@@ -1,0 +1,351 @@
+ :host {
+      @apply block h-full w-full;
+      
+    }
+
+    .table-wrapper {
+      @apply h-full w-full overflow-x-auto overflow-y-auto;
+      min-width: 0;
+    }
+
+    .market-table {
+      @apply w-full border-separate border-spacing-0 bg-[#161b20];
+      min-width: 100%;
+
+      
+    }
+
+    .market-table th {
+      @apply sticky top-0  bg-[#1d232a] text-left p-2 text-sm font-medium text-gray-300 border-b border-gray-700;
+      white-space: nowrap;
+      background: linear-gradient(to right, rgba(13, 13, 13, 0.95), rgba(13, 13, 13, 0.95));
+
+    }
+
+    .market-table td {
+      @apply p-2 text-sm border-b border-gray-700 bg-[#161b20];
+      white-space: nowrap;
+      
+      background: linear-gradient(to right, rgba(13, 13, 13, 0.95), rgba(13, 13, 13, 0.95));
+
+    }
+
+    .instrument-col {
+      @apply  left-0 sticky ;
+      min-width: 160px;
+      max-width: 160px;
+      background-color: #161b20 !important;
+      background: linear-gradient(to right, rgba(13, 13, 13, 0.95), rgba(13, 13, 13, 0.95));
+      color: #ffffff;
+    }
+
+    tr:hover td {
+      @apply bg-gray-800;
+    }
+
+    tr:hover .instrument-col {
+      @apply bg-gray-800 !important;
+    }
+
+    .instrument-cell {
+      @apply flex items-center gap-2;
+    }
+
+    .type-badge {
+      @apply px-2 py-0.5 text-xs font-semibold rounded;
+    }
+
+    .type-badge.fx {
+      @apply bg-green-900/50 text-green-500;
+    }
+
+    .type-badge.crypto {
+      @apply bg-yellow-900/50 text-yellow-500;
+    }
+
+    .price-box {
+      @apply inline-flex items-center gap-1 px-2 py-1 rounded font-mono;
+    }
+
+    .price-box.up {
+      @apply bg-green-900/20 text-green-500;
+    }
+
+    .price-box.down {
+      @apply bg-red-900/20 text-red-500;
+    }
+
+    .update-cell {
+      @apply flex items-center gap-2;
+    }
+
+    .pulse-dot {
+      @apply w-2 h-2 bg-green-500 rounded-full;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        @apply scale-100;
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5);
+      }
+      70% {
+        @apply scale-150;
+        box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+      }
+      100% {
+        @apply scale-100;
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+      }
+    }
+
+    .signal-btn {
+      @apply px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded;
+    }
+
+    [class*="text-green"] {
+      @apply text-green-500;
+    }
+
+    [class*="text-red"] {
+      @apply text-red-500;
+    }
+
+
+    .filter-panel {
+      @apply rounded-lg overflow-hidden mb-2;
+      background: rgba(17, 17, 17, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(229, 191, 125, 0.05);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .filter-header {
+      @apply bg-black/40 border-b border-[#E5BF7D]/5;
+    }
+    
+    .filter-header-content {
+      @apply flex justify-between items-center px-4 h-12;
+    }
+    
+    .filter-title-group {
+      @apply flex items-center gap-3;
+    }
+    
+    .filter-title-group svg {
+      @apply text-[#E5BF7D]/70;
+    }
+    
+    .filter-title {
+      @apply text-sm font-medium text-[#E5BF7D]/90;
+    }
+    
+    .filter-controls {
+      @apply flex items-center gap-3;
+    }
+    
+    .search-group {
+      @apply relative;
+    }
+    
+    .search-input {
+      @apply w-48 h-7 bg-black/30 border border-[#E5BF7D]/10 rounded-md px-3 py-1 text-xs;
+      @apply text-[#E5BF7D]/90 placeholder-[#E5BF7D]/30;
+      @apply focus:outline-none focus:border-[#E5BF7D]/20;
+    }
+    
+    .search-btn {
+      @apply absolute right-2 top-1.5;
+      @apply text-[#E5BF7D]/40;
+    }
+    
+    .toggle-filter-btn {
+      @apply p-1.5 text-[#E5BF7D]/70 hover:bg-[#E5BF7D]/5 rounded-md transition-colors;
+    }
+    
+    .filter-content {
+      @apply p-4 space-y-4;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), transparent);
+    }
+    
+    .filter-grid {
+      @apply grid grid-cols-2 gap-4;
+    }
+    
+    .filter-group {
+      @apply space-y-2;
+    }
+    
+    .filter-group.full-width {
+      @apply col-span-2;
+    }
+    
+    .filter-group label {
+      @apply block text-xs font-medium text-[#E5BF7D]/60;
+    }
+    
+    .filter-options {
+      @apply flex gap-4;
+    }
+    
+    .filter-checkbox {
+      @apply flex items-center gap-2 cursor-pointer;
+    }
+    
+    .filter-checkbox input {
+      @apply hidden;
+    }
+    
+    .checkbox-custom {
+      @apply w-4 h-4 border border-[#E5BF7D]/20 rounded;
+      @apply flex items-center justify-center;
+      @apply transition-colors;
+    }
+    
+    .filter-checkbox input:checked + .checkbox-custom {
+      @apply bg-[#E5BF7D]/20 border-[#E5BF7D]/30;
+    }
+    
+    .filter-checkbox input:checked + .checkbox-custom::after {
+      content: '✓';
+      @apply text-[#E5BF7D] text-xs;
+    }
+    
+    .filter-checkbox span:last-child {
+      @apply text-xs text-[#E5BF7D]/80;
+    }
+    
+    .filter-select {
+      @apply w-full h-8 bg-black/30 border border-[#E5BF7D]/10 rounded-md;
+      @apply px-3 text-xs text-[#E5BF7D]/90;
+      @apply focus:outline-none focus:border-[#E5BF7D]/20;
+    }
+    
+    .range-slider {
+      @apply flex items-center gap-4;
+    }
+    
+    .range-value {
+      @apply text-xs text-[#E5BF7D]/70 w-12 text-center;
+    }
+    
+    .slider-group {
+      @apply flex-1 relative h-8;
+    }
+    
+    .slider-group input[type="range"] {
+      @apply absolute w-full h-1 bg-[#E5BF7D]/10 rounded-full;
+      @apply appearance-none cursor-pointer;
+    }
+    
+    .slider-group input[type="range"]::-webkit-slider-thumb {
+      @apply appearance-none w-3 h-3 bg-[#E5BF7D] rounded-full;
+      @apply hover:bg-[#E5BF7D]/80 transition-colors;
+    }
+    
+    .filter-actions {
+      @apply flex justify-end gap-2 mt-4 pt-4 border-t border-[#E5BF7D]/5;
+    }
+    
+    .reset-btn, .save-btn {
+      @apply flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium;
+      @apply transition-colors;
+    }
+    
+    .reset-btn {
+      @apply text-[#E5BF7D]/70 hover:bg-[#E5BF7D]/5;
+    }
+    
+    .save-btn {
+      @apply bg-[#E5BF7D]/10 text-[#E5BF7D] hover:bg-[#E5BF7D]/20;
+    }
+    
+
+
+
+    .favorite-star {
+      @apply ml-auto cursor-pointer text-gray-600;
+      transition: color 0.2s;
+    }
+    
+    .favorite-star:hover {
+      @apply text-[#E5BF7D];
+    }
+    
+    .favorite-star .favorite {
+      @apply text-[#E5BF7D];
+      fill: #E5BF7D;
+    }
+    
+    
+    /* .favorite-star {
+      @apply ml-auto cursor-pointer text-gray-600;
+      transition: color 0.2s;
+    } */
+    
+    .favorite-star.active svg {
+      fill: #e09f2d;
+      transform: scale(1.2);
+    }
+    
+    
+     /* Effet shimmer */
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150px;
+    height: 100%;
+    width: 150px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.432), transparent);
+    animation: shimmer 1.5s infinite;
+    z-index: 2;
+  }
+  
+  @keyframes shimmer {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(300px);
+    }
+  }
+  
+  /* Skeleton pour une ligne de texte */
+  .skeleton-text {
+    height: 16px;
+    margin: 8px 0;
+    border-radius: 4px;
+    background-color: #e0e0e07c;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .skeleton-text::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150px;
+    height: 100%;
+    width: 150px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.39), transparent);
+    animation: shimmer 1.5s infinite;
+  }
+  
+  /* Optionnel : ajuster la cellule skeleton dans le tableau */
+  .skeleton-cell {
+    padding: 12px;
+  }
+    
+    
+
+
+
+
+
+
+
+
+
+
+    

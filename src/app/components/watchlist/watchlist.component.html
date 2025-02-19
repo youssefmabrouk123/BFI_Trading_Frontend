@@ -1,0 +1,72 @@
+<div class="table-wrapper">
+  <table class="market-table">
+    <thead>
+      <tr>
+        <th class="instrument-col sticky left-0 bg-white z-50">Instrument</th>
+        <th class="z-20">Bid</th>
+        <th class="z-20">Ask</th>
+        <th class="z-20">Spread</th>
+        <th class="z-20">Var.Nette</th>
+        <th class="z-20">% 1D</th>
+        <th class="z-20">Price update</th>
+        <th class="z-20">Previous close</th>
+        <th class="z-20">High</th>
+        <th class="z-20">Low</th>
+      </tr>
+    </thead>
+    <!-- Afficher les données si elles existent -->
+    <tbody *ngIf="!isLoading && favoritesData.length > 0">
+      <tr *ngFor="let item of favoritesData; trackBy: trackByPk" [class.favorite-row]="item.favorite">
+        <td class="instrument-col sticky left-0 bg-white z-10">
+          <div class="instrument-cell ">
+            <span [class]="'type-badge ' + item.type.toLowerCase()">{{ item.type }}</span>
+            <span class="instrument-name">{{ item.instrument }}</span>
+            <span class="favorite-star" (click)="toggleFavorite(item, $event)" [class.active]="item.favorite">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </span>
+          </div>
+        </td>
+        <td>
+          <div [class]="'price-box ' + item.direction">
+            <span class="arrow">{{ item.direction === 'up' ? '▲' : '▼' }}</span>
+            {{ item.buy }}
+          </div>
+        </td>
+        <td>
+          <div [class]="'price-box ' + item.direction">
+            <span class="arrow">{{ item.direction === 'up' ? '▲' : '▼' }}</span>
+            {{ item.sell }}
+          </div>
+        </td>
+        <td style="color: aliceblue;">{{ item.spread }}</td>
+        <td [class]="item.varNette !== '-' && parseNumber(item.varNette) >= 0 ? 'text-green' : 'text-red'">
+          {{ item.varNette }}
+        </td>
+        <td [class]="item.percent1J !== '-' && parseNumber(item.percent1J) >= 0 ? 'text-green' : 'text-red'">
+          {{ item.percent1J }}%
+        </td>
+        <td style="color: aliceblue;">{{ item.updateTime }}</td>
+        <td style="color: aliceblue;">{{ item.closing }}</td>
+        <td style="color: aliceblue;">{{ item.high }}</td>
+        <td style="color: aliceblue;">{{ item.low }}</td>
+      </tr>
+    </tbody>
+    <!-- Afficher un message si aucune donnée n'est disponible -->
+    <tbody *ngIf="!isLoading && favoritesData.length === 0">
+        <tr>
+          <td colspan="10" class="p-4 text-center text-gray-500">Aucun favori disponible.</td>
+        </tr>
+      </tbody>
+    <!-- Afficher le skeleton pendant le chargement -->
+    <tbody *ngIf="isLoading">
+      <tr *ngFor="let skeleton of skeletonArray">
+        <td class="skeleton-cell" colspan="10">
+          <div class="skeleton skeleton-text"></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

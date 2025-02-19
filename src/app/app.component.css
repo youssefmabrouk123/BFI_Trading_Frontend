@@ -1,0 +1,21 @@
+/* Apply gray and white colors globally */
+body {
+    color: white; /* Default text color */
+    background-color: #000000; /* Optional: Dark background */
+    font-size: 16px;
+
+    
+  }
+  
+  /* Make all text shades of gray and white */
+  * {
+    color: lightgray;
+    font-weight: 700;
+  }
+  
+  /* Override specific elements */
+  h1, h2, h3, h4, h5, h6 {
+    color: white;
+    font-size: 16px;
+  }
+
