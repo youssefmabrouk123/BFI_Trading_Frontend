@@ -391,3 +391,137 @@
     color: #E74C3C;
   }
   
+
+  .nav-container {
+    background: linear-gradient(to right, rgba(13, 13, 13, 0.95), rgba(18, 18, 18, 0.95));
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(229, 191, 125, 0.08);
+    top: 0;
+    z-index: 50;
+    position: relative;
+}
+
+.nav-content {
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Add hamburger menu button */
+.mobile-menu-button {
+    display: none;
+    background: transparent;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: #E5BF7D;
+}
+
+/* Mobile menu overlay */
+.mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(13, 13, 13, 0.95);
+    z-index: 49;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+    .nav-links {
+        gap: 4px;
+    }
+
+    .nav-link {
+        padding: 8px 12px;
+    }
+
+    .platform-name {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: #0D0D0D;
+        padding: 16px;
+        border-bottom: 1px solid rgba(229, 191, 125, 0.08);
+    }
+
+    .nav-links.mobile-open {
+        display: flex;
+    }
+
+    .mobile-menu-overlay.mobile-open {
+        display: block;
+    }
+
+    .nav-link {
+        padding: 12px 16px;
+    }
+
+    .platform-name {
+        display: none;
+    }
+
+    .logo-divider {
+        display: none;
+    }
+
+    .user-section {
+        gap: 8px;
+    }
+
+    .profile-info {
+        display: none;
+    }
+
+    .dropdown-arrow {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-content {
+        padding: 0 16px;
+        margin: right 0;
+    }
+
+    .logo-image {
+        height: 28px;
+    }
+
+    .icon-button {
+        width: 32px;
+        height: 32px;
+    }
+
+    .profile-trigger {
+        padding: 4px;
+    }
+
+    .avatar-container {
+        width: 28px;
+        height: 28px;
+    }
+
+    .dropdown-menu {
+        width: 200px;
+        right: -16px;
+    }
+}

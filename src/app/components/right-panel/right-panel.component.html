@@ -1,1 +1,179 @@
-<p>right-panel works!</p>
+<div class=" particles min-h-screen flex flex-col text-[#E5BF7D] relative overflow-hidden bg-[#0A0A0A]">
+  <!-- Trading Elements Background -->
+  <div class="absolute inset-0 z-0 trading-elements">
+    <div class="market-line line-1"></div>
+    <div class="market-line line-2"></div>
+    <div class="market-bar bar-1"></div>
+    <div class="market-bar bar-2"></div>
+    <div class="market-bar bar-3"></div>
+  </div>
+
+  <!-- Header Component -->
+  <header class="w-full py-6  z-20">
+    <div class="container mx-auto flex justify-center items-center">
+      <div class="flex items-center gap-3">
+        <div class="logo-container">
+          <img src="assets/img/bfi_logo_2021 (1).svg" alt="BFI Logo" class="w-21 h-16 filter drop-shadow-[0_0_12px_rgba(229,191,125,0.5)]" />
+        </div>
+        <h1 class="text-4xl font-bold tracking-wider">
+          <span class="text-sm font-light uppercase tracking-widest ml-5 text-[#E5BF7D]/70">Trading</span>
+        </h1>
+      </div>
+    </div>
+  </header>
+  <!-- Main Content -->
+  <main class="flex-1 flex items-center justify-center z-10 px-4 py-12">
+    <div class="w-full max-w-md bg-[#111111]/70 backdrop-blur-lg border border-[#E5BF7D]/5 rounded-lg shadow-lg">
+      <!-- Tabs and Buttons -->
+      <div class="px-3 py-4 bg-[#0C0C0C]/80 border-b border-[#E5BF7D]/5 flex justify-between items-center h-12">
+        <div class="inline-flex bg-[#141414]/40 p-1 rounded-md gap-0.5">
+          <button 
+            class="px-3 py-1.5 text-xs font-medium tracking-wider text-[#E5BF7D]/60 bg-transparent rounded transition-all duration-200 hover:text-[#E5BF7D]/80 hover:bg-[#E5BF7D]/3 border border-transparent"
+            [class.tab-active]="activeTab === 'login'"
+            (click)="setActiveTab('login')"
+          >
+            LOGIN
+          </button>
+          <button 
+            class="px-3 py-1.5 text-xs font-medium tracking-wider text-[#E5BF7D]/60 bg-transparent rounded transition-all duration-200 hover:text-[#E5BF7D]/80 hover:bg-[#E5BF7D]/3 border border-transparent"
+            [class.tab-active]="activeTab === 'signup'"
+            (click)="setActiveTab('signup')"
+          >
+            SIGN UP
+          </button>
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <button class="p-1.5 rounded hover:bg-[#E5BF7D]/5 transition-all duration-200">
+            <svg class="w-4 h-4 text-[#E5BF7D]/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+          <button class="p-1.5 rounded hover:bg-[#E5BF7D]/5 transition-all duration-200">
+            <svg class="w-4 h-4 text-[#E5BF7D]/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="p-3 overflow-auto">
+        <form [formGroup]="authForm" (ngSubmit)="onSubmit()" class="space-y-5">
+          <div class="space-y-2" *ngIf="activeTab === 'login' || activeTab === 'signup'">
+            <label for="email" class="block text-xs font-medium text-[#E5BF7D]/80">Email Address</label>
+            <div class="relative">
+              <input 
+                type="email" 
+                id="email" 
+                formControlName="email" 
+                placeholder="your@email.com" 
+                class="w-full px-3 py-2 text-sm text-[#E5BF7D] bg-[#0A0A0A]/70 border border-[#E5BF7D]/5 rounded focus:outline-none focus:border-[#E5BF7D]/20 focus:ring-1 focus:ring-[#E5BF7D]/10"
+              />
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 text-[#E5BF7D]/40">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                </svg>
+              </div>
+            </div>
+            <div class="text-xs text-red-400" *ngIf="emailControl.touched && emailControl.invalid">{{ emailError }}</div>
+          </div>
+
+          <div class="space-y-2" *ngIf="activeTab === 'login' || activeTab === 'signup'">
+            <label for="password" class="block text-xs font-medium text-[#E5BF7D]/80">Password</label>
+            <div class="relative">
+              <input 
+                [type]="showPassword ? 'text' : 'password'" 
+                id="password" 
+                formControlName="password" 
+                placeholder="••••••••" 
+                class="w-full px-3 py-2 text-sm text-[#E5BF7D] bg-[#0A0A0A]/70 border border-[#E5BF7D]/5 rounded focus:outline-none focus:border-[#E5BF7D]/20 focus:ring-1 focus:ring-[#E5BF7D]/10"
+              />
+              <button 
+                type="button" 
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-[#E5BF7D]/60 hover:text-[#E5BF7D]"
+                (click)="togglePasswordVisibility()"
+              >
+                <svg *ngIf="!showPassword" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <svg *ngIf="showPassword" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                </svg>
+              </button>
+            </div>
+            <div class="text-xs text-red-400" *ngIf="passwordControl.touched && passwordControl.invalid">{{ passwordError }}</div>
+          </div>
+
+          <div class="space-y-2" *ngIf="activeTab === 'signup'">
+            <label for="confirmPassword" class="block text-xs font-medium text-[#E5BF7D]/80">Confirm Password</label>
+            <input 
+              type="password" 
+              id="confirmPassword" 
+              formControlName="confirmPassword" 
+              placeholder="••••••••" 
+              class="w-full px-3 py-2 text-sm text-[#E5BF7D] bg-[#0A0A0A]/70 border border-[#E5BF7D]/5 rounded focus:outline-none focus:border-[#E5BF7D]/20 focus:ring-1 focus:ring-[#E5BF7D]/10"
+            />
+            <div class="text-xs text-red-400" *ngIf="confirmPasswordControl.touched && confirmPasswordControl.hasError('passwordMismatch')">
+              Passwords do not match
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button 
+            type="submit" 
+            class="w-full px-4 py-2 text-xs font-semibold uppercase tracking-wider text-[#111111] bg-gradient-to-r from-[#E5BF7D] to-[#D4AF37] rounded disabled:opacity-50 disabled:cursor-not-allowed"
+            [disabled]="authForm.invalid"
+          >
+            {{ activeTab === 'login' ? 'Sign In' : 'Create Account' }}
+          </button>
+
+          <!-- Settings Option -->
+          <div *ngIf="activeTab === 'login'" class="flex justify-between items-center text-xs">
+            <div class="flex items-center">
+              <input 
+                type="checkbox" 
+                id="remember" 
+                class="w-3.5 h-3.5 bg-[#111111] border border-[#E5BF7D]/10 rounded text-[#E5BF7D] focus:ring-[#E5BF7D]/20"
+              />
+              <label for="remember" class="ml-1.5 text-[#E5BF7D]/70">Remember me</label>
+            </div>
+            <a href="#" class="text-[#E5BF7D]/60 hover:text-[#E5BF7D]/80">Forgot Password?</a>
+          </div>
+        </form>
+
+        <!-- Social Login -->
+        <div class="mt-6 mb-2">
+          <div class="flex items-center justify-center gap-3 mb-4">
+            <span class="h-px w-full bg-[#E5BF7D]/5"></span>
+            <span class="text-xs uppercase tracking-wider text-[#E5BF7D]/40">or</span>
+            <span class="h-px w-full bg-[#E5BF7D]/5"></span>
+          </div>
+          <div class="flex gap-3 justify-center">
+            <button type="button" class="w-10 h-10 bg-[#0A0A0A]/70 border border-[#E5BF7D]/5 rounded-md flex items-center justify-center text-[#E5BF7D]/60 hover:text-[#E5BF7D]/90 hover:border-[#E5BF7D]/10 hover:bg-[#E5BF7D]/5">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.283 10.356h-8.327v3.451h4.792c-.446 2.193-2.313 3.453-4.792 3.453a5.27 5.27 0 0 1-5.279-5.28 5.27 5.27 0 0 1 5.279-5.279c1.259 0 2.397.447 3.29 1.178l2.6-2.599c-1.584-1.381-3.615-2.233-5.89-2.233a8.908 8.908 0 0 0-8.934 8.934 8.907 8.907 0 0 0 8.934 8.934c4.467 0 8.529-3.249 8.529-8.934 0-.528-.081-1.097-.202-1.625z"/>
+              </svg>
+            </button>
+            <button type="button" class="w-10 h-10 bg-[#0A0A0A]/70 border border-[#E5BF7D]/5 rounded-md flex items-center justify-center text-[#E5BF7D]/60 hover:text-[#E5BF7D]/90 hover:border-[#E5BF7D]/10 hover:bg-[#E5BF7D]/5">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13.397 20.997v-8.196h2.765l.411-3.209h-3.176V7.548c0-.926.258-1.56 1.587-1.56h1.684V3.127A22.336 22.336 0 0 0 14.201 3c-2.444 0-4.122 1.492-4.122 4.231v2.355H7.332v3.209h2.753v8.202h3.312z"/>
+              </svg>
+            </button>
+            <button type="button" class="w-10 h-10 bg-[#0A0A0A]/70 border border-[#E5BF7D]/5 rounded-md flex items-center justify-center text-[#E5BF7D]/60 hover:text-[#E5BF7D]/90 hover:border-[#E5BF7D]/10 hover:bg-[#E5BF7D]/5">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.73 0 1.323-.593 1.323-1.325V1.325C24 .593 23.407 0 22.675 0z"/>
+              </svg>
+            </button>
+            <button type="button" class="w-10 h-10 bg-[#0A0A0A]/70 border border-[#E5BF7D]/5 rounded-md flex items-center justify-center text-[#E5BF7D]/60 hover:text-[#E5BF7D]/90 hover:border-[#E5BF7D]/10 hover:bg-[#E5BF7D]/5">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { QuoteService } from 'src/app/services/quoteService/quote.service';
 import { Quote } from 'src/app/models/quote.model';
 import { combineLatest, Subscription } from 'rxjs';
 import { FavoriteService } from 'src/app/services/favorite/favorite.service';
+import { CrossParityService } from 'src/app/services/crossParity/cross-parity.service';
 
 interface MarketDataItem {
   type: 'FX';
@@ -44,90 +45,88 @@ interface MarketFilters {
 @Component({
   selector: 'app-left-panel',
   templateUrl: './left-panel.component.html',
-  styleUrls: ['./left-panel.component.css']
+  styleUrls: ['./left-panel.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LeftPanelComponent implements OnInit, OnDestroy {
-  readonly instruments: string[] = [
-    'EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CAD', 'USD/CHF', 'NZD/USD',
-    'EUR/GBP', 'EUR/JPY', 'GBP/JPY', 'EUR/CHF', 'EUR/CAD', 'EUR/AUD', 'EUR/NZD',
-    'GBP/CHF', 'GBP/CAD', 'GBP/AUD', 'GBP/NZD', 'AUD/JPY', 'AUD/CHF', 'AUD/CAD',
-    'AUD/NZD', 'CAD/JPY', 'CAD/CHF', 'NZD/JPY', 'NZD/CHF', 'CHF/JPY', 'USD/MXN',
-    'USD/SGD', 'USD/HKD', 'USD/SEK', 'USD/NOK', 'USD/DKK', 'USD/ZAR', 'USD/CNY',
-    'USD/INR', 'EUR/SGD', 'EUR/HKD', 'EUR/SEK', 'EUR/NOK', 'EUR/DKK', 'EUR/ZAR',
-    'EUR/CNY', 'GBP/SGD', 'GBP/HKD', 'GBP/ZAR', 'AUD/SGD', 'AUD/HKD', 'CAD/SGD',
-    'CAD/HKD', 'NZD/SGD', 'NZD/HKD'
-  ];
-
-
-  isLoading: boolean = true; 
+  instruments: string[] = [];
+  isLoading = true;
   skeletonArray: number[] = [1, 2, 3, 4, 5];
   marketData: MarketDataItem[] = [];
   filteredMarketData: MarketDataItem[] = [];
-  isFilterPanelOpen: boolean = false;
+  isFilterPanelOpen = false;
+  isRefreshing = true;
+
   
   filters: MarketFilters = {
-    types: {
-      fx: true,
-      crypto: true
-    },
-    activity: {
-      gainers: false,
-      losers: false,
-      mostVolatile: false,
-      favorites: false
-    },
+    types: { fx: true, crypto: true },
+    activity: { gainers: false, losers: false, mostVolatile: false, favorites: false },
     currencyBase: 'all',
-    performance: {
-      min: -5,
-      max: 5
-    },
+    performance: { min: -5, max: 5 },
     search: ''
   };
 
   private subscriptions = new Subscription();
   private previousQuotes = new Map<string, Quote>();
-  private savedFilters: { name: string, filters: MarketFilters }[] = [];
+  private savedFilters: { name: string; filters: MarketFilters }[] = [];
 
   constructor(
     private quoteService: QuoteService,
-    private favoriteService: FavoriteService
+    private favoriteService: FavoriteService,
+    private crossParityService: CrossParityService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    // Here we subscribe only to quotes. If you need to subscribe to favorites,
-    // add that observable in combineLatest.
-    this.subscriptions.add(
-      combineLatest([
-        this.quoteService.getQuotes()
-      ]).subscribe({
-        next: ([quotes]) => {
-          this.updateMarketData(quotes);
-          this.applyFilters();
-          this.isLoading = false; 
-
-        },
-        error: (error) => console.error('Error receiving quotes:', error)
-      })
-    );
+    this.fetchData();
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
+  // Méthode d'extraction des données
+  private fetchData(): void {
+    this.subscriptions.add(
+      combineLatest([
+        this.quoteService.getQuotes(),
+        this.crossParityService.getCrossParities()
+      ]).subscribe({
+        next: ([quotes, crossParities]) => {
+          this.instruments = crossParities.sort((a, b) => a.localeCompare(b));
+          console.log('quotes');
+          console.log(quotes);
+          console.log('quotes');
+
+
+          this.updateMarketData(quotes);
+          this.applyFilters();
+          this.isLoading = false;
+          this.isRefreshing=false;
+          this.cd.markForCheck();
+        },
+        error: (error) => console.error('Error receiving data:', error)
+      })
+    );
+  }
+
+  // Méthode appelée lors du clic sur le bouton "Rafraîchir"
+  refreshTable(): void {
+    this.isRefreshing = true;
+    this.isLoading = true;
+    this.fetchData();
+  }
   private updateMarketData(quotes: Quote[]): void {
     const quotesMap = new Map(quotes.map(q => [q.identifier, q]));
-  
     this.marketData = this.instruments.map(instrument => {
       const quote = quotesMap.get(instrument);
       if (quote) {
-        console.log(quote);
+        // Suppression du console.log() en production
         const previousQuote = this.previousQuotes.get(quote.identifier);
         const direction = previousQuote
           ? (quote.bidPrice > previousQuote.bidPrice ? 'up' : 'down')
           : 'up';
         this.previousQuotes.set(quote.identifier, quote);
-        
         return {
           type: 'FX',
           instrument: quote.identifier,
@@ -145,8 +144,6 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
           pk: quote.pk
         };
       }
-      
-      // When no quote is found, we now provide a default pk value.
       return {
         type: 'FX',
         instrument,
@@ -161,43 +158,37 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
         low: '-',
         direction: 'up',
         favorite: false,
-        pk: 0 // Default pk value when no quote is found.
+        pk: 0
       };
     });
-  
-    this.applyFilters();
   }
-  
-  applyFilters(): void {
-    let filtered = [...this.marketData];
 
-    // Filter by type (e.g. FX)
+  applyFilters(): void {
+    let filtered = this.marketData.slice();
+
+    // Filtrer par type (ex. FX)
     if (!this.filters.types.fx) {
       filtered = filtered.filter(item => item.type !== 'FX');
     }
-
-    // Filter favorites if checked
+    // Filtrer par favoris si sélectionné
     if (this.filters.activity.favorites) {
       filtered = filtered.filter(item => item.favorite);
     }
-
-    // Filter by currency base if not "all"
+    // Filtrer par devise de base (si différente de "all")
     if (this.filters.currencyBase !== 'all') {
       filtered = filtered.filter(item => {
         const [base, quote] = item.instrument.split('/');
         return base === this.filters.currencyBase || quote === this.filters.currencyBase;
       });
     }
-
-    // Filter by performance range
+    // Filtrer par plage de performance
     filtered = filtered.filter(item => {
       if (item.percent1J === '-') return true;
       const percentValue = parseFloat(item.percent1J);
-      return percentValue >= this.filters.performance.min && 
+      return percentValue >= this.filters.performance.min &&
              percentValue <= this.filters.performance.max;
     });
-
-    // Filter by activity gainers/losers if selected
+    // Filtrer par activité (gainers/losers)
     if (this.filters.activity.gainers || this.filters.activity.losers) {
       filtered = filtered.filter(item => {
         if (item.percent1J === '-') return false;
@@ -211,16 +202,14 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
         return true;
       });
     }
-
-    // Filter by search term
+    // Filtrer par terme de recherche
     if (this.filters.search.trim()) {
       const searchTerm = this.filters.search.toLowerCase().trim();
-      filtered = filtered.filter(item => 
+      filtered = filtered.filter(item =>
         item.instrument.toLowerCase().includes(searchTerm)
       );
     }
-
-    // Sort by volatility if selected
+    // Trier par volatilité si sélectionné
     if (this.filters.activity.mostVolatile) {
       filtered.sort((a, b) => {
         const aValue = a.percent1J !== '-' ? Math.abs(parseFloat(a.percent1J)) : 0;
@@ -228,31 +217,21 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
         return bValue - aValue;
       });
     }
-
     this.filteredMarketData = filtered;
+    this.cd.markForCheck();
   }
 
   toggleFilterPanel(): void {
     this.isFilterPanelOpen = !this.isFilterPanelOpen;
+    this.cd.markForCheck();
   }
 
   resetFilters(): void {
     this.filters = {
-      types: {
-        fx: true,
-        crypto: true
-      },
-      activity: {
-        gainers: false,
-        losers: false,
-        mostVolatile: false,
-        favorites: false
-      },
+      types: { fx: true, crypto: true },
+      activity: { gainers: false, losers: false, mostVolatile: false, favorites: false },
       currencyBase: 'all',
-      performance: {
-        min: -5,
-        max: 5
-      },
+      performance: { min: -5, max: 5 },
       search: ''
     };
     this.applyFilters();
@@ -267,23 +246,19 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
   }
 
   toggleFavorite(item: MarketDataItem, event: Event): void {
-    event.stopPropagation(); // Prevent row click
-    // Optimistically update UI
+    event.stopPropagation(); // Empêche le clic sur la ligne
+    // Mise à jour optimiste de l’UI
     item.favorite = !item.favorite;
-    this.favoriteService.toggleFavorite(item.pk, item.favorite)
-      .subscribe({
-        next: (res) => {
-          console.log('Favorite updated successfully:', res);
-          // Optionally, update the local item with response data:
-          // item.favorite = res.favorite;
-          this.applyFilters();
-        },
-        error: (err) => {
-          console.error('Error updating favorite:', err);
-          // Revert the toggle in case of error
-          item.favorite = !item.favorite;
-        }
-      });
+    this.favoriteService.toggleFavorite(item.pk, item.favorite).subscribe({
+      next: (res) => {
+        this.applyFilters();
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        // Revenir en arrière en cas d’erreur
+        item.favorite = !item.favorite;
+      }
+    });
   }
   
   trackByInstrument(index: number, item: MarketDataItem): string {

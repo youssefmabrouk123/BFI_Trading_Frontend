@@ -58,6 +58,8 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path *ngIf="!isFullscreen(rightPanel)" d="M4 8V4h4M4 4l5 5m11-1V4h-4m4 0l-5 5M4 16v4h4m-4 0l5-5m11 5l-5-5m5 5v-4h-4" 
                               stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+                        <path *ngIf="isFullscreen(rightPanel)" d="M6 18L18 6M6 6l12 12" 
+                              stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
                     </svg>
                 </button>
             </div>
@@ -99,6 +101,8 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path *ngIf="!isFullscreen(bottomPanel)" d="M4 8V4h4M4 4l5 5m11-1V4h-4m4 0l-5 5M4 16v4h4m-4 0l5-5m11 5l-5-5m5 5v-4h-4" 
                           stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+                    <path *ngIf="isFullscreen(bottomPanel)" d="M6 18L18 6M6 6l12 12" 
+                          stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>    
                 </svg>
             </button>
         </div>

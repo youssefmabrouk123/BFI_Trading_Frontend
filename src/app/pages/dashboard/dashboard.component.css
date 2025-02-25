@@ -186,3 +186,179 @@
 
 
 
+
+
+@media (max-width: 768px) {
+  :host {
+    padding: 8px;
+  }
+
+  #container {
+    gap: 8px;
+  }
+
+  #top-section {
+    flex-direction: column;
+    height: auto;
+  }
+
+  #left-panel, #right-panel {
+    min-width: 100%;
+    height: 400px; /* Fixed height on mobile */
+  }
+
+  #bottom-panel {
+    height: 400px; /* Fixed height on mobile */
+  }
+
+  .resizer {
+    display: none; /* Hide resizers on mobile */
+  }
+
+  .panel-header {
+    padding: 6px 8px;
+    height: 40px;
+  }
+
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .tab {
+    padding: 4px 10px;
+    white-space: nowrap;
+  }
+
+  .panel-content {
+    padding: 8px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  #top-section {
+    flex-direction: column;
+  }
+
+  #left-panel, #right-panel {
+    min-width: 100%;
+  }
+
+  .resizer-v {
+    display: none;
+  }
+}
+
+/* Base styles remain the same */
+.panel {
+  background: rgba(17, 17, 17, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(229, 191, 125, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: rgba(229, 191, 125, 0.08);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Rest of your existing styles... */
+
+/* Adjusted fullscreen for responsive */
+.fullscreen {
+  position: fixed !important;
+  top: 12px !important;
+  left: 12px !important;
+  right: 12px !important;
+  bottom: 12px !important;
+  width: calc(100vw - 24px) !important;
+  height: calc(100vh - 24px) !important;
+  z-index: 9999 !important;
+}
+
+@media (max-width: 768px) {
+  .fullscreen {
+    top: 8px !important;
+    left: 8px !important;
+    right: 8px !important;
+    bottom: 8px !important;
+    width: calc(100vw - 16px) !important;
+    height: calc(100vh - 16px) !important;
+  }
+}
+
+
+/* ... styles de base ... */
+
+@media (max-width: 768px) {
+  :host {
+    padding: 8px;
+  }
+  #container {
+    gap: 8px;
+  }
+  #top-section {
+    flex-direction: column;
+    height: auto;
+  }
+  #left-panel, #right-panel {
+    min-width: 100%;
+    height: 400px; /* Hauteur fixe sur mobile */
+  }
+  #bottom-panel {
+    height: 400px; /* Hauteur fixe sur mobile */
+  }
+  /* Si vous souhaitez activer le redimensionnement sur mobile, 
+     commentez ou supprimez cette règle qui cache les resizers */
+  /* .resizer {
+    display: none;
+  } */
+  .panel-header {
+    padding: 6px 8px;
+    height: 40px;
+  }
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tab {
+    padding: 4px 10px;
+    white-space: nowrap;
+  }
+  .panel-content {
+    padding: 8px;
+  }
+}
+
+/* Styles pour le mode fullscreen et autres restent inchangés */
+.fullscreen {
+  position: fixed !important;
+  top: 12px !important;
+  left: 12px !important;
+  right: 12px !important;
+  bottom: 12px !important;
+  width: calc(100vw - 24px) !important;
+  height: calc(100vh - 24px) !important;
+  z-index: 9999 !important;
+}
+
+@media (max-width: 768px) {
+  .fullscreen {
+    top: 8px !important;
+    left: 8px !important;
+    right: 8px !important;
+    bottom: 8px !important;
+    width: calc(100vw - 16px) !important;
+    height: calc(100vh - 16px) !important;
+  }
+}

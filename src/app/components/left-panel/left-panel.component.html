@@ -15,7 +15,14 @@
             <line x1="17" y1="16" x2="23" y2="16"></line>
           </svg>
           <h3 class="filter-title">Market Filter</h3>
+          <div class="table-controls">
+            <button class="refresh-btn" (click)="refreshTable()" [class.loading]="isRefreshing">
+              <i class="fa fa-sync refresh-icon" [class.spinning]="isRefreshing"></i>
+            </button>
+          </div>
+          
         </div>
+       
         
         <div class="filter-controls">
           <div class="search-group">
@@ -163,14 +170,14 @@
           </div>
         </td>
         <td>
-          <div [class]="'price-box ' + item.direction">
-            <span class="arrow">{{ item.direction === 'up' ? '▲' : '▼' }}</span>
+          <div [class]="'price-box  ' + item.direction" >
+            <span class="arrow font-bold " >{{ item.direction === 'up' ? '▲' : '▼' }}</span>
             {{ item.buy }}
           </div>
         </td>
         <td>
-          <div [class]="'price-box ' + item.direction">
-            <span class="arrow">{{ item.direction === 'up' ? '▲' : '▼' }}</span>
+          <div [class]="'price-box ' + item.direction" >
+            <span class="arrow font-bold" >{{ item.direction === 'up' ? '▲' : '▼' }}</span>
             {{ item.sell }}
           </div>
         </td>
@@ -202,4 +209,5 @@
     </tbody>
 
   </table>
+  
 </div>

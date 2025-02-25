@@ -1,4 +1,3 @@
-// src/app/services/quoteService/quote.service.ts
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { Quote } from 'src/app/models/quote.model';
@@ -44,3 +43,4 @@ export class QuoteService {
     }
   }
 }
+

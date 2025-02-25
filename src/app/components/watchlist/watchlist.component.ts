@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { QuoteService } from 'src/app/services/quoteService/quote.service';
 import { FavoriteService } from 'src/app/services/favorite/favorite.service';
 import { Quote } from 'src/app/models/quote.model';
-import { Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
+import { CrossParityService } from 'src/app/services/crossParity/cross-parity.service';
 
 interface MarketDataItem {
   type: 'FX';
@@ -29,91 +30,59 @@ interface MarketDataItem {
 export class WatchlistComponent implements OnInit, OnDestroy {
   marketData: MarketDataItem[] = [];
   favoritesData: MarketDataItem[] = [];
-  isLoading: boolean = true; // Indicateur de chargement
-  // Tableau pour générer des lignes skeleton
+  isLoading: boolean = true;
   skeletonArray: number[] = [1, 2, 3, 4, 5];
-
   private subscriptions = new Subscription();
-
-  // Liste d'instruments (identiques à ceux utilisés dans LeftPanelComponent)
-  readonly instruments: string[] = [
-    'EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CAD', 'USD/CHF', 'NZD/USD',
-    'EUR/GBP', 'EUR/JPY', 'GBP/JPY', 'EUR/CHF', 'EUR/CAD', 'EUR/AUD', 'EUR/NZD',
-    'GBP/CHF', 'GBP/CAD', 'GBP/AUD', 'GBP/NZD', 'AUD/JPY', 'AUD/CHF', 'AUD/CAD',
-    'AUD/NZD', 'CAD/JPY', 'CAD/CHF', 'NZD/JPY', 'NZD/CHF', 'CHF/JPY', 'USD/MXN',
-    'USD/SGD', 'USD/HKD', 'USD/SEK', 'USD/NOK', 'USD/DKK', 'USD/ZAR', 'USD/CNY',
-    'USD/INR', 'EUR/SGD', 'EUR/HKD', 'EUR/SEK', 'EUR/NOK', 'EUR/DKK', 'EUR/ZAR',
-    'EUR/CNY', 'GBP/SGD', 'GBP/HKD', 'GBP/ZAR', 'AUD/SGD', 'AUD/HKD', 'CAD/SGD',
-    'CAD/HKD', 'NZD/SGD', 'NZD/HKD'
-  ];
+  instruments: string[] = [];
 
   constructor(
     private quoteService: QuoteService,
-    private favoriteService: FavoriteService
+    private favoriteService: FavoriteService,
+    private crossParityService: CrossParityService
   ) {}
 
   ngOnInit(): void {
-    // Souscription aux quotes
     this.subscriptions.add(
-      this.quoteService.getQuotes().subscribe({
-        next: (quotes: Quote[]) => {
+      combineLatest([
+        this.quoteService.getQuotes(),
+        this.crossParityService.getCrossParities()
+      ]).subscribe({
+        next: ([quotes, crossParities]) => {
+          // Set the instruments from quotes instead of waiting for crossParities
+          this.instruments = quotes.map(quote => quote.identifier)
+            .sort((a, b) => a.localeCompare(b));
           this.updateMarketData(quotes);
           this.filterFavorites();
-          this.isLoading = false; // Fin du chargement
+          this.isLoading = false;
         },
-        error: (err) => {
-          console.error("Erreur lors de la récupération des quotes", err);
-          this.isLoading = false; // Fin du chargement même en cas d'erreur
+        error: (error) => {
+          console.error('Error receiving data:', error);
+          this.isLoading = false;
         }
       })
     );
   }
-
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-
   private updateMarketData(quotes: Quote[]): void {
-    const quotesMap = new Map(quotes.map(q => [q.identifier, q]));
-
-    this.marketData = this.instruments.map(instrument => {
-      const quote = quotesMap.get(instrument);
-      if (quote) {
-        return {
-          type: 'FX',
-          instrument: quote.identifier,
-          buy: quote.bidPrice.toFixed(4),
-          sell: quote.askPrice.toFixed(4),
-          spread: quote.spread.toFixed(4),
-          varNette: quote.netVar.toFixed(4),
-          percent1J: quote.percentageVar.toFixed(2),
-          updateTime: new Date(quote.quoteTime).toLocaleTimeString(),
-          closing: quote.closeBid?.toString() ?? '-',
-          high: quote.maxAsk.toFixed(4),
-          low: quote.minBid.toFixed(4),
-          direction: 'up', // Simplifié ici
-          favorite: quote.favorite,
-          pk: quote.pk
-        };
-      }
-      // Si aucun quote n'est trouvé, retourner une ligne vide avec une valeur par défaut pour pk.
-      return {
-        type: 'FX',
-        instrument,
-        buy: '-',
-        sell: '-',
-        spread: '-',
-        varNette: '-',
-        percent1J: '-',
-        updateTime: '-',
-        closing: '-',
-        high: '-',
-        low: '-',
-        direction: 'up',
-        favorite: false,
-        pk: 0
-      };
-    });
+    // Create market data directly from quotes instead of mapping instruments
+    this.marketData = quotes.map(quote => ({
+      type: 'FX',
+      instrument: quote.identifier,
+      buy: quote.bidPrice.toFixed(4),
+      sell: quote.askPrice.toFixed(4),
+      spread: quote.spread.toFixed(4),
+      varNette: quote.netVar.toFixed(4),
+      percent1J: quote.percentageVar.toFixed(2),
+      updateTime: new Date(quote.quoteTime).toLocaleTimeString(),
+      closing: quote.closeBid?.toString() ?? '-',
+      high: quote.maxAsk.toFixed(4),
+      low: quote.minBid.toFixed(4),
+      direction: 'up', // You might want to add logic for direction
+      favorite: quote.favorite,
+      pk: quote.pk
+    }));
   }
 
   // Mise à jour de la liste des favoris

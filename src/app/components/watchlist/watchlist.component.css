@@ -65,15 +65,15 @@
   }
 
   .price-box {
-    @apply inline-flex items-center gap-1 px-2 py-1 rounded font-mono;
+    @apply inline-flex items-center gap-1 px-2 py-1 rounded font-mono w-24;
   }
 
   .price-box.up {
-    @apply bg-green-900/20 text-green-500;
+    @apply bg-green-900/20 text-green-500 font-bold;
   }
 
   .price-box.down {
-    @apply bg-red-900/20 text-red-500;
+    @apply bg-red-900/20 text-red-500 font-bold;
   }
 
   .update-cell {
