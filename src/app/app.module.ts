@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+// import {  NgChartsModule } from 'ng2-charts';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
@@ -15,9 +15,12 @@ import { WatchlistComponent } from './components/watchlist/watchlist.component';
 import { CommonModule } from '@angular/common';
 import { NgParticlesModule } from 'ng-particles';
 import { RightPanelComponent } from './components/right-panel/right-panel.component';
-import { AuthInterceptor } from './services/auth/auth.interceptor';
-
-
+// import { AuthInterceptor } from './services/auth/auth.interceptor';
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { TradingChartComponent } from './components/trading-chart/trading-chart.component';
+import { HighchartsChartModule } from 'highcharts-angular';
 
 
 @NgModule({
@@ -29,7 +32,9 @@ import { AuthInterceptor } from './services/auth/auth.interceptor';
     BottomPanelComponent,
     NavbarComponent,
     WatchlistComponent,
-    RightPanelComponent
+    RightPanelComponent,
+    TradingChartComponent,
+    
     
     
     
@@ -42,10 +47,18 @@ import { AuthInterceptor } from './services/auth/auth.interceptor';
     HttpClientModule,
     CommonModule,
     ReactiveFormsModule,
-    FormsModule
+    BrowserAnimationsModule,
+    MatSnackBarModule,
+    FormsModule,
+    ToastrModule.forRoot({
+      timeOut: 3000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+    }),
+    HighchartsChartModule
     
   ],
-  providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

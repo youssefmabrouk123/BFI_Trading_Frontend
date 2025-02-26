@@ -184,3 +184,23 @@
           transform: scaleY(1.5);
         }
       }
+
+
+
+      .success-toast {
+        background-color: #2ecc71 !important; /* Green for success */
+        color: white !important;
+      }
+      
+      .success-toast .mat-snack-bar-action {
+        color: white !important;
+      }
+      
+      .error-toast {
+        background-color: #e74c3c !important; /* Red for error */
+        color: white !important;
+      }
+      
+      .error-toast .mat-snack-bar-action {
+        color: white !important;
+      }

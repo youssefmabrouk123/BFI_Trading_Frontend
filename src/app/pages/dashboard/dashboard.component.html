@@ -1,4 +1,4 @@
-<!-- dashboard.component.html -->
+
 <div #container id="container" class="h-full w-full flex flex-col">
     <!-- Top Section -->
     <div #topSection id="top-section" class="flex">
@@ -68,6 +68,7 @@
                 <ng-container [ngSwitch]="activeRightTab">
                     <div *ngSwitchCase="'chart'" class="h-full">
                         <!-- <app-chart></app-chart> -->
+                         <app-trading-chart></app-trading-chart>
                     </div>
                     <div *ngSwitchCase="'details'" class="h-full">
                         <!-- <app-details></app-details> -->
