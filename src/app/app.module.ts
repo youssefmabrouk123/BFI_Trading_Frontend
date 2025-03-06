@@ -21,7 +21,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { TradingChartComponent } from './components/trading-chart/trading-chart.component';
 import { HighchartsChartModule } from 'highcharts-angular';
-
+import { TradePopupComponent } from './components/trade-popup/trade-popup.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -34,6 +37,8 @@ import { HighchartsChartModule } from 'highcharts-angular';
     WatchlistComponent,
     RightPanelComponent,
     TradingChartComponent,
+    TradePopupComponent,
+   
     
     
     
@@ -55,7 +60,10 @@ import { HighchartsChartModule } from 'highcharts-angular';
       positionClass: 'toast-top-right',
       preventDuplicates: true,
     }),
-    HighchartsChartModule
+    HighchartsChartModule,
+    MatDialogModule,
+    MatIconModule,
+    MatButtonModule,
     
   ],
   providers: [],

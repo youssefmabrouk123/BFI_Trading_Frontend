@@ -1,0 +1,66 @@
+<div class="trade-popup-container panel">
+    <div class="popup-header">
+      <h2>{{ data.instrument }}</h2>
+      <button class="close-btn" (click)="close()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  
+    <div class="current-price">
+      <span>{{ data.currentPrice | number:'1.2-2' }}</span>
+      <div class="price-icon" [ngClass]="{
+        'price-up': getPriceDirection() === 'up', 
+        'price-down': getPriceDirection() === 'down'
+      }">
+        {{ getPriceDirection() === 'up' ? '▲' : '▼' }}
+      </div>
+    </div>
+  
+    <div class="operation-selector">
+      <button 
+        [ngClass]="{
+          'operation-btn': true,
+          'sell-active': selectedOperation === 'VENDRE',
+          'sell-inactive': selectedOperation !== 'VENDRE'
+        }"
+        (click)="setOperation('VENDRE')">
+        VENDRE
+      </button>
+      <button 
+        [ngClass]="{
+          'operation-btn': true,
+          'buy-active': selectedOperation === 'ACHETER',
+          'buy-inactive': selectedOperation !== 'ACHETER'
+        }"
+        (click)="setOperation('ACHETER')">
+        ACHETER
+      </button>
+    </div>
+  
+    <div class="quantity-selector">
+      <button class="quantity-btn" (click)="decrementQuantity()">-</button>
+      <span>{{ quantity }} Oz.</span>
+      <button class="quantity-btn" (click)="incrementQuantity()">+</button>
+    </div>
+  
+    <div class="price-details">
+      <div class="sell-price">
+        <span>VENDRE</span>
+        <strong>{{ data.sellPrice | number:'1.2-2' }}</strong>
+        <small>Limite {{'@'}} {{ data.sellPrice - 0.95 | number:'1.2-2' }}</small>
+      </div>
+      <div class="buy-price">
+        <span>ACHETER</span>
+        <strong>{{ data.buyPrice | number:'1.2-2' }}</strong>
+        <small>Limite {{'@'}} {{ data.buyPrice + 0.87 | number:'1.2-2' }}</small>
+      </div>
+    </div>
+  
+    <div class="market-info">
+      <div>Bas: {{ data.dailyLow | number:'1.2-2' }}</div>
+      <div>Haut: {{ data.dailyHigh | number:'1.2-2' }}</div>
+    </div>
+  </div>

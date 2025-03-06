@@ -4,6 +4,8 @@ import { Quote } from 'src/app/models/quote.model';
 import { combineLatest, Subscription } from 'rxjs';
 import { FavoriteService } from 'src/app/services/favorite/favorite.service';
 import { CrossParityService } from 'src/app/services/crossParity/cross-parity.service';
+import { MatDialog } from '@angular/material/dialog';
+import { TradePopupComponent } from '../trade-popup/trade-popup.component';
 
 interface MarketDataItem {
   type: 'FX';
@@ -74,7 +76,8 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
     private quoteService: QuoteService,
     private favoriteService: FavoriteService,
     private crossParityService: CrossParityService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -132,7 +135,7 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
           instrument: quote.identifier,
           buy: quote.bidPrice.toFixed(4),
           sell: quote.askPrice.toFixed(4),
-          spread: quote.spread.toFixed(4),
+          spread: quote.spread.toFixed(1),
           varNette: quote.netVar.toFixed(4),
           percent1J: quote.percentageVar.toFixed(2),
           updateTime: new Date(quote.quoteTime).toLocaleTimeString(),
@@ -296,4 +299,28 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
     link.click();
     document.body.removeChild(link);
   }
+
+
+  // onRowDoubleClick(item: any): void {
+  //   this.dialog.open(TradePopupComponent, {
+  //     width: '500px',
+  //     data: item
+  //   });
+  // }
+  openTradePopup() {
+    this.dialog.open(TradePopupComponent, {
+      data: {
+        instrument: 'XAUUSD',
+        currentPrice: 2914.92,
+        sellPrice: 2914.92,
+        buyPrice: 2915.87,
+        dailyLow: 2902.72,
+        dailyHigh: 2922.37
+      },
+      width: '350px',
+      panelClass: 'custom-dialog-container'
+    });
+  }
+
+ 
 }

@@ -1,75 +1,75 @@
 <!-- trading-chart.component.html -->
 <div class="trading-chart-wrapper">
-    <!-- Chart Header with Market Information -->
-    <div class="chart-header">
-      <div class="symbol-info">
-        <h2>{{ symbol }}</h2>
-        <div class="price-info">
-          <span class="current-price">${{ currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
-          <span class="price-change" [ngClass]="{'positive': priceChange > 0, 'negative': priceChange < 0}">
-            {{ priceChange > 0 ? '+' : '' }}{{ priceChange.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
-            ({{ priceChangePercent > 0 ? '+' : '' }}{{ priceChangePercent.toFixed(2) }}%)
-          </span>
-        </div>
-      </div>
-      
-      <div class="market-stats">
-        <div class="stat-item">
-          <span class="stat-label">24h High</span>
-          <span class="stat-value">${{ high24h.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">24h Low</span>
-          <span class="stat-value">${{ low24h.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">24h Volume</span>
-          <span class="stat-value">{{ volume24h.toLocaleString('en-US', { maximumFractionDigits: 0 }) }}</span>
-        </div>
+  <!-- Chart Header with Market Information -->
+  <div class="chart-header">
+    <div class="symbol-info">
+      <h2>{{ symbol }}</h2>
+      <div class="price-info">
+        <span class="current-price">${{ currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+        <span class="price-change" [ngClass]="{'positive': priceChange > 0, 'negative': priceChange < 0}">
+          {{ priceChange > 0 ? '+' : '' }}{{ priceChange.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+          ({{ priceChangePercent > 0 ? '+' : '' }}{{ priceChangePercent.toFixed(2) }}%)
+        </span>
       </div>
     </div>
     
-    <!-- Chart Controls -->
-    <div class="chart-controls">
-      <div class="control-group timeframes">
-        <ng-container *ngFor="let tf of timeframes">
-          <button 
-            class="timeframe-btn" 
-            [ngClass]="{'active': selectedTimeframe === tf}"
-            (click)="changeTimeframe(tf)">
-            {{ tf }}
-          </button>
-        </ng-container>
+    <div class="market-stats">
+      <div class="stat-item">
+        <span class="stat-label">24h High</span>
+        <span class="stat-value">${{ high24h.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
       </div>
-      
-      <div class="control-group chart-types">
-        <ng-container *ngFor="let type of chartTypes">
-          <button 
-            class="chart-type-btn" 
-            [ngClass]="{'active': selectedChartType === type}"
-            (click)="changeChartType(type)">
-            {{ type }}
-          </button>
-        </ng-container>
+      <div class="stat-item">
+        <span class="stat-label">24h Low</span>
+        <span class="stat-value">${{ low24h.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
       </div>
-      
-      <div class="control-group indicators">
-        <div class="dropdown">
-          <button class="dropdown-toggle">Indicators</button>
-          <div class="dropdown-menu">
-            <div *ngFor="let indicator of indicators; let i = index" class="indicator-item">
-              <label>
-                <input type="checkbox" [checked]="indicator.active" (change)="toggleIndicator(i)">
-                {{ indicator.name }}
-              </label>
-            </div>
+      <div class="stat-item">
+        <span class="stat-label">24h Volume</span>
+        <span class="stat-value">{{ volume24h.toLocaleString('en-US', { maximumFractionDigits: 0 }) }}</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Chart Controls -->
+  <div class="chart-controls">
+    <div class="control-group timeframes">
+      <ng-container *ngFor="let tf of timeframes">
+        <button 
+          class="timeframe-btn" 
+          [ngClass]="{'active': selectedTimeframe === tf}"
+          (click)="changeTimeframe(tf)">
+          {{ tf }}
+        </button>
+      </ng-container>
+    </div>
+    
+    <div class="control-group chart-types">
+      <ng-container *ngFor="let type of chartTypes">
+        <button 
+          class="chart-type-btn" 
+          [ngClass]="{'active': selectedChartType === type}"
+          (click)="changeChartType(type)">
+          {{ type }}
+        </button>
+      </ng-container>
+    </div>
+    
+    <div class="control-group indicators">
+      <div class="dropdown">
+        <button class="dropdown-toggle">Indicators</button>
+        <div class="dropdown-menu">
+          <div *ngFor="let indicator of indicators; let i = index" class="indicator-item">
+            <label>
+              <input type="checkbox" [checked]="indicator.active" (change)="toggleIndicator(i)">
+              {{ indicator.name }}
+            </label>
           </div>
         </div>
       </div>
     </div>
-    
-    <!-- Chart Container -->
-    <div class="chart-container">
-      <canvas id="priceChart"></canvas>
-    </div>
   </div>
+  
+  <!-- Chart Container -->
+  <div class="chart-container">
+    <canvas id="priceChart"></canvas>
+  </div>
+</div>
