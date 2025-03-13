@@ -1,4 +1,3 @@
-
 <div #container id="container" class="h-full w-full flex flex-col">
     <!-- Top Section -->
     <div #topSection id="top-section" class="flex">
@@ -6,26 +5,27 @@
         <div #leftPanel id="left-panel" class="panel">
             <div class="panel-header">
                 <div class="tabs">
-                    <button class="tab" [class.tab-active]="activeLeftTab === 'watchlist'" 
-                            (click)="activeLeftTab = 'watchlist'">
+                    <button class="tab" [class.tab-active]="activeLeftTab === 'watchlist'"
+                        (click)="activeLeftTab = 'watchlist'">
                         <span class="tab-content">Watchlist</span>
                     </button>
-                    <button class="tab" [class.tab-active]="activeLeftTab === 'markets'" 
-                            (click)="activeLeftTab = 'markets'">
+                    <button class="tab" [class.tab-active]="activeLeftTab === 'markets'"
+                        (click)="activeLeftTab = 'markets'">
                         <span class="tab-content">Markets</span>
                     </button>
                 </div>
-                
+
                 <button class="btn-ghost" (click)="toggleFullscreen(leftPanel)">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path *ngIf="!isFullscreen(leftPanel)" d="M4 8V4h4M4 4l5 5m11-1V4h-4m4 0l-5 5M4 16v4h4m-4 0l5-5m11 5l-5-5m5 5v-4h-4" 
-                              stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
-                        <path *ngIf="isFullscreen(leftPanel)" d="M6 18L18 6M6 6l12 12" 
-                              stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+                        <path *ngIf="!isFullscreen(leftPanel)"
+                            d="M4 8V4h4M4 4l5 5m11-1V4h-4m4 0l-5 5M4 16v4h4m-4 0l5-5m11 5l-5-5m5 5v-4h-4"
+                            stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                        <path *ngIf="isFullscreen(leftPanel)" d="M6 18L18 6M6 6l12 12" stroke-linecap="round"
+                            stroke-linejoin="round" stroke-width="1.5" />
                     </svg>
                 </button>
             </div>
-            
+
             <div class="panel-content">
                 <ng-container [ngSwitch]="activeLeftTab">
                     <div *ngSwitchCase="'watchlist'" class="h-full">
@@ -44,31 +44,32 @@
         <div #rightPanel id="right-panel" class="panel">
             <div class="panel-header">
                 <div class="tabs">
-                    <button class="tab" [class.tab-active]="activeRightTab === 'chart'" 
-                            (click)="activeRightTab = 'chart'">
+                    <button class="tab" [class.tab-active]="activeRightTab === 'chart'"
+                        (click)="activeRightTab = 'chart'">
                         <span class="tab-content">Chart</span>
                     </button>
-                    <button class="tab" [class.tab-active]="activeRightTab === 'details'" 
-                            (click)="activeRightTab = 'details'">
+                    <button class="tab" [class.tab-active]="activeRightTab === 'details'"
+                        (click)="activeRightTab = 'details'">
                         <span class="tab-content">Details</span>
                     </button>
                 </div>
-                
+
                 <button class="btn-ghost" (click)="toggleFullscreen(rightPanel)">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path *ngIf="!isFullscreen(rightPanel)" d="M4 8V4h4M4 4l5 5m11-1V4h-4m4 0l-5 5M4 16v4h4m-4 0l5-5m11 5l-5-5m5 5v-4h-4" 
-                              stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
-                        <path *ngIf="isFullscreen(rightPanel)" d="M6 18L18 6M6 6l12 12" 
-                              stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+                        <path *ngIf="!isFullscreen(rightPanel)"
+                            d="M4 8V4h4M4 4l5 5m11-1V4h-4m4 0l-5 5M4 16v4h4m-4 0l5-5m11 5l-5-5m5 5v-4h-4"
+                            stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                        <path *ngIf="isFullscreen(rightPanel)" d="M6 18L18 6M6 6l12 12" stroke-linecap="round"
+                            stroke-linejoin="round" stroke-width="1.5" />
                     </svg>
                 </button>
             </div>
-            
+
             <div class="panel-content">
                 <ng-container [ngSwitch]="activeRightTab">
                     <div *ngSwitchCase="'chart'" class="h-full">
                         <!-- <app-chart></app-chart> -->
-                         <app-trading-chart></app-trading-chart>
+                        <app-trading-chart></app-trading-chart>
                     </div>
                     <div *ngSwitchCase="'details'" class="h-full">
                         <!-- <app-details></app-details> -->
@@ -84,43 +85,53 @@
     <div #bottomPanel id="bottom-panel" class="panel">
         <div class="panel-header">
             <div class="tabs">
-                <button class="tab" [class.tab-active]="activeBottomTab === 'positions'" 
-                        (click)="activeBottomTab = 'positions'">
+                <button class="tab" [class.tab-active]="activeBottomTab === 'positions'"
+                    (click)="activeBottomTab = 'positions'">
                     <span class="tab-content">Positions</span>
                 </button>
-                <button class="tab" [class.tab-active]="activeBottomTab === 'orders'" 
+                    <!-- <button class="tab" [class.tab-active]="activeBottomTab === 'orders'"
                         (click)="activeBottomTab = 'orders'">
-                    <span class="tab-content">Orders</span>
-                </button>
-                <button class="tab" [class.tab-active]="activeBottomTab === 'history'" 
-                        (click)="activeBottomTab = 'history'">
+                        <span class="tab-content">Orders</span>
+                    </button> -->
+                <button class="tab" [class.tab-active]="activeBottomTab === 'history'"
+                    (click)="activeBottomTab = 'history'">
                     <span class="tab-content">History</span>
                 </button>
+                <button class="tab" [class.tab-active]="activeBottomTab === 'Closed'"
+                    (click)="activeBottomTab = 'Closed'">
+                    <span class="tab-content">Closed Positions</span>
+                </button>
             </div>
-            
+
             <button class="btn-ghost" (click)="toggleFullscreen(bottomPanel)">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path *ngIf="!isFullscreen(bottomPanel)" d="M4 8V4h4M4 4l5 5m11-1V4h-4m4 0l-5 5M4 16v4h4m-4 0l5-5m11 5l-5-5m5 5v-4h-4" 
-                          stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
-                    <path *ngIf="isFullscreen(bottomPanel)" d="M6 18L18 6M6 6l12 12" 
-                          stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>    
+                    <path *ngIf="!isFullscreen(bottomPanel)"
+                        d="M4 8V4h4M4 4l5 5m11-1V4h-4m4 0l-5 5M4 16v4h4m-4 0l5-5m11 5l-5-5m5 5v-4h-4"
+                        stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                    <path *ngIf="isFullscreen(bottomPanel)" d="M6 18L18 6M6 6l12 12" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="1.5" />
                 </svg>
             </button>
         </div>
-        
+
         <div class="panel-content">
             <ng-container [ngSwitch]="activeBottomTab">
                 <div *ngSwitchCase="'positions'" class="h-full">
                     <!-- <app-positions></app-positions> -->
+                    <app-position-table></app-position-table>
                 </div>
                 <div *ngSwitchCase="'orders'" class="h-full">
                     <!-- <app-orders></app-orders> -->
                 </div>
                 <div *ngSwitchCase="'history'" class="h-full">
                     <!-- <app-history></app-history> -->
+                    <!-- <app-closed-   -table></app-closed-positions-table> -->
+                     <app-transaction-table></app-transaction-table>
+                </div>
+                <div *ngSwitchCase="'Closed'" class="h-full">
+                    <app-closed-positions-table></app-closed-positions-table>
                 </div>
             </ng-container>
         </div>
     </div>
 </div>
-

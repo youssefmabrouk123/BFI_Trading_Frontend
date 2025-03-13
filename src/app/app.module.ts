@@ -25,6 +25,10 @@ import { TradePopupComponent } from './components/trade-popup/trade-popup.compon
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { PositionTableComponent } from './components/position-table/position-table.component';
+import { ClosePositionDialogComponent } from './components/close-position-dialog/close-position-dialog.component';
+import { ClosedPositionsTableComponent } from './components/closed-positions-table/closed-positions-table.component';
+import { TransactionTableComponent } from './components/transaction-table/transaction-table.component';
 
 @NgModule({
   declarations: [
@@ -38,10 +42,10 @@ import { MatIconModule } from '@angular/material/icon';
     RightPanelComponent,
     TradingChartComponent,
     TradePopupComponent,
-   
-    
-    
-    
+    PositionTableComponent,
+    ClosePositionDialogComponent,
+    ClosedPositionsTableComponent,
+    TransactionTableComponent,
     
   ],
   imports: [

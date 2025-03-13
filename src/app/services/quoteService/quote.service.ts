@@ -19,6 +19,7 @@ export class QuoteService {
         try {
           const quotes = JSON.parse(event.data) as Quote[];
           this.quotesSubject.next(quotes);
+          
         } catch (error) {
           console.error('Error parsing SSE data:', error);
           this.quotesSubject.error(new Error('Invalid data format received'));

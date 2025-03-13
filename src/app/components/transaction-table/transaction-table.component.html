@@ -1,0 +1,50 @@
+<div class="table-wrapper">
+  <table class="market-table">
+    <thead>
+      <tr>
+        <th class="instrument-col sticky left-0 bg-white z-50">Currency</th>
+        <th class="z-20">Amount</th>
+        <th class="z-20">Transaction Time</th>
+      </tr>
+    </thead>
+    
+    <!-- Show transactions if available -->
+    <tbody *ngIf="!isLoading && transactions.length > 0">
+      <tr *ngFor="let transaction of transactions; trackBy: trackByCurrency" class="cursor-pointer hover:bg-gray-100 transition-colors">
+        <td class="instrument-col sticky left-0 bg-white z-10">
+          <div class="instrument-cell">
+            <span class="instrument-name">{{ transaction.currency }}</span>
+          </div>
+        </td>
+        <td>
+          <div [class]="'price-box ' + (transaction.amount >= 0 ? 'up' : 'down')">
+            <span class="arrow">{{ transaction.amount >= 0 ? '▲' : '▼' }}</span>
+            {{ transaction.amount }}
+          </div>
+        </td>
+        <td>
+          <div class="update-cell">
+            <span>{{ transaction.transactionTime | date:'yyyy-MM-dd HH:mm' }}</span>
+            <span class="pulse-dot"></span>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+
+    <!-- Show message if no transactions -->
+    <tbody *ngIf="!isLoading && transactions.length === 0">
+      <tr>
+        <td colspan="3" class="p-4 text-center text-gray-500">No transactions available.</td>
+      </tr>
+    </tbody>
+
+    <!-- Show skeleton while loading -->
+    <tbody *ngIf="isLoading">
+      <tr *ngFor="let skeleton of skeletonArray">
+        <td class="skeleton-cell" colspan="3">
+          <div class="skeleton skeleton-text"></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

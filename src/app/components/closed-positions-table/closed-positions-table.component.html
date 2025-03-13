@@ -1,0 +1,48 @@
+<div class="table-wrapper">
+    <table class="market-table">
+        <thead>
+            <tr>
+                <th class="instrument-col sticky left-0 bg-white z-50">Instrument</th>
+                <th class="z-20">Direction</th>
+                <th class="z-20">Quantity</th>
+                <th class="z-20">Open Price</th>
+                <th class="z-20">Close Price</th>
+                <th class="z-20">Open Time</th>
+                <th class="z-20">Close Time</th>
+                <th class="z-20">P/L Realized</th>
+                <th class="z-20">Holding Period</th>
+            </tr>
+        </thead>
+        <tbody *ngIf="!isLoading && positions.length > 0">
+            <tr *ngFor="let position of positions" class="hover:bg-gray-100 transition-colors">
+                <td class="instrument-col sticky left-0 bg-white z-10">
+                    <div class="instrument-cell">
+                        <span class="type-badge fx">FX</span>
+                        <span class="instrument-name">{{ position.crossParityName }}</span>
+                    </div>
+                </td>
+                <td class="tdcolor">{{ position.direction }}</td>
+                <td class="tdcolor">{{ position.quantity }}</td>
+                <td class="tdcolor">{{ position.openPrice | number:'1.4-4' }}</td>
+                <td class="tdcolor">{{ position.closePrice | number:'1.4-4' }}</td>
+                <td class="tdcolor">{{ position.openTime | date:'yyyy-MM-dd HH:mm' }}</td>
+                <td class="tdcolor">{{ position.closeTime | date:'yyyy-MM-dd HH:mm' }}</td>
+                <td [class]="getValueClass(position.realizedProfitLoss)">
+                    {{ position.realizedProfitLoss | number:'1.4-4' }}
+                </td>
+                <td class="tdcolor">{{ formatHoldingPeriod(position.holdingPeriodHours) }}</td>            </tr>
+        </tbody>
+        <tbody *ngIf="!isLoading && positions.length === 0">
+            <tr>
+                <td colspan="9" class="p-4 text-center text-gray-500">No closed positions available.</td>
+            </tr>
+        </tbody>
+        <tbody *ngIf="isLoading">
+            <tr *ngFor="let skeleton of [1, 2, 3, 4, 5]">
+                <td class="skeleton-cell" colspan="9">
+                    <div class="skeleton skeleton-text"></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

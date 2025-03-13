@@ -4,6 +4,8 @@ import { FavoriteService } from 'src/app/services/favorite/favorite.service';
 import { Quote } from 'src/app/models/quote.model';
 import { combineLatest, Subscription } from 'rxjs';
 import { CrossParityService } from 'src/app/services/crossParity/cross-parity.service';
+import { TradePopupComponent } from '../trade-popup/trade-popup.component';
+import { MatDialog } from '@angular/material/dialog';
 
 interface MarketDataItem {
   type: 'FX';
@@ -38,7 +40,9 @@ export class WatchlistComponent implements OnInit, OnDestroy {
   constructor(
     private quoteService: QuoteService,
     private favoriteService: FavoriteService,
-    private crossParityService: CrossParityService
+    private crossParityService: CrossParityService,
+    public dialog: MatDialog
+    
   ) {}
 
   ngOnInit(): void {
@@ -122,4 +126,16 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     if (value === '-') return '';
     return parseFloat(value) >= 0 ? 'text-green' : 'text-red';
   }
+
+
+
+
+   openTradePopup(pk:number) {
+  
+      this.dialog.open(TradePopupComponent, {
+        data:pk,
+        width: '350px',
+        panelClass: 'custom-dialog-container'
+      });
+    }
 }

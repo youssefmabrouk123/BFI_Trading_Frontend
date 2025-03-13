@@ -1,183 +1,346 @@
-/* trade-popup.component.scss */
-:host ::ng-deep .custom-trade-dialog .mat-dialog-container {
-    background: transparent;
-    padding: 0;
-    box-shadow: none;
-    background-color:rgba(17, 17, 17, 0.7);
+.trade-popup-container {
+  background: rgba(17, 17, 17, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(229, 191, 125, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(229, 191, 125, 0.05);
+  animation: fadeIn 0.3s ease-out;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.popup-header {
+  padding: 14px 16px;
+  background: linear-gradient(90deg, rgba(12, 12, 12, 0.8) 0%, rgba(20, 20, 20, 0.8) 100%);
+  border-bottom: 1px solid rgba(229, 191, 125, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.type-badge {
+  padding: 4px 8px;
+  background: rgba(229, 191, 125, 0.15);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #E5BF7D;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.instrument-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.5px;
+}
+
+.close-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: 1px solid rgba(229, 191, 125, 0.08);
+  background: rgba(20, 20, 20, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: rgba(229, 191, 125, 0.1);
+  border-color: rgba(229, 191, 125, 0.15);
+}
+
+.price-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 16px 16px 0;
+}
+
+.price-box {
+  padding: 12px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(229, 191, 125, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.price-box:hover {
+  background: rgba(229, 191, 125, 0.05);
+  border-color: rgba(229, 191, 125, 0.1);
+}
+
+.price-box.active {
+  background: rgba(229, 191, 125, 0.1);
+  border-color: rgba(229, 191, 125, 0.15);
+}
+
+.price-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 4px;
+}
+
+.price-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #E5BF7D;
+}
+
+.operation-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 16px;
+}
+
+.operation-btn {
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(20, 20, 20, 0.6);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(229, 191, 125, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.operation-btn:hover {
+  background: rgba(229, 191, 125, 0.08);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.operation-btn.active {
+  background: rgba(229, 191, 125, 0.15);
+  color: #E5BF7D;
+  border-color: rgba(229, 191, 125, 0.2);
+}
+
+.quantity-container {
+  padding: 0 16px 16px;
+}
+
+.quantity-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 8px;
+}
+
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(229, 191, 125, 0.05);
+  border-radius: 6px;
+  padding: 4px;
+  height: 42px;
+}
+
+.quantity-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 20, 20, 0.6);
+  border: 1px solid rgba(229, 191, 125, 0.08);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quantity-btn:hover {
+  background: rgba(229, 191, 125, 0.1);
+  border-color: rgba(229, 191, 125, 0.15);
+}
+
+.quantity-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #E5BF7D;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+  appearance: none;
+  -moz-appearance: textfield;
+  margin: 0 8px;
+}
+
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.unit {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-left: 4px;
+  margin-right: 8px;
+}
+
+.trade-summary {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin: 0 16px 16px;
+  border: 1px solid rgba(229, 191, 125, 0.05);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.summary-row:last-child {
+  margin-bottom: 0;
+  padding-top: 8px;
+  border-top: 1px solid rgba(229, 191, 125, 0.08);
+}
+
+.summary-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+}
+
+.summary-value {
+  font-weight: 500;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.summary-value.highlight {
+  font-size: 15px;
+  font-weight: 600;
+  color: #E5BF7D;
+}
+
+.market-info {
+  display: flex;
+  justify-content: space-around;
+  padding: 0 16px 16px;
+}
+
+.market-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.stat-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.confirm-btn {
+  margin: 0 16px 16px;
+  padding: 12px;
+  border-radius: 6px;
+  background: rgba(229, 191, 125, 0.15);
+  color: #E5BF7D;
+  border: 1px solid rgba(229, 191, 125, 0.2);
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: calc(100% - 32px);
+}
+
+.confirm-btn:hover {
+  background: rgba(229, 191, 125, 0.25);
+}
+
+.confirm-btn.sell {
+  background: rgba(244, 67, 54, 0.15);
+  color: #F44336;
+  border-color: rgba(244, 67, 54, 0.2);
+}
+
+.confirm-btn.sell:hover {
+  background: rgba(244, 67, 54, 0.25);
+}
+
+.confirm-btn.buy {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4CAF50;
+  border-color: rgba(76, 175, 80, 0.2);
+}
+
+.confirm-btn.buy:hover {
+  background: rgba(76, 175, 80, 0.25);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-  
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
   .trade-popup-container {
-    width: 350px;
     max-width: 100%;
-    color: #E5BF7D;
-    
-    .popup-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px;
-      border-bottom: 1px solid rgba(229, 191, 125, 0.1);
-  
-      h2 {
-        margin: 0;
-        font-size: 18px;
-        font-weight: 600;
-        color: #E5BF7D;
-      }
-  
-      .close-btn {
-        background: transparent;
-        border: none;
-        color: #E5BF7D;
-        cursor: pointer;
-        opacity: 0.7;
-        transition: opacity 0.3s ease;
-  
-        &:hover {
-          opacity: 1;
-        }
-      }
-    }
-  
-    .current-price {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 12px;
-      border-bottom: 1px solid rgba(229, 191, 125, 0.1);
-  
-      span {
-        font-size: 20px;
-        font-weight: bold;
-        margin-right: 8px;
-      }
-  
-      .price-icon {
-        font-size: 16px;
-      }
-  
-      .price-up {
-        color: #4CAF50;
-      }
-  
-      .price-down {
-        color: #F44336;
-      }
-    }
-  
-    .operation-selector {
-      display: flex;
-      margin: 12px;
-      gap: 12px;
-  
-      .operation-btn {
-        flex: 1;
-        padding: 10px;
-        border: none;
-        border-radius: 4px;
-        text-transform: uppercase;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        cursor: pointer;
-      }
-  
-      .sell-active {
-        background-color: #F44336;
-        color: rgb(20, 17, 17);
-      }
-  
-      .sell-inactive {
-        background-color: rgba(244, 67, 54, 0.1);
-        color: rgba(229, 191, 125, 0.7);
-      }
-  
-      .buy-active {
-        background-color: #4CAF50;
-        color: rgb(31, 25, 25);
-      }
-  
-      .buy-inactive {
-        background-color: rgba(76, 175, 80, 0.1);
-        color: rgba(229, 191, 125, 0.7);
-      }
-    }
-  
-    .quantity-selector {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 12px;
-      padding: 10px;
-      background-color: rgba(17, 17, 17, 0.5);
-      border-radius: 4px;
-  
-      .quantity-btn {
-        background: rgba(229, 191, 125, 0.1);
-        color: #E5BF7D;
-        border: none;
-        width: 30px;
-        height: 30px;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background 0.3s ease;
-  
-        &:hover {
-          background: rgba(229, 191, 125, 0.2);
-        }
-      }
-  
-      span {
-        font-weight: 600;
-      }
-    }
-  
-    .price-details {
-      display: flex;
-      justify-content: space-between;
-      margin: 12px;
-      padding: 12px;
-      border-top: 1px solid rgba(229, 191, 125, 0.1);
-      border-bottom: 1px solid rgba(229, 191, 125, 0.1);
-  
-      .sell-price, .buy-price {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-  
-        span {
-          color: rgba(229, 191, 125, 0.7);
-          font-size: 12px;
-          margin-bottom: 4px;
-        }
-  
-        strong {
-          font-size: 16px;
-        }
-  
-        small {
-          color: rgba(229, 191, 125, 0.5);
-          font-size: 10px;
-          margin-top: 4px;
-        }
-      }
-  
-      .sell-price strong {
-        color: #F44336;
-      }
-  
-      .buy-price strong {
-        color: #4CAF50;
-      }
-    }
-  
-    .market-info {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px;
-      color: rgba(229, 191, 125, 0.7);
-      font-size: 12px;
-    }
+    border-radius: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
+  
+  .popup-header {
+    padding: 12px;
+  }
+  
+  .price-details, 
+  .operation-selector, 
+  .quantity-container,
+  .trade-summary,
+  .market-info {
+    padding: 12px;
+  }
+  
+  .confirm-btn {
+    margin-top: auto;
+    border-radius: 0;
+    width: 100%;
+    margin: auto 0 0 0;
+    padding: 16px;
+  }
+}

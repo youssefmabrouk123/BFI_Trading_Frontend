@@ -142,7 +142,7 @@
   bottom: 12px !important;
   width: calc(100vw - 24px) !important;
   height: calc(100vh - 24px) !important;
-  z-index: 9999 !important;
+  z-index: 1000 !important;
 }
 
 .btn-ghost {
@@ -282,7 +282,7 @@
   bottom: 12px !important;
   width: calc(100vw - 24px) !important;
   height: calc(100vh - 24px) !important;
-  z-index: 9999 !important;
+  z-index: 1000 !important;
 }
 
 @media (max-width: 768px) {
@@ -349,7 +349,7 @@
   bottom: 12px !important;
   width: calc(100vw - 24px) !important;
   height: calc(100vh - 24px) !important;
-  z-index: 9999 !important;
+  z-index: 1000 !important;
 }
 
 @media (max-width: 768px) {

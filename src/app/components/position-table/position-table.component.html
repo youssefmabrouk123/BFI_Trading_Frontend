@@ -1,0 +1,75 @@
+  <div class="table-wrapper">
+      <!-- <div class="table-header flex justify-between items-center mb-2">
+        <h2 class="text-lg font-semibold">Positions ouvertes</h2>
+        <div class="real-time-indicator flex items-center">
+          <span class="pulse-dot mr-2"></span>
+          <span class="text-sm text-gray-600">Mise à jour en temps réel</span>
+        </div>
+      </div> -->
+    
+      <table class="market-table">
+        <thead>
+          <tr>
+            <th class="instrument-col sticky left-0 bg-white z-50">Instrument</th>
+            <th class="z-20">Status</th>
+            <th class="z-20">Direction</th>
+            <th class="z-20">Quantity</th>
+            <th class="z-20">Open Price</th>
+            <th class="z-20">Current Price</th>
+            <th class="z-20">P/L</th>          
+            <th class="z-20"> </th>
+
+
+          </tr>
+        </thead>
+        <tbody *ngIf="!isLoading && positions.length > 0">
+          <tr *ngFor="let position of positions; trackBy: trackByInstrument" class="cursor-pointer hover:bg-gray-100 transition-colors">
+            <td class="instrument-col sticky left-0 bg-white z-10">
+              <div class="instrument-cell">
+                <span class="type-badge fx">FX</span>
+                <span class="instrument-name">{{ position.crossParityName }}</span>
+              </div>
+            </td>
+            <td class="tdcolor">{{ position.status }}</td>
+            <td class="tdcolor">{{ position.direction }}</td>
+            <td class="tdcolor">{{ position.quantity }}</td>
+            <td class="tdcolor">{{ position.openPrice }}</td>
+            <td>
+              <div [class]="'price-box ' + position.priceDirection">
+                <span class="arrow font-bold">
+                  <ng-container *ngIf="position.priceDirection === 'up'">▲</ng-container>
+                  <ng-container *ngIf="position.priceDirection === 'down'">▼</ng-container>
+                  <ng-container *ngIf="position.priceDirection === 'neutral'">—</ng-container>
+                </span>
+                {{ position.currentPrice }}
+              </div>
+            </td>
+            <td [class]="getValueClass(position.profitLoss)">
+              {{ position.profitLoss }}
+            </td>
+            <td class="text-center">
+              <button 
+              [disabled]="position.status === 'closed'"
+              class="px-4  py-1 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              (click)="confirmClose(position)"
+            >
+              Close
+            </button>
+            </td>
+          </tr>
+          
+        </tbody>
+        <tbody *ngIf="!isLoading && positions.length === 0">
+          <tr>
+            <td colspan="7" class="p-4 text-center text-gray-500" >No positions available.</td>
+          </tr>
+        </tbody>
+        <tbody *ngIf="isLoading">
+          <tr *ngFor="let skeleton of [1, 2, 3, 4, 5]">
+            <td class="skeleton-cell" colspan="7">
+              <div class="skeleton skeleton-text"></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>

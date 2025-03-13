@@ -97,9 +97,9 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
       ]).subscribe({
         next: ([quotes, crossParities]) => {
           this.instruments = crossParities.sort((a, b) => a.localeCompare(b));
-          console.log('quotes');
-          console.log(quotes);
-          console.log('quotes');
+          // console.log('quotes');
+          // console.log(quotes);
+          // console.log('quotes');
 
 
           this.updateMarketData(quotes);
@@ -129,6 +129,8 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
         const direction = previousQuote
           ? (quote.bidPrice > previousQuote.bidPrice ? 'up' : 'down')
           : 'up';
+
+            
         this.previousQuotes.set(quote.identifier, quote);
         return {
           type: 'FX',
@@ -307,20 +309,18 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
   //     data: item
   //   });
   // }
-  openTradePopup() {
+  openTradePopup(pk:number) {
+
     this.dialog.open(TradePopupComponent, {
-      data: {
-        instrument: 'XAUUSD',
-        currentPrice: 2914.92,
-        sellPrice: 2914.92,
-        buyPrice: 2915.87,
-        dailyLow: 2902.72,
-        dailyHigh: 2922.37
-      },
+      data:pk,
       width: '350px',
       panelClass: 'custom-dialog-container'
     });
+
+    
   }
+
+  
 
  
 }
