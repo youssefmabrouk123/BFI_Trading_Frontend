@@ -77,11 +77,11 @@
               <span class="checkbox-custom"></span>
               <span>Losers</span>
             </label>
-            <label class="filter-checkbox">
+            <!-- <label class="filter-checkbox">
               <input type="checkbox" [(ngModel)]="filters.activity.mostVolatile" (ngModelChange)="applyFilters()">
               <span class="checkbox-custom"></span>
               <span>Most Volatile</span>
-            </label>
+            </label> -->
             <label class="filter-checkbox">
               <input type="checkbox" [(ngModel)]="filters.activity.favorites" (ngModelChange)="applyFilters()">
               <span class="checkbox-custom"></span>
@@ -118,22 +118,22 @@
           </svg>
           Reset
         </button>
-        <button class="save-btn" (click)="saveFilters()">
+        <button class="save-btn" (click)="exportTableToCSV()">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
             <polyline points="17 21 17 13 7 13 7 21"></polyline>
             <polyline points="7 3 7 8 15 8"></polyline>
           </svg>
-          Save View
+          Save View CSV
         </button>
-        <button class="export-btn" (click)="exportTableToCSV()">
+        <!-- <button class="export-btn" (click)="exportTableToCSV()">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="7 10 12 15 17 10"></polyline>
             <line x1="12" y1="15" x2="12" y2="3"></line>
           </svg>
           Export CSV
-        </button>
+        </button> -->
       </div>
     </div>
   </div>

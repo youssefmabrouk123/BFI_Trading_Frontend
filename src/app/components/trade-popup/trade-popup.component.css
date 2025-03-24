@@ -1,8 +1,9 @@
+
 .trade-popup-container {
   background: rgba(17, 17, 17, 0.95);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(229, 191, 125, 0.08);
-  border-radius: 8px;
+  border-radius: 2px;
   overflow: hidden;
   width: 100%;
   max-width: 400px;

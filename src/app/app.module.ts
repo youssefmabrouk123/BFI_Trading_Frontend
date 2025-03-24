@@ -19,7 +19,6 @@ import { RightPanelComponent } from './components/right-panel/right-panel.compon
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { TradingChartComponent } from './components/trading-chart/trading-chart.component';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { TradePopupComponent } from './components/trade-popup/trade-popup.component';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -29,6 +28,8 @@ import { PositionTableComponent } from './components/position-table/position-tab
 import { ClosePositionDialogComponent } from './components/close-position-dialog/close-position-dialog.component';
 import { ClosedPositionsTableComponent } from './components/closed-positions-table/closed-positions-table.component';
 import { TransactionTableComponent } from './components/transaction-table/transaction-table.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+
 
 @NgModule({
   declarations: [
@@ -40,13 +41,13 @@ import { TransactionTableComponent } from './components/transaction-table/transa
     NavbarComponent,
     WatchlistComponent,
     RightPanelComponent,
-    TradingChartComponent,
     TradePopupComponent,
     PositionTableComponent,
     ClosePositionDialogComponent,
     ClosedPositionsTableComponent,
     TransactionTableComponent,
     
+  
   ],
   imports: [
     BrowserModule,
@@ -68,6 +69,7 @@ import { TransactionTableComponent } from './components/transaction-table/transa
     MatDialogModule,
     MatIconModule,
     MatButtonModule,
+    NgxChartsModule
     
   ],
   providers: [],
