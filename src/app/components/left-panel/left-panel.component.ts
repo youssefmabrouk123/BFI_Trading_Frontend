@@ -303,22 +303,35 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
   }
 
 
-  // onRowDoubleClick(item: any): void {
+  // openTradePopup(pk:number) {
+
   //   this.dialog.open(TradePopupComponent, {
-  //     width: '500px',
-  //     data: item
+  //     data:pk,
+  //     width: '350px',
+  //     panelClass: 'custom-dialog-container'
   //   });
+
   // }
-  openTradePopup(pk:number) {
 
-    this.dialog.open(TradePopupComponent, {
-      data:pk,
-      width: '350px',
-      panelClass: 'custom-dialog-container'
-    });
+openTradePopup(item: MarketDataItem) {
+  const dialogRef = this.dialog.open(TradePopupComponent, {
+    data: {
+      pk: item.pk,
+      instrument: item.instrument,
+      bidPrice: item.buy,
+      askPrice: item.sell
+    },
+    width: '350px',
+    panelClass: 'custom-dialog-container'
+  });
 
-    
-  }
+  dialogRef.afterClosed().subscribe(result => {
+    if (result?.success) {
+      // Handle successful trade if needed
+      console.log('Trade successful', result.position);
+    }
+  });
+}
 
   
 

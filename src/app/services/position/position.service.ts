@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, BehaviorSubject, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import Decimal from 'decimal.js';
 
 @Injectable({
   providedIn: 'root',
@@ -18,31 +19,9 @@ export class PositionService {
     // Vous pourriez initialiser une connexion WebSocket ici si disponible
   }
 
-  // Ouvrir une nouvelle position
-  openPosition(crossParityId: number, isLong: boolean, quantity: number, openPrice: number): Observable<any> {
-    const params = {
-      crossParityId,
-      isLong,
-      quantity,
-      openPrice,
-    };
-    return this.http.post<any>(`${this.apiUrl}/open`, null, { params }).pipe(
-      tap(() => {
-        // Récupérer les positions mises à jour après avoir ouvert une nouvelle position
-        this.refreshPositions();
-      })
-    );
-  }
+ 
 
-  // Fermer une position existante
-  // closePosition(positionId: number): Observable<any> {
-  //   return this.http.post<any>(`${this.apiUrl}/close/${positionId}`, null).pipe(
-  //     tap(() => {
-  //       // Récupérer les positions mises à jour après avoir fermé une position
-  //       this.refreshPositions();
-  //     })
-  //   );
-  // }
+
 
   // Obtenir toutes les positions ouvertes avec leur P/L
   getOpenPositionsWithProfitLoss(): Observable<any[]> {
@@ -74,5 +53,32 @@ closePosition(positionId: number, closePrice: number): Observable<any> {
 getLatestPrice(positionId: number): Observable<number> {
   return this.http.get<number>(`${this.apiUrl}/latest-price/${positionId}`);
 }
+
+getPositions(): Observable<any[]> {
+  return this.http.get<any[]>('http://localhost:6060/public/api/trading/positions');
+}
+
+openPosition(pk: number, isLong: boolean, quantity: number, openPrice: number,crossParity:string): Observable<any> {
+  // Create query parameters
+  let params = new HttpParams()
+    .set('crossParity', crossParity)   // Convert to string, replace with dynamic value if needed
+    .set('mntAcht', quantity.toString())
+    .set('transactionType', isLong ? 'BUY' : 'SELL')
+    .set('marketPrice', openPrice.toString());
+
+  console.log('Query Params:', params.toString());
+
+  return this.http.post('http://localhost:6060/public/api/trading/trade', null, {
+    headers: { 'Content-Type': 'application/json' },
+    params: params,  // Pass parameters here
+    withCredentials: true  // Add if needed for auth
+  }).pipe(
+    catchError(error => {
+      console.error('Trade error:', error.status, error.statusText, error.error);
+      return throwError(() => new Error('Trade execution failed'));
+    })
+  );
+}
+
 
 }

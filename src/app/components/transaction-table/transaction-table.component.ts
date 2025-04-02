@@ -1,26 +1,36 @@
 import { Component, OnInit } from '@angular/core';
-import { TransactionCurrency, TransactionService } from 'src/app/services/transaction/transaction.service';
+import { SocketService } from 'src/app/services/socket/socket.service';
+import { TradingService } from 'src/app/services/trading/trading.service';
+
 
 @Component({
   selector: 'app-transaction-table',
   templateUrl: './transaction-table.component.html',
   styleUrls: ['./transaction-table.component.css']
+
 })
 export class TransactionTableComponent implements OnInit {
-  transactions: TransactionCurrency[] = [];
-  isLoading = true;
-  skeletonArray = new Array(5); // Placeholder for loading effect
+  transactions: any[] = [];
 
-  constructor(private transactionService: TransactionService) {}
+  constructor(
+    private socketService: SocketService,
+    private tradingService: TradingService
+  ) {}
 
   ngOnInit(): void {
-    this.transactionService.getTransactions().subscribe(data => {
-      this.transactions = data;
-      this.isLoading = false;
-    });
+    // Charger les transactions initiales
+    this.loadInitialTransactions();
+
+    // Écouter les mises à jour en temps réel
+    // this.socketService.listen('transactionsUpdate').subscribe((data: any[]) => {
+    //   console.log('Mise à jour des transactions reçue:', data);
+    //   this.transactions = data;
+    // });
   }
 
-  trackByCurrency(index: number, transaction: TransactionCurrency) {
-    return transaction.currency;
+  loadInitialTransactions(): void {
+    this.tradingService.getTransactions().subscribe((data: any[]) => {
+      this.transactions = data;
+    });
   }
 }

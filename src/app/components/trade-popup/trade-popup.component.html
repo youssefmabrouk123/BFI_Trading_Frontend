@@ -1,85 +1,91 @@
-<div class="trade-popup-container" *ngIf="data">
+<div class="trade-popup-container">
   <div class="popup-header">
     <div class="header-left">
-      <span class="type-badge">{{ 'FX' }}</span>
-      <h2 class="instrument-name">{{ data.identifier }}</h2>
+      <span class="type-badge">FX</span>
+      <h2 class="instrument-name">{{ instrument }}</h2>
     </div>
-    <button class="close-btn" (click)="close()">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M1 1L13 13M1 13L13 1" stroke="#E5BF7D" stroke-width="1.5" stroke-linecap="round"/>
+    <button class="close-btn" (click)="close()" [disabled]="isProcessing">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 2L14 14M2 14L14 2" stroke="#E5BF7D" stroke-width="2" stroke-linecap="round"/>
       </svg>
     </button>
   </div>
 
   <div class="price-details">
     <div class="price-box" [ngClass]="{'active': selectedOperation === 'VENDRE'}" (click)="setOperation('VENDRE')">
-      <span class="price-label">VENDRE</span>
-      <strong class="price-value">{{ data.askPrice }}</strong>
+      <span class="price-label">SELL</span>
+      <strong class="price-value">{{ askPrice | number:'1.4-4' }}</strong>
     </div>
     <div class="price-box" [ngClass]="{'active': selectedOperation === 'ACHETER'}" (click)="setOperation('ACHETER')">
-      <span class="price-label">ACHETER</span>
-      <strong class="price-value">{{ data.bidPrice }}</strong>
+      <span class="price-label">BUY</span>
+      <strong class="price-value">{{ bidPrice | number:'1.4-4' }}</strong>
     </div>
   </div>
 
+  <div class="spread-info">
+    Spread: {{ spread | number:'1.1-1' }} pips
+  </div>
+
   <div class="operation-selector">
-    <button
-      class="operation-btn"
-      [ngClass]="{'active': selectedOperation === 'VENDRE'}"
-      (click)="setOperation('VENDRE')"
-    >
+    <button class="operation-btn" 
+            [ngClass]="{'active': selectedOperation === 'VENDRE'}"
+            (click)="setOperation('VENDRE')"
+            [disabled]="isProcessing">
       Sell
     </button>
-    <button
-      class="operation-btn"
-      [ngClass]="{'active': selectedOperation === 'ACHETER'}"
-      (click)="setOperation('ACHETER')"
-    >
+    <button class="operation-btn" 
+            [ngClass]="{'active': selectedOperation === 'ACHETER'}"
+            (click)="setOperation('ACHETER')"
+            [disabled]="isProcessing">
       Buy
     </button>
   </div>
 
   <div class="quantity-container">
-    <div class="quantity-label">Quantity</div>
+    <div class="quantity-label">Amount ({{ selectedOperation === 'ACHETER' ? baseCurrency : quoteCurrency }})</div>
     <div class="quantity-selector">
-      <button class="quantity-btn minus" (click)="decrementQuantity()">
+      <button class="quantity-btn minus" (click)="decrementQuantity()" [disabled]="isProcessing">
         <svg width="12" height="2" viewBox="0 0 12 2" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M1 1H11" stroke="#E5BF7D" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </button>
-      <input type="number" class="quantity-input" [(ngModel)]="quantity" min="1" />
-      <button class="quantity-btn plus" (click)="incrementQuantity()">
+      <input type="number" 
+             class="quantity-input" 
+             [(ngModel)]="quantity" 
+             min="1" 
+             (change)="onQuantityChange($event)"
+             [disabled]="isProcessing" />
+      <button class="quantity-btn plus" (click)="incrementQuantity()" [disabled]="isProcessing">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M6 1V11M1 6H11" stroke="#E5BF7D" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </button>
-      <span class="unit"></span>
     </div>
   </div>
 
   <div class="trade-summary">
     <div class="summary-row">
       <span class="summary-label">Price</span>
-      <span class="summary-value">{{ selectedOperation === 'ACHETER' ? data.bidPrice : data.askPrice }}</span>
+      <span class="summary-value">
+        {{ (selectedOperation === 'ACHETER' ? bidPrice : askPrice) | number:'1.4-4' }}
+        {{ quoteCurrency }}
+      </span>
     </div>
     <div class="summary-row">
       <span class="summary-label">Total</span>
-      <span class="summary-value highlight">{{ (selectedOperation === 'ACHETER' ? data.bidPrice : data.askPrice) * quantity }}</span>
+      <span class="summary-value highlight">
+        {{ getTotalAmount() | number:'1.4-4' }}
+        {{ quoteCurrency }}
+      </span>
     </div>
   </div>
 
-  <div class="market-info">
-    <div class="market-stat">
-      <span class="stat-label">Bas</span>
-      <span class="stat-value">{{ data.minBid }}</span>
-    </div>
-    <div class="market-stat">
-      <span class="stat-label">Haut</span>
-      <span class="stat-value">{{ data.maxAsk }}</span>
-    </div>
-  </div>
-
-  <button class="confirm-btn" [ngClass]="{'sell': selectedOperation === 'VENDRE', 'buy': selectedOperation === 'ACHETER'}" (click)="confirmTrade()">
-    {{ selectedOperation }} {{ quantity }} 
+  <button class="confirm-btn" 
+          [ngClass]="{'sell': selectedOperation === 'VENDRE', 'buy': selectedOperation === 'ACHETER'}" 
+          (click)="confirmTrade()"
+          [disabled]="isProcessing">
+    <span *ngIf="!isProcessing">{{ selectedOperation }} {{ quantity }} {{ baseCurrency }}</span>
+    <span *ngIf="isProcessing" class="loading-spinner"></span>
+    <span *ngIf="isProcessing">Processing...</span>
   </button>
 </div>
