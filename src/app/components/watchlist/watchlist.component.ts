@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { QuoteService } from 'src/app/services/quoteService/quote.service';
 import { FavoriteService } from 'src/app/services/favorite/favorite.service';
 import { Quote } from 'src/app/models/quote.model';
@@ -32,7 +32,7 @@ interface MarketDataItem {
 export class WatchlistComponent implements OnInit, OnDestroy {
   marketData: MarketDataItem[] = [];
   favoritesData: MarketDataItem[] = [];
-  isLoading: boolean = true;
+  isLoading: boolean = true; // Propriété pour contrôler le chargement et le squelette
   skeletonArray: number[] = [1, 2, 3, 4, 5];
   private subscriptions = new Subscription();
   instruments: string[] = [];
@@ -41,36 +41,54 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     private quoteService: QuoteService,
     private favoriteService: FavoriteService,
     private crossParityService: CrossParityService,
+    private cd: ChangeDetectorRef,
     public dialog: MatDialog
-    
   ) {}
 
   ngOnInit(): void {
+    this.fetchData(true); // Chargement initial avec squelette
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  // Gestion centralisée des données et du squelette
+  private fetchData(showSkeleton: boolean = false): void {
+    if (showSkeleton) {
+      this.isLoading = true; // Activer le squelette
+    }
+
     this.subscriptions.add(
       combineLatest([
         this.quoteService.getQuotes(),
-        this.crossParityService.getCrossParities()
+        this.crossParityService.getCrossParities(),
+        this.favoriteService.getFavorites()
       ]).subscribe({
-        next: ([quotes, crossParities]) => {
-          // Set the instruments from quotes instead of waiting for crossParities
+        next: ([quotes, crossParities, favorites]) => {
           this.instruments = quotes.map(quote => quote.identifier)
             .sort((a, b) => a.localeCompare(b));
-          this.updateMarketData(quotes);
+          this.updateMarketData(quotes, favorites);
           this.filterFavorites();
-          this.isLoading = false;
+          this.isLoading = false; // Désactiver le squelette une fois chargé
+          this.cd.markForCheck();
         },
         error: (error) => {
           console.error('Error receiving data:', error);
-          this.isLoading = false;
+          this.isLoading = false; // Désactiver même en cas d’erreur
+          this.cd.markForCheck();
         }
       })
     );
   }
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+
+  // Rafraîchissement explicite
+  refreshData(): void {
+    this.fetchData(true); // Afficher le squelette pendant le rafraîchissement
   }
-  private updateMarketData(quotes: Quote[]): void {
-    // Create market data directly from quotes instead of mapping instruments
+
+  private updateMarketData(quotes: Quote[], favorites: any[]): void {
+    const favoriteIds = new Set(favorites.map(f => f.pk));
     this.marketData = quotes.map(quote => ({
       type: 'FX',
       instrument: quote.identifier,
@@ -83,41 +101,41 @@ export class WatchlistComponent implements OnInit, OnDestroy {
       closing: quote.closeBid?.toString() ?? '-',
       high: quote.maxAsk.toFixed(4),
       low: quote.minBid.toFixed(4),
-      direction: 'up', // You might want to add logic for direction
-      favorite: quote.favorite,
+      direction: 'up', // À ajuster selon la logique réelle
+      favorite: favoriteIds.has(quote.pk),
       pk: quote.pk
     }));
   }
 
-  // Mise à jour de la liste des favoris
   filterFavorites(): void {
     this.favoritesData = this.marketData.filter(item => item.favorite);
+    this.cd.markForCheck();
   }
 
-  // Bascule le statut favori d'un item
   toggleFavorite(item: MarketDataItem, event: Event): void {
     event.stopPropagation();
-    // Mise à jour optimiste
-    item.favorite = !item.favorite;
-    this.favoriteService.toggleFavorite(item.pk, item.favorite)
-      .subscribe({
-        next: () => {
-          this.filterFavorites();
-        },
-        error: (err) => {
-          console.error("Erreur lors de la mise à jour du favori", err);
-          // Revenir sur le changement en cas d'erreur
-          item.favorite = !item.favorite;
-        }
-      });
+    const originalFavoriteState = item.favorite;
+    item.favorite = !item.favorite; // Mise à jour optimiste
+    this.filterFavorites();
+    this.cd.markForCheck();
+
+    this.favoriteService.toggleFavorite(item.pk).subscribe({
+      next: () => {
+        this.fetchData(false); // Rafraîchir sans squelette
+      },
+      error: (err) => {
+        console.error("Erreur lors de la mise à jour du favori", err);
+        item.favorite = originalFavoriteState;
+        this.filterFavorites();
+        this.cd.markForCheck();
+      }
+    });
   }
 
-  // Fonction trackBy pour améliorer les performances du *ngFor
   trackByPk(index: number, item: MarketDataItem): number {
     return item.pk;
   }
 
-  // Méthode utilitaire pour parseFloat dans le template
   parseNumber(value: string): number {
     return parseFloat(value);
   }
@@ -127,15 +145,22 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     return parseFloat(value) >= 0 ? 'text-green' : 'text-red';
   }
 
-
-
-
-   openTradePopup(pk:number) {
-  
-      this.dialog.open(TradePopupComponent, {
-        data:pk,
-        width: '350px',
-        panelClass: 'custom-dialog-container'
-      });
-    }
+  openTradePopup(item: MarketDataItem) {
+     const dialogRef = this.dialog.open(TradePopupComponent, {
+       data: {
+         pk: item.pk,
+         instrument: item.instrument,
+         bidPrice: item.buy,
+         askPrice: item.sell
+       },
+       width: '350px',
+       panelClass: 'custom-dialog-container'
+     });
+ 
+     dialogRef.afterClosed().subscribe(result => {
+       if (result?.success) {
+         console.log('Trade successful', result.position);
+       }
+     });
+   }
 }

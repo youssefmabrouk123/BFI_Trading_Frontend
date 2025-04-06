@@ -1,16 +1,31 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { SocketService } from 'src/app/services/socket/socket.service';
 import { TradingService } from 'src/app/services/trading/trading.service';
 
+interface Transaction {
+  id?: number;
+  devAchn: { identifier: string };
+  mntAcht: number;
+  devVen: { identifier: string };
+  mntVen: number;
+  price: number;
+  transactionTime: string;
+}
 
 @Component({
   selector: 'app-transaction-table',
   templateUrl: './transaction-table.component.html',
   styleUrls: ['./transaction-table.component.css']
-
 })
-export class TransactionTableComponent implements OnInit {
-  transactions: any[] = [];
+export class TransactionTableComponent implements OnInit, OnDestroy {
+  transactions: Transaction[] = [];
+  filteredTransactions: Transaction[] = [];
+  isLoading = false;
+  isRefreshing = false;
+  searchQuery = '';
+  skeletonArray = Array(5); // For skeleton loading
+  private socketSubscription?: Subscription;
 
   constructor(
     private socketService: SocketService,
@@ -18,19 +33,58 @@ export class TransactionTableComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Charger les transactions initiales
     this.loadInitialTransactions();
+    // this.setupSocketListener();
+  }
 
-    // Écouter les mises à jour en temps réel
-    // this.socketService.listen('transactionsUpdate').subscribe((data: any[]) => {
-    //   console.log('Mise à jour des transactions reçue:', data);
-    //   this.transactions = data;
-    // });
+  ngOnDestroy(): void {
+    this.socketSubscription?.unsubscribe();
   }
 
   loadInitialTransactions(): void {
-    this.tradingService.getTransactions().subscribe((data: any[]) => {
-      this.transactions = data;
+    this.isLoading = true;
+    this.tradingService.getTransactions().subscribe({
+      next: (data: Transaction[]) => {
+        this.transactions = data;
+        this.filterTransactions();
+        this.isLoading = false;
+        this.isRefreshing = false;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des transactions:', err);
+        this.isLoading = false;
+        this.isRefreshing = false;
+      }
     });
+  }
+
+  refreshTransactions(): void {
+    this.isRefreshing = true;
+    this.loadInitialTransactions();
+  }
+
+  filterTransactions(): void {
+    this.filteredTransactions = this.transactions.filter(transaction =>
+      transaction.devAchn.identifier.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      transaction.devVen.identifier.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      transaction.transactionTime.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
+  }
+
+  // setupSocketListener(): void {
+  //   this.socketSubscription = this.socketService.listen('transactionsUpdate').subscribe({
+  //     next: (data: Transaction[]) => {
+  //       console.log('Mise à jour des transactions reçue:', data);
+  //       this.transactions = data;
+  //       this.filterTransactions();
+  //     },
+  //     error: (err) => {
+  //       console.error('Erreur dans la mise à jour socket:', err);
+  //     }
+  //   });
+  // }
+
+  trackById(index: number, transaction: Transaction): number | undefined {
+    return transaction.id;
   }
 }

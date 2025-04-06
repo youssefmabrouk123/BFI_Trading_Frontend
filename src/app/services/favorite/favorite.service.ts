@@ -1,17 +1,27 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FavoriteService {
-  private apiUrl = 'http://localhost:6060/public/api/cross-parities';
+  private apiUrl = 'http://localhost:6060/api/favorites';
 
   constructor(private http: HttpClient) {}
 
-  toggleFavorite(id: number, favorie: boolean): Observable<any> {
-    // The query parameter is passed using string interpolation.
-    return this.http.put(`${this.apiUrl}/${id}/favorie?favorie=${favorie}`, null);
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token'); // Retrieve token from localStorage
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+  }
+
+  toggleFavorite(crossParityId: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/toggle/${crossParityId}`, {}, { headers: this.getHeaders() });
+  }
+
+  getFavorites(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 }

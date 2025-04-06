@@ -1,31 +1,94 @@
 <div class="table-wrapper">
+  <div class="filter-panel sticky left-0 z-50">
+    <div class="filter-header">
+      <div class="filter-header-content">
+        <div class="filter-title-group">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7h18v6H3z"></path>
+            <path d="M8 7V3m8 4V3m-5 10v4m0 4v-4m-5-4h10"></path>
+          </svg>
+          <h3 class="filter-title">Positions</h3>
+          <div class="table-controls">
+            <button class="refresh-btn" (click)="refreshPositions()" [class.loading]="isRefreshing" title="Refresh">
+              <i class="fa fa-sync refresh-icon" [class.spinning]="isRefreshing"></i>
+            </button>
+          </div>
+        </div>
+        <div class="filter-controls">
+          <div class="search-group">
+            <input type="text" 
+                   class="search-input" 
+                   placeholder="Search positions..." 
+                   [(ngModel)]="searchQuery" 
+                   (ngModelChange)="filterAndSortPositions()">
+            <button class="search-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <table class="market-table">
     <thead>
       <tr>
-        <th class="instrument-col">Devise</th>
-        <th>mntDev</th>
-        <th>besoinDev</th>
-        <th>Position finale</th>
-        <th>Action</th>
+        <th class="instrument-col sticky left-0 z-20" (click)="sortBy('identifier')">
+          Devise <i class="fa" [ngClass]="getSortIcon('identifier')"></i>
+        </th>
+        <th (click)="sortBy('mntDev')">Montant Devise <i class="fa" [ngClass]="getSortIcon('mntDev')"></i></th>
+        <th (click)="sortBy('besoinDev')">Besoin Devise <i class="fa" [ngClass]="getSortIcon('besoinDev')"></i></th>
+        <th (click)="sortBy('finalPosition')">Position Finale <i class="fa" [ngClass]="getSortIcon('finalPosition')"></i></th>
+        <th>Actions</th>
       </tr>
     </thead>
-    <tbody>
-      <tr *ngFor="let position of positions" class="cursor-pointer hover:bg-gray-800 transition-colors">
-        <td class="instrument-col">
+    <tbody *ngIf="!isLoading && filteredPositions.length > 0">
+      <tr *ngFor="let position of filteredPositions; trackBy: trackById" 
+          class="cursor-pointer hover:bg-gray-800 transition-colors">
+        <td class="instrument-col sticky left-0 z-10">
           <div class="instrument-cell">
             <span class="type-badge fx">FX</span>
             <span class="instrument-name">{{ position.identifier }}</span>
           </div>
         </td>
-        <td>{{ position.mntDev }}</td>
-        <td>{{ position.besoinDev }}</td>
-        <td [ngClass]="getValueClass((position.mntDev - position.besoinDev).toString())">
-          {{ position.mntDev - position.besoinDev }}
+        <td class="colo">{{ position.mntDev | number:'1.2-2' }}</td>
+        <td class="colo">{{ position.besoinDev | number:'1.2-2' }}</td>
+        <td  [ngClass]="getValueClass(position.mntDev - position.besoinDev)">
+          {{ getValueText((position.mntDev - position.besoinDev).toString()) | number:'1.2-2' }}
         </td>
-        <td>
-          <button class="signal-btn" (click)="openTradePopup(position)">
-            Trade
-          </button>
+        <td class="action-cell" *ngIf="position.identifier !== 'TND'">
+          <div class="action-container">
+            <button class="action-btn" (click)="toggleActions(position.pk)" title="More actions">
+              <i class="fa fa-ellipsis-h"></i>
+            </button>
+            <div class="action-dropdown" *ngIf="activeDropdown === position.pk">
+              <button class="dropdown-item trade" (click)="openTradePopup(position)">
+                <i class="fa fa-exchange"></i> Trade
+              </button>
+              <button class="dropdown-item sl-tp" (click)="openStopLossTakeProfitPopup(position)">
+                <i class="fa fa-shield"></i> Stop Loss/Take Profit
+              </button>
+              <!-- <button class="dropdown-item close-position" (click)="closePosition(position)">
+                <i class="fa fa-times"></i> Close Position
+              </button> -->
+            </div>
+          </div>
+        </td>
+        <td *ngIf="position.identifier === 'TND'"></td> <!-- Empty cell for alignment -->
+      </tr>
+    </tbody>
+    <tbody *ngIf="!isLoading && filteredPositions.length === 0">
+      <tr>
+        <td colspan="5" class="p-4 text-center text-gray-500">No positions available</td>
+      </tr>
+    </tbody>
+    <tbody *ngIf="isLoading">
+      <tr *ngFor="let skeleton of skeletonArray">
+        <td class="skeleton-cell" colspan="5">
+          <div class="skeleton skeleton-text"></div>
         </td>
       </tr>
     </tbody>

@@ -95,11 +95,11 @@
                     </button> -->
                 <button class="tab" [class.tab-active]="activeBottomTab === 'history'"
                     (click)="activeBottomTab = 'history'">
-                    <span class="tab-content">History</span>
+                    <span class="tab-content">Transaction History</span>
                 </button>
                 <button class="tab" [class.tab-active]="activeBottomTab === 'Closed'"
                     (click)="activeBottomTab = 'Closed'">
-                    <span class="tab-content">Closed Positions</span>
+                    <span class="tab-content">Pending Orders</span>
                 </button>
             </div>
 
@@ -129,7 +129,8 @@
                      <app-transaction-table></app-transaction-table>
                 </div>
                 <div *ngSwitchCase="'Closed'" class="h-full">
-                    <app-closed-positions-table></app-closed-positions-table>
+                    <!-- <app-closed-positions-table></app-closed-positions-table> -->
+                     <app-pending-order-table></app-pending-order-table>
                 </div>
             </ng-container>
         </div>

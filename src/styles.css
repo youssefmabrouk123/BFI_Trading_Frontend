@@ -4,4 +4,5 @@
 @tailwind utilities;
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;  background: linear-gradient(140deg, #0A0908 0%, #171717 100%);
+   } /* Set the default font and background color for the body */

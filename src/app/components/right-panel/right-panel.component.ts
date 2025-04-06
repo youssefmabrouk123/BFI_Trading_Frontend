@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { catchError, of, Subject, takeUntil } from 'rxjs';
 import { AuthResponse, AuthService } from 'src/app/services/auth/auth.service';
 
 @Component({
@@ -14,7 +14,10 @@ export class RightPanelComponent implements OnInit, OnDestroy {
   activeTab: 'login' | 'signup' = 'login';
   authForm!: FormGroup;
   showPassword = false;
+  showConfirmPassword = false;
   formSubmitted = false;
+  passwordStrength = 0;
+  isLoading = false;
   
   private destroy$ = new Subject<void>();
   
@@ -23,16 +26,18 @@ export class RightPanelComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private snackBar: MatSnackBar
-    
   ) {}
 
   ngOnInit(): void {
-    this.snackBar.open('Test toast', 'Close', { duration: 2000 });
     this.initForm();
     this.updateValidators();
-    if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/dashboard']);
-    }
+    
+    // Écouter les changements du mot de passe pour calculer la force
+    this.passwordControl.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(value => {
+        this.calculatePasswordStrength(value);
+      });
   }
 
   ngOnDestroy(): void {
@@ -40,24 +45,46 @@ export class RightPanelComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  calculatePasswordStrength(password: string): void {
+    let strength = 0;
+    
+    // Longueur
+    if (password.length >= 8) strength += 1;
+    if (password.length >= 12) strength += 1;
+    
+    // Complexité
+    if (/[A-Z]/.test(password)) strength += 1;
+    if (/[0-9]/.test(password)) strength += 1;
+    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+    
+    this.passwordStrength = Math.min(strength, 5); // Max 5 points
+  }
+
   setActiveTab(tab: 'login' | 'signup'): void {
     if (this.activeTab !== tab) {
       this.activeTab = tab;
       this.authForm.reset();
       this.showPassword = false;
+      this.showConfirmPassword = false;
       this.formSubmitted = false;
+      this.passwordStrength = 0;
       this.updateValidators();
     }
   }
 
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
+  togglePasswordVisibility(field: 'password' | 'confirmPassword'): void {
+    if (field === 'password') {
+      this.showPassword = !this.showPassword;
+    } else {
+      this.showConfirmPassword = !this.showConfirmPassword;
+    }
   }
 
   onSubmit(): void {
     this.formSubmitted = true;
 
     if (this.authForm.valid) {
+      this.isLoading = true;
       const formData = { ...this.authForm.value };
       
       if (this.activeTab === 'login') {
@@ -73,37 +100,44 @@ export class RightPanelComponent implements OnInit, OnDestroy {
       email: formData.email,
       password: formData.password
     };
-
+  
     this.authService.signin(loginData)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError(error => {
+          console.log(error);
+          this.isLoading = false;
+          this.formSubmitted = false;
+          this.showErrorToast(error.message || 'Échec de la connexion');
+          return of(null); // Retourne un observable vide pour continuer le flux
+        })
+      )
       .subscribe({
-        next: (response: AuthResponse) => {
-          this.showSuccessToast('Login successful!');
-          this.formSubmitted = false;
-          this.authForm.reset();
-          setTimeout(() => {
-            this.router.navigate(['/dashboard']);
-          }, 1500);
-        },
-        error: (error) => {
-          this.showErrorToast('Login failed. Check your credentials.');
-          this.formSubmitted = false;
+        next: (response) => {
+          if (response) { // Vérifie que la réponse existe
+            this.showSuccessToast('Connexion réussie !');
+            this.isLoading = false;
+            this.formSubmitted = false;
+            this.authForm.reset();
+            setTimeout(() => {
+              this.router.navigate(['/dashboard']);
+            }, 1500);
+          }
         }
       });
   }
-
   private handleSignup(formData: any): void {
     const signupData = {
       email: formData.email,
       password: formData.password
     };
-    console.log('Signup payload:', signupData);
   
     this.authService.signup(signupData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: AuthResponse) => {
           this.showSuccessToast('Inscription réussie ! Veuillez vous connecter.');
+          this.isLoading = false;
           this.formSubmitted = false;
           this.authForm.reset();
           setTimeout(() => {
@@ -111,18 +145,19 @@ export class RightPanelComponent implements OnInit, OnDestroy {
           }, 1500);
         },
         error: (error) => {
-          console.error('Signup error:', error);
           let errorMessage = "Erreur lors de l'inscription";
           if (error.status === 409) {
             errorMessage = "Cet email est déjà utilisé";
+          } else if (error.message) {
+            errorMessage = error.message;
           }
           this.showErrorToast(errorMessage);
+          this.isLoading = false;
           this.formSubmitted = false;
         }
       });
   }
 
-  // Toast notification methods
   private showSuccessToast(message: string): void {
     this.snackBar.open(message, 'OK', {
       duration: 3000,
@@ -141,21 +176,16 @@ export class RightPanelComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Rest of your existing methods (initForm, getters, etc.) remain unchanged
   private initForm(): void {
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    
     this.authForm = this.fb.group({
-    
       email: ['', [Validators.required, Validators.email]],
       password: ['', [
         Validators.required, 
-        Validators.minLength(8),
-        Validators.pattern(passwordPattern)
+        Validators.minLength(8)
       ]],
       confirmPassword: ['']
     }, { 
-      validators: this.activeTab === 'signup' ? this.passwordMatchValidator : null 
+      validators: this.passwordMatchValidator 
     });
   }
 
@@ -164,17 +194,14 @@ export class RightPanelComponent implements OnInit, OnDestroy {
   get confirmPasswordControl(): AbstractControl { return this.authForm.get('confirmPassword')!; }
 
   get emailError(): string {
-    const control = this.emailControl;
-    if (control.hasError('required')) return 'Email requis';
-    if (control.hasError('email')) return 'Veuillez entrer un email valide';
+    if (this.emailControl.hasError('required')) return 'Email requis';
+    if (this.emailControl.hasError('email')) return 'Veuillez entrer un email valide';
     return '';
   }
 
   get passwordError(): string {
-    const control = this.passwordControl;
-    if (control.hasError('required')) return 'Mot de passe requis';
-    if (control.hasError('minlength')) return 'Le mot de passe doit contenir au moins 8 caractères';
-    if (control.hasError('pattern')) return 'Le mot de passe doit inclure majuscule, minuscule, chiffre et caractère spécial';
+    if (this.passwordControl.hasError('required')) return 'Mot de passe requis';
+    if (this.passwordControl.hasError('minlength')) return 'Le mot de passe doit contenir au moins 8 caractères';
     return '';
   }
 
@@ -194,6 +221,6 @@ export class RightPanelComponent implements OnInit, OnDestroy {
   private passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
     const password = control.get('password')?.value;
     const confirmPassword = control.get('confirmPassword')?.value;
-    return (password && confirmPassword && password !== confirmPassword) ? { passwordMismatch: true } : null;
+    return password && confirmPassword && password !== confirmPassword ? { passwordMismatch: true } : null;
   }
 }

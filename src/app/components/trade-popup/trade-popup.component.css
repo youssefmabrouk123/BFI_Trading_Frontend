@@ -377,3 +377,18 @@
     width: calc(100% - 16px);
   }
 }
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(229, 191, 125, 0.02);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(229, 191, 125, 0.08);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(229, 191, 125, 0.12);
+}

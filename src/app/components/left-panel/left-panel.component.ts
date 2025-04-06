@@ -26,21 +26,10 @@ interface MarketDataItem {
 }
 
 interface MarketFilters {
-  types: {
-    fx: boolean;
-    crypto: boolean;
-  };
-  activity: {
-    gainers: boolean;
-    losers: boolean;
-    mostVolatile: boolean;
-    favorites: boolean;
-  };
+  types: { fx: boolean; crypto: boolean };
+  activity: { gainers: boolean; losers: boolean; mostVolatile: boolean; favorites: boolean };
   currencyBase: string;
-  performance: {
-    min: number;
-    max: number;
-  };
+  performance: { min: number; max: number };
   search: string;
 }
 
@@ -52,14 +41,13 @@ interface MarketFilters {
 })
 export class LeftPanelComponent implements OnInit, OnDestroy {
   instruments: string[] = [];
-  isLoading = true;
+  isLoading = true; // Contrôle le squelette et le chargement
   skeletonArray: number[] = [1, 2, 3, 4, 5];
   marketData: MarketDataItem[] = [];
   filteredMarketData: MarketDataItem[] = [];
   isFilterPanelOpen = false;
-  isRefreshing = true;
+  isRefreshing = false;
 
-  
   filters: MarketFilters = {
     types: { fx: true, crypto: true },
     activity: { gainers: false, losers: false, mostVolatile: false, favorites: false },
@@ -81,56 +69,59 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.fetchData();
+    this.fetchData(true); // Chargement initial avec squelette
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  // Méthode d'extraction des données
-  private fetchData(): void {
+  // Gestion centralisée des données et du squelette
+  private fetchData(showSkeleton: boolean = false): void {
+    if (showSkeleton) {
+      this.isLoading = true; // Activer le squelette
+    }
+
     this.subscriptions.add(
       combineLatest([
         this.quoteService.getQuotes(),
-        this.crossParityService.getCrossParities()
+        this.crossParityService.getCrossParities(),
+        this.favoriteService.getFavorites()
       ]).subscribe({
-        next: ([quotes, crossParities]) => {
+        next: ([quotes, crossParities, favorites]) => {
           this.instruments = crossParities.sort((a, b) => a.localeCompare(b));
-          // console.log('quotes');
-          // console.log(quotes);
-          // console.log('quotes');
-
-
-          this.updateMarketData(quotes);
+          this.updateMarketData(quotes, favorites);
           this.applyFilters();
-          this.isLoading = false;
-          this.isRefreshing=false;
+          this.isLoading = false; // Désactiver le squelette
+          this.isRefreshing = false;
           this.cd.markForCheck();
         },
-        error: (error) => console.error('Error receiving data:', error)
+        error: (error) => {
+          console.error('Error receiving data:', error);
+          this.isLoading = false;
+          this.isRefreshing = false;
+          this.cd.markForCheck();
+        }
       })
     );
   }
 
-  // Méthode appelée lors du clic sur le bouton "Rafraîchir"
   refreshTable(): void {
     this.isRefreshing = true;
-    this.isLoading = true;
-    this.fetchData();
+    this.fetchData(true); // Rafraîchir avec squelette
   }
-  private updateMarketData(quotes: Quote[]): void {
+
+  private updateMarketData(quotes: Quote[], favorites: any[]): void {
+    const favoriteIds = new Set(favorites.map(f => f.pk));
     const quotesMap = new Map(quotes.map(q => [q.identifier, q]));
     this.marketData = this.instruments.map(instrument => {
       const quote = quotesMap.get(instrument);
       if (quote) {
-        // Suppression du console.log() en production
         const previousQuote = this.previousQuotes.get(quote.identifier);
         const direction = previousQuote
           ? (quote.bidPrice > previousQuote.bidPrice ? 'up' : 'down')
           : 'up';
 
-            
         this.previousQuotes.set(quote.identifier, quote);
         return {
           type: 'FX',
@@ -145,7 +136,7 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
           high: quote.maxAsk.toFixed(4),
           low: quote.minBid.toFixed(4),
           direction,
-          favorite: quote.favorite,
+          favorite: favoriteIds.has(quote.pk),
           pk: quote.pk
         };
       }
@@ -169,52 +160,38 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
   }
 
   applyFilters(): void {
-    let filtered = this.marketData.slice();
+    let filtered = [...this.marketData]; // Nouvelle référence pour OnPush
 
-    // Filtrer par type (ex. FX)
     if (!this.filters.types.fx) {
       filtered = filtered.filter(item => item.type !== 'FX');
     }
-    // Filtrer par favoris si sélectionné
     if (this.filters.activity.favorites) {
       filtered = filtered.filter(item => item.favorite);
     }
-    // Filtrer par devise de base (si différente de "all")
     if (this.filters.currencyBase !== 'all') {
       filtered = filtered.filter(item => {
         const [base, quote] = item.instrument.split('/');
         return base === this.filters.currencyBase || quote === this.filters.currencyBase;
       });
     }
-    // Filtrer par plage de performance
     filtered = filtered.filter(item => {
       if (item.percent1J === '-') return true;
       const percentValue = parseFloat(item.percent1J);
-      return percentValue >= this.filters.performance.min &&
-             percentValue <= this.filters.performance.max;
+      return percentValue >= this.filters.performance.min && percentValue <= this.filters.performance.max;
     });
-    // Filtrer par activité (gainers/losers)
     if (this.filters.activity.gainers || this.filters.activity.losers) {
       filtered = filtered.filter(item => {
         if (item.percent1J === '-') return false;
         const percentValue = parseFloat(item.percent1J);
-        if (this.filters.activity.gainers && !this.filters.activity.losers) {
-          return percentValue > 0;
-        }
-        if (this.filters.activity.losers && !this.filters.activity.gainers) {
-          return percentValue < 0;
-        }
+        if (this.filters.activity.gainers && !this.filters.activity.losers) return percentValue > 0;
+        if (this.filters.activity.losers && !this.filters.activity.gainers) return percentValue < 0;
         return true;
       });
     }
-    // Filtrer par terme de recherche
     if (this.filters.search.trim()) {
       const searchTerm = this.filters.search.toLowerCase().trim();
-      filtered = filtered.filter(item =>
-        item.instrument.toLowerCase().includes(searchTerm)
-      );
+      filtered = filtered.filter(item => item.instrument.toLowerCase().includes(searchTerm));
     }
-    // Trier par volatilité si sélectionné
     if (this.filters.activity.mostVolatile) {
       filtered.sort((a, b) => {
         const aValue = a.percent1J !== '-' ? Math.abs(parseFloat(a.percent1J)) : 0;
@@ -251,21 +228,25 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
   }
 
   toggleFavorite(item: MarketDataItem, event: Event): void {
-    event.stopPropagation(); // Empêche le clic sur la ligne
-    // Mise à jour optimiste de l’UI
-    item.favorite = !item.favorite;
-    this.favoriteService.toggleFavorite(item.pk, item.favorite).subscribe({
-      next: (res) => {
-        this.applyFilters();
-        this.cd.markForCheck();
+    event.stopPropagation();
+    const originalFavoriteState = item.favorite;
+    item.favorite = !item.favorite; // Mise à jour optimiste
+    this.applyFilters();
+    this.cd.markForCheck();
+
+    this.favoriteService.toggleFavorite(item.pk).subscribe({
+      next: () => {
+        this.fetchData(false); // Rafraîchir sans squelette
       },
       error: (err) => {
-        // Revenir en arrière en cas d’erreur
-        item.favorite = !item.favorite;
+        console.error("Erreur lors de la mise à jour du favori", err);
+        item.favorite = originalFavoriteState;
+        this.applyFilters();
+        this.cd.markForCheck();
       }
     });
   }
-  
+
   trackByInstrument(index: number, item: MarketDataItem): string {
     return item.instrument;
   }
@@ -302,38 +283,22 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
     document.body.removeChild(link);
   }
 
+  openTradePopup(item: MarketDataItem) {
+    const dialogRef = this.dialog.open(TradePopupComponent, {
+      data: {
+        pk: item.pk,
+        instrument: item.instrument,
+        bidPrice: item.buy,
+        askPrice: item.sell
+      },
+      width: '350px',
+      panelClass: 'custom-dialog-container'
+    });
 
-  // openTradePopup(pk:number) {
-
-  //   this.dialog.open(TradePopupComponent, {
-  //     data:pk,
-  //     width: '350px',
-  //     panelClass: 'custom-dialog-container'
-  //   });
-
-  // }
-
-openTradePopup(item: MarketDataItem) {
-  const dialogRef = this.dialog.open(TradePopupComponent, {
-    data: {
-      pk: item.pk,
-      instrument: item.instrument,
-      bidPrice: item.buy,
-      askPrice: item.sell
-    },
-    width: '350px',
-    panelClass: 'custom-dialog-container'
-  });
-
-  dialogRef.afterClosed().subscribe(result => {
-    if (result?.success) {
-      // Handle successful trade if needed
-      console.log('Trade successful', result.position);
-    }
-  });
-}
-
-  
-
- 
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.success) {
+        console.log('Trade successful', result.position);
+      }
+    });
+  }
 }

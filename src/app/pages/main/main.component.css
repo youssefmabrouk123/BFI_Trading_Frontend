@@ -1,0 +1,527 @@
+.nav-container {
+    background: linear-gradient(to right, rgba(13, 13, 13, 0.95), rgba(18, 18, 18, 0.95));
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(229, 191, 125, 0.08);
+    top: 0;
+    z-index: 50;
+    position:relative;
+  }
+  
+  .nav-content {
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  
+  .nav-wrapper {
+    height: 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo-section {
+    .logo-link {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+  
+    .logo-image {
+      height: 32px;
+      width: auto;
+    }
+  
+    .logo-divider {
+      width: 1px;
+      height: 24px;
+      background: linear-gradient(to bottom, rgba(229, 191, 125, 0.05), rgba(229, 191, 125, 0.15), rgba(229, 191, 125, 0.05));
+    }
+  
+    .platform-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #E5BF7D;
+      letter-spacing: 0.5px;
+    }
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: 8px;
+  
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      color: rgba(229, 191, 125, 0.7);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      transition: all 0.2s ease;
+  
+      .link-icon {
+        opacity: 0.7;
+        transition: all 0.2s ease;
+      }
+  
+      &:hover {
+        color: rgba(229, 191, 125, 0.9);
+        background: rgba(229, 191, 125, 0.05);
+  
+        .link-icon {
+          opacity: 0.9;
+        }
+      }
+  
+      &.active {
+        color: #E5BF7D;
+        background: rgba(229, 191, 125, 0.08);
+        border: 1px solid rgba(229, 191, 125, 0.12);
+  
+        .link-icon {
+          opacity: 1;
+        }
+      }
+    }
+  }
+  
+  .user-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .icon-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(229, 191, 125, 0.05);
+    border: 1px solid rgba(229, 191, 125, 0.08);
+    color: rgba(229, 191, 125, 0.8);
+    position: relative;
+    transition: all 0.2s ease;
+  
+    &:hover {
+      background: rgba(229, 191, 125, 0.08);
+      border-color: rgba(229, 191, 125, 0.12);
+      color: #E5BF7D;
+    }
+  
+    .notification-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #D4AF37;
+      color: #0D0D0D;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #0D0D0D;
+    }
+  }
+  
+  .profile-dropdown {
+    position: relative;
+  
+    .profile-trigger {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px;
+      padding-right: 12px;
+      border-radius: 8px;
+      background: rgba(229, 191, 125, 0.05);
+      border: 1px solid rgba(229, 191, 125, 0.08);
+      transition: all 0.2s ease;
+  
+      &:hover {
+        background: rgba(229, 191, 125, 0.08);
+        border-color: rgba(229, 191, 125, 0.12);
+      }
+    }
+  
+    .avatar-container {
+      position: relative;
+      width: 32px;
+      height: 32px;
+  
+      .avatar-image {
+        width: 100%;
+        height: 100%;
+        border-radius: 6px;
+        object-fit: cover;
+      }
+  
+      .avatar-status {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #10B981;
+        border: 2px solid #0D0D0D;
+      }
+    }
+  
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+  
+      .profile-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: #E5BF7D;
+      }
+  
+      .profile-role {
+        font-size: 11px;
+        color: rgba(229, 191, 125, 0.6);
+      }
+    }
+  
+    .dropdown-arrow {
+      color: rgba(229, 191, 125, 0.7);}}
+
+
+      /* Icon Button (Notifications) */
+.icon-button {
+    position: relative;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .icon-button svg {
+    stroke: #E5BF7D;
+    transition: stroke 0.2s ease;
+  }
+  
+  .icon-button:hover svg {
+    stroke: #FFC107;
+  }
+  
+  .notification-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background-color: #D4AF37;
+    color: #0D0D0D;
+    font-size: 10px;
+    font-weight: bold;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Profile Dropdown Container */
+  .profile-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Profile Trigger Button */
+  .profile-trigger {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px 8px;
+    transition: background 0.2s ease;
+    border-radius: 4px;
+  }
+  
+  .profile-trigger:hover {
+    background-color: rgba(229, 191, 125, 0.1);
+  }
+  
+  /* Avatar Container & Image */
+  .avatar-container {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+  }
+  
+  .avatar-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  /* Online Status Indicator */
+  .avatar-status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background-color: #10B981;
+    border: 2px solid #1F1F1F;
+    border-radius: 50%;
+  }
+  
+  /* Profile Info */
+  .profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: 4px;
+  }
+  
+  .profile-name {
+    font-size: 14px;
+    color: #E5BF7D;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  
+  .profile-role {
+    font-size: 12px;
+    color: rgba(229, 191, 125, 0.7);
+  }
+  
+  /* Dropdown Arrow */
+  .dropdown-arrow {
+    stroke: #E5BF7D;
+    transition: transform 0.2s ease;
+  }
+  
+  /* Rotate arrow when dropdown is open */
+  .profile-dropdown.open .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+  
+  /* Dropdown Menu */
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: #1E1E1E;
+    border: 1px solid rgba(229, 191, 125, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    width: 220px;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  }
+  
+  /* Show dropdown when open */
+  .profile-dropdown.open .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  
+  /* Dropdown Header */
+  .dropdown-header {
+    padding: 12px 16px;
+    background-color: #272727;
+    border-bottom: 1px solid rgba(229, 191, 125, 0.1);
+  }
+  
+  .dropdown-header .user-name {
+    font-size: 14px;
+    color: #E5BF7D;
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  .dropdown-header .user-email {
+    font-size: 12px;
+    color: rgba(229, 191, 125, 0.7);
+    margin: 0;
+  }
+  
+  /* Dropdown Content */
+  .dropdown-content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    color: rgba(229, 191, 125, 0.8);
+    text-decoration: none;
+    transition: background 0.2s ease;
+  }
+  
+  .dropdown-item svg {
+    margin-right: 8px;
+    stroke: #E5BF7D;
+  }
+  
+  .dropdown-item:hover {
+    background-color: rgba(229, 191, 125, 0.1);
+  }
+  
+  /* Divider */
+  .dropdown-divider {
+    height: 1px;
+    background: rgba(229, 191, 125, 0.1);
+    margin: 8px 0;
+  }
+  
+  /* Sign Out (Red Text) */
+  .text-red {
+    color: #E74C3C;
+  }
+  
+
+  .nav-container {
+    background: linear-gradient(to right, rgba(13, 13, 13, 0.95), rgba(18, 18, 18, 0.95));
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(229, 191, 125, 0.08);
+    top: 0;
+    z-index: 50;
+    position: relative;
+}
+
+.nav-content {
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Add hamburger menu button */
+.mobile-menu-button {
+    display: none;
+    background: transparent;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: #E5BF7D;
+}
+
+/* Mobile menu overlay */
+.mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(13, 13, 13, 0.95);
+    z-index: 49;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+    .nav-links {
+        gap: 4px;
+    }
+
+    .nav-link {
+        padding: 8px 12px;
+    }
+
+    .platform-name {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: #0D0D0D;
+        padding: 16px;
+        border-bottom: 1px solid rgba(229, 191, 125, 0.08);
+    }
+
+    .nav-links.mobile-open {
+        display: flex;
+    }
+
+    .mobile-menu-overlay.mobile-open {
+        display: block;
+    }
+
+    .nav-link {
+        padding: 12px 16px;
+    }
+
+    .platform-name {
+        display: none;
+    }
+
+    .logo-divider {
+        display: none;
+    }
+
+    .user-section {
+        gap: 8px;
+    }
+
+    .profile-info {
+        display: none;
+    }
+
+    .dropdown-arrow {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-content {
+        padding: 0 16px;
+        margin: right 0;
+    }
+
+    .logo-image {
+        height: 28px;
+    }
+
+    .icon-button {
+        width: 32px;
+        height: 32px;
+    }
+
+    .profile-trigger {
+        padding: 4px;
+    }
+
+    .avatar-container {
+        width: 28px;
+        height: 28px;
+    }
+
+    .dropdown-menu {
+        width: 200px;
+        right: -16px;
+    }
+}

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import Decimal from 'decimal.js';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +16,7 @@ export class PositionService {
   private positionsSubject = new BehaviorSubject<any[]>([]);
   public positions$ = this.positionsSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,private authService: AuthService) {
     // Vous pourriez initialiser une connexion WebSocket ici si disponible
   }
 
@@ -58,10 +59,23 @@ getPositions(): Observable<any[]> {
   return this.http.get<any[]>('http://localhost:6060/public/api/trading/positions');
 }
 
-openPosition(pk: number, isLong: boolean, quantity: number, openPrice: number,crossParity:string): Observable<any> {
+openPosition(pk: number, isLong: boolean, quantity: number, openPrice: number, crossParity: string): Observable<any> {
+  // Get the token from your auth service
+  const token = this.authService.getToken();
+  
+  if (!token) {
+    return throwError(() => new Error('No authentication token available'));
+  }
+
+  // Create headers with authorization token
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}` // Include the token here
+  });
+
   // Create query parameters
-  let params = new HttpParams()
-    .set('crossParity', crossParity)   // Convert to string, replace with dynamic value if needed
+  const params = new HttpParams()
+    .set('crossParity', crossParity)
     .set('mntAcht', quantity.toString())
     .set('transactionType', isLong ? 'BUY' : 'SELL')
     .set('marketPrice', openPrice.toString());
@@ -69,9 +83,9 @@ openPosition(pk: number, isLong: boolean, quantity: number, openPrice: number,cr
   console.log('Query Params:', params.toString());
 
   return this.http.post('http://localhost:6060/public/api/trading/trade', null, {
-    headers: { 'Content-Type': 'application/json' },
-    params: params,  // Pass parameters here
-    withCredentials: true  // Add if needed for auth
+    headers: headers, // Include the authorization header
+    params: params,
+    // withCredentials: true // Keep this if you need cookies
   }).pipe(
     catchError(error => {
       console.error('Trade error:', error.status, error.statusText, error.error);

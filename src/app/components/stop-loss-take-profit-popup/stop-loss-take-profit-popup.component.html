@@ -1,0 +1,179 @@
+<div class="fixed inset-0 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-xl z-50 animate-fade-in" role="dialog" aria-labelledby="dialog-title">
+    <div class="w-full max-w-sm sm:max-w-md mx-auto bg-gradient-to-b from-[#0F0E0D] to-[#080706] rounded-3xl shadow-2xl border border-[#E5BF7D]/25 overflow-hidden font-['Inter',sans-serif] transition-all duration-500 hover:shadow-[0_0_25px_rgba(229,191,125,0.2)] animate-slide-up">
+      <!-- Header with decorative elements -->
+      <div class="relative px-6 pt-6 pb-5">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#E5BF7D]/30 to-transparent"></div>
+        <div class="flex items-center justify-center">
+          <div class="absolute left-0 right-0 top-0 h-16 bg-gradient-to-b from-[#E5BF7D]/5 to-transparent pointer-events-none"></div>
+          <span class="text-[#E5BF7D]/30 mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+          </span>
+          <h2 id="dialog-title" class="text-xl sm:text-2xl font-light text-[#E5BF7D] tracking-wider text-center drop-shadow-lg">
+            Stop Loss & Take Profit
+          </h2>
+        </div>
+        <button (click)="onCancel()" class="absolute top-4 right-4 p-1.5 text-[#E5BF7D]/60 hover:text-[#E5BF7D] hover:bg-[#E5BF7D]/10 rounded-full transition-all duration-300 focus:ring-2 focus:ring-[#E5BF7D]/50 focus:outline-none" aria-label="Close dialog">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+  
+      <!-- Content -->
+      <mat-dialog-content class="px-6 sm:px-8 pt-2 pb-6 text-[#E5BF7D]/90 max-h-[70vh] overflow-y-auto custom-scrollbar">
+        <!-- Info Bar -->
+        <div class="flex justify-between items-center mb-7 text-xs sm:text-sm font-medium bg-[#141414]/70 rounded-2xl py-3 px-5 sm:px-6 border border-[#E5BF7D]/20 shadow-inner backdrop-blur-sm relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-r from-[#E5BF7D]/5 to-transparent opacity-40 pointer-events-none"></div>
+          <span class="truncate relative">Pair: <span class="text-[#E5BF7D] font-semibold ml-1">{{data.baseCurrency}}/{{data.quoteCurrency}}</span></span>
+          <div class="w-px h-5 bg-[#E5BF7D]/20"></div>
+          <span class="truncate relative">Position: <span class="text-[#E5BF7D] font-semibold ml-1">{{data.currentPosition}}</span></span>
+        </div>
+  
+        <!-- Form -->
+        <div class="space-y-7">
+          <!-- Order Type Section -->
+          <div class="space-y-2">
+            <label class="block text-xs text-[#E5BF7D]/70 font-medium ml-2 mb-1">Order Type</label>
+            <div class="flex justify-center gap-3">
+              <button [ngClass]="{'bg-gradient-to-r from-[#E5BF7D]/30 to-[#D4A65A]/30 text-[#E5BF7D] border-[#E5BF7D]/50 shadow-[0_0_10px_rgba(229,191,125,0.15)]': orderType === 'BUY', 'bg-[#141414]/70 text-[#E5BF7D]/60 border-[#E5BF7D]/15': orderType !== 'BUY'}" 
+                    (click)="orderType = 'BUY'" 
+                    class="flex-1 py-3 rounded-xl text-sm font-medium border hover:bg-[#E5BF7D]/20 hover:text-[#E5BF7D] transition-all duration-300 focus:ring-2 focus:ring-[#E5BF7D]/50 focus:outline-none relative overflow-hidden" 
+                    aria-label="Set order type to Buy">
+                <div class="absolute inset-0 bg-gradient-to-r from-green-500/5 to-transparent opacity-30 pointer-events-none" [ngClass]="{'opacity-60': orderType === 'BUY'}"></div>
+                Buy
+              </button>
+              <button [ngClass]="{'bg-gradient-to-r from-[#E5BF7D]/30 to-[#D4A65A]/30 text-[#E5BF7D] border-[#E5BF7D]/50 shadow-[0_0_10px_rgba(229,191,125,0.15)]': orderType === 'SELL', 'bg-[#141414]/70 text-[#E5BF7D]/60 border-[#E5BF7D]/15': orderType !== 'SELL'}" 
+                    (click)="orderType = 'SELL'" 
+                    class="flex-1 py-3 rounded-xl text-sm font-medium border hover:bg-[#E5BF7D]/20 hover:text-[#E5BF7D] transition-all duration-300 focus:ring-2 focus:ring-[#E5BF7D]/50 focus:outline-none relative overflow-hidden" 
+                    aria-label="Set order type to Sell">
+                <div class="absolute inset-0 bg-gradient-to-r from-red-500/5 to-transparent opacity-30 pointer-events-none" [ngClass]="{'opacity-60': orderType === 'SELL'}"></div>
+                Sell
+              </button>
+            </div>
+          </div>
+  
+          <!-- Trigger Type Section -->
+          <div class="space-y-2">
+            <label class="block text-xs text-[#E5BF7D]/70 font-medium ml-2 mb-1">Trigger Type</label>
+            <div class="flex justify-center gap-3">
+              <button [ngClass]="{'bg-gradient-to-r from-[#E5BF7D]/30 to-[#D4A65A]/30 text-[#E5BF7D] border-[#E5BF7D]/50 shadow-[0_0_10px_rgba(229,191,125,0.15)]': triggerType === 'STOP_LOSS', 'bg-[#141414]/70 text-[#E5BF7D]/60 border-[#E5BF7D]/15': triggerType !== 'STOP_LOSS'}" 
+                    (click)="triggerType = 'STOP_LOSS'" 
+                    class="flex-1 py-3 rounded-xl text-sm font-medium border hover:bg-[#E5BF7D]/20 hover:text-[#E5BF7D] transition-all duration-300 focus:ring-2 focus:ring-[#E5BF7D]/50 focus:outline-none relative overflow-hidden" 
+                    aria-label="Set trigger type to Stop Loss">
+                <div class="absolute inset-0 bg-gradient-to-r from-red-500/5 to-transparent opacity-30 pointer-events-none" [ngClass]="{'opacity-60': triggerType === 'STOP_LOSS'}"></div>
+                <div class="flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1.5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
+                  </svg>
+                  Stop Loss
+                </div>
+              </button>
+              <button [ngClass]="{'bg-gradient-to-r from-[#E5BF7D]/30 to-[#D4A65A]/30 text-[#E5BF7D] border-[#E5BF7D]/50 shadow-[0_0_10px_rgba(229,191,125,0.15)]': triggerType === 'TAKE_PROFIT', 'bg-[#141414]/70 text-[#E5BF7D]/60 border-[#E5BF7D]/15': triggerType !== 'TAKE_PROFIT'}" 
+                    (click)="triggerType = 'TAKE_PROFIT'" 
+                    class="flex-1 py-3 rounded-xl text-sm font-medium border hover:bg-[#E5BF7D]/20 hover:text-[#E5BF7D] transition-all duration-300 focus:ring-2 focus:ring-[#E5BF7D]/50 focus:outline-none relative overflow-hidden" 
+                    aria-label="Set trigger type to Take Profit">
+                <div class="absolute inset-0 bg-gradient-to-r from-green-500/5 to-transparent opacity-30 pointer-events-none" [ngClass]="{'opacity-60': triggerType === 'TAKE_PROFIT'}"></div>
+                <div class="flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1.5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M7 11l5-5 5 5M7 18l5-5 5 5"/>
+                  </svg>
+                  Take Profit
+                </div>
+              </button>
+            </div>
+          </div>
+  
+          <!-- Amount Input -->
+          <div class="space-y-2">
+            <label class="block text-xs text-[#E5BF7D]/70 font-medium ml-2 mb-1">Amount</label>
+            <div class="relative">
+              <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-[#E5BF7D]/20 to-[#D4A65A]/20 blur-lg opacity-50 group-focus-within:opacity-100 transition-opacity duration-300"></div>
+              <input type="number" [(ngModel)]="amount" min="0" step="0.0001" 
+                     class="w-full py-3.5 px-5 bg-[#0A0908]/95 text-[#E5BF7D] rounded-xl border border-[#E5BF7D]/30 focus:border-[#E5BF7D]/50 focus:ring-2 focus:ring-[#E5BF7D]/30 text-center text-sm font-medium placeholder:text-[#E5BF7D]/40 transition-all duration-300 hover:bg-[#0F0E0D] focus:bg-[#0F0E0D] shadow-inner backdrop-blur-sm" 
+                     placeholder="Enter amount" 
+                     aria-label="Enter amount">
+              <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center bg-[#141414]/70 px-2 py-1 rounded-lg border border-[#E5BF7D]/20">
+                <span class="text-[#E5BF7D]/80 text-xs font-medium">Units</span>
+              </div>
+              <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-[#141414]/90 text-[#E5BF7D]/90 text-xs px-3 py-1.5 rounded-lg border border-[#E5BF7D]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-lg whitespace-nowrap z-10">
+                Enter amount in units
+              </div>
+            </div>
+          </div>
+  
+          <!-- Target Price Input -->
+          <div class="space-y-2">
+            <label class="block text-xs text-[#E5BF7D]/70 font-medium ml-2 mb-1">Target Price</label>
+            <div class="relative">
+              <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-[#E5BF7D]/20 to-[#D4A65A]/20 blur-lg opacity-50 group-focus-within:opacity-100 transition-opacity duration-300"></div>
+              <input type="number" [(ngModel)]="targetPrice" min="0" step="0.0001" 
+                     class="w-full py-3.5 px-5 bg-[#0A0908]/95 text-[#E5BF7D] rounded-xl border border-[#E5BF7D]/30 focus:border-[#E5BF7D]/50 focus:ring-2 focus:ring-[#E5BF7D]/30 text-center text-sm font-medium placeholder:text-[#E5BF7D]/40 transition-all duration-300 hover:bg-[#0F0E0D] focus:bg-[#0F0E0D] shadow-inner backdrop-blur-sm" 
+                     placeholder="Enter target price" 
+                     aria-label="Enter target price in TND">
+              <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center bg-[#141414]/70 px-2 py-1 rounded-lg border border-[#E5BF7D]/20">
+                <span class="text-[#E5BF7D]/80 text-xs font-medium">TND</span>
+              </div>
+              <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-[#141414]/90 text-[#E5BF7D]/90 text-xs px-3 py-1.5 rounded-lg border border-[#E5BF7D]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-lg whitespace-nowrap z-10">
+                Target price in TND
+              </div>
+            </div>
+          </div>
+  
+          <!-- Action Toggle -->
+          <div class="space-y-2">
+            <label class="block text-xs text-[#E5BF7D]/70 font-medium ml-2 mb-1">Action on Trigger</label>
+            <div class="flex justify-center gap-3">
+              <button [ngClass]="{'bg-gradient-to-r from-[#E5BF7D]/30 to-[#D4A65A]/30 text-[#E5BF7D] border-[#E5BF7D]/50 shadow-[0_0_10px_rgba(229,191,125,0.15)]': actionOnTrigger === 'EXECUTE', 'bg-[#141414]/70 text-[#E5BF7D]/60 border-[#E5BF7D]/15': actionOnTrigger !== 'EXECUTE'}" 
+                    (click)="actionOnTrigger = 'EXECUTE'" 
+                    class="flex-1 py-3 rounded-xl text-sm font-medium border hover:bg-[#E5BF7D]/20 hover:text-[#E5BF7D] transition-all duration-300 focus:ring-2 focus:ring-[#E5BF7D]/50 focus:outline-none relative overflow-hidden" 
+                    aria-label="Set action to Execute">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#E5BF7D]/10 to-transparent opacity-30 pointer-events-none" [ngClass]="{'opacity-60': actionOnTrigger === 'EXECUTE'}"></div>
+                <div class="flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1.5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 11 12 14 22 4"></polyline>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                  </svg>
+                  Execute
+                </div>
+              </button>
+              <button [ngClass]="{'bg-gradient-to-r from-[#E5BF7D]/30 to-[#D4A65A]/30 text-[#E5BF7D] border-[#E5BF7D]/50 shadow-[0_0_10px_rgba(229,191,125,0.15)]': actionOnTrigger === 'NOTIFY', 'bg-[#141414]/70 text-[#E5BF7D]/60 border-[#E5BF7D]/15': actionOnTrigger !== 'NOTIFY'}" 
+                    (click)="actionOnTrigger = 'NOTIFY'" 
+                    class="flex-1 py-3 rounded-xl text-sm font-medium border hover:bg-[#E5BF7D]/20 hover:text-[#E5BF7D] transition-all duration-300 focus:ring-2 focus:ring-[#E5BF7D]/50 focus:outline-none relative overflow-hidden" 
+                    aria-label="Set action to Notify">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#E5BF7D]/10 to-transparent opacity-30 pointer-events-none" [ngClass]="{'opacity-60': actionOnTrigger === 'NOTIFY'}"></div>
+                <div class="flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1.5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                  </svg>
+                  Notify
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-dialog-content>
+  
+      <!-- Actions -->
+      <div class="px-6 sm:px-8 py-6 bg-gradient-to-b from-[#0F0E0D] to-[#080706] border-t border-[#E5BF7D]/20 relative">
+        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#E5BF7D]/30 to-transparent"></div>
+        <button (click)="onSubmit()" [disabled]="!isFormValid()" 
+                class="w-full py-3.5 bg-gradient-to-r from-[#E5BF7D]/40 to-[#D4A65A]/40 text-[#E5BF7D] rounded-xl border border-[#E5BF7D]/40 hover:from-[#E5BF7D]/50 hover:to-[#D4A65A]/50 disabled:from-[#E5BF7D]/15 disabled:to-[#D4A65A]/15 disabled:text-[#E5BF7D]/50 disabled:border-[#E5BF7D]/25 disabled:cursor-not-allowed transition-all duration-300 text-sm font-semibold tracking-wider shadow-lg hover:shadow-xl focus:ring-2 focus:ring-[#E5BF7D]/50 focus:outline-none transform hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden" 
+                aria-label="Confirm order">
+          <div class="absolute inset-0 bg-gradient-to-r from-[#E5BF7D]/10 to-[#D4A65A]/10 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+          <span class="relative flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 opacity-80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            Confirm Order
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+  

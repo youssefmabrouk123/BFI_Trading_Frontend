@@ -1,8 +1,44 @@
 <div class="table-wrapper">
+  <div class="filter-panel sticky left-0 z-50">
+    <div class="filter-header">
+      <div class="filter-header-content">
+        <div class="filter-title-group">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 2"></polyline>
+            <polyline points="9 2 6 12 2 12"></polyline>
+            <path d="M18 12h-2a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2z"></path>
+            <path d="M6 12h2a2 2 0 0 0 2 2v6a2 2 0 0 0-2 2H6a2 2 0 0 0-2-2v-6a2 2 0 0 0 2-2z"></path>
+          </svg>
+          <h3 class="filter-title">Transaction History</h3>
+          <div class="table-controls">
+            <button class="refresh-btn" (click)="refreshTransactions()" [class.loading]="isRefreshing">
+              <i class="fa fa-sync refresh-icon" [class.spinning]="isRefreshing"></i>
+            </button>
+          </div>
+        </div>
+        <div class="filter-controls">
+          <div class="search-group">
+            <input type="text" 
+                   class="search-input" 
+                   placeholder="Search transactions..." 
+                   [(ngModel)]="searchQuery" 
+                   (ngModelChange)="filterTransactions()">
+            <button class="search-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <table class="market-table">
     <thead>
       <tr>
-        <th>Devise Achetée</th>
+        <th class="instrument-col sticky left-0 z-20">Devise Achetée</th>
         <th>Montant Acheté</th>
         <th>Devise Vendue</th>
         <th>Montant Vendu</th>
@@ -10,18 +46,35 @@
         <th>Heure Transaction</th>
       </tr>
     </thead>
-    <tbody>
-      <tr *ngFor="let transaction of transactions" class="cursor-pointer hover:bg-gray-800 transition-colors">
-        
-        <td>{{ transaction.devAchn.identifier }}</td>
-        <td>{{ transaction.mntAcht }}</td>
-        <td>{{ transaction.devVen.identifier }}</td>
-        <td>{{ transaction.mntVen }}</td>
-        <td>{{ transaction.price }}</td>
+    <tbody *ngIf="!isLoading && filteredTransactions.length > 0">
+      <tr *ngFor="let transaction of filteredTransactions; trackBy: trackById" 
+          class="cursor-pointer hover:bg-gray-800 transition-colors">
+        <td class="instrument-col sticky left-0 z-10">
+          <div class="instrument-cell">
+            <span class="type-badge fx">{{ transaction.devAchn.identifier }}</span>
+          </div>
+        </td>
+        <td>{{ transaction.mntAcht | number:'1.2-2' }}</td>
+        <td>
+          <div class="instrument-cell">
+            <span class="type-badge fx">{{ transaction.devVen.identifier }}</span>
+          </div>
+        </td>
+        <td>{{ transaction.mntVen | number:'1.2-2' }}</td>
+        <td>{{ transaction.price | number:'1.4-4' }}</td>
         <td>{{ transaction.transactionTime | date:'medium' }}</td>
       </tr>
-      <tr *ngIf="transactions.length === 0">
-        <td colspan="7" class="no-data">Aucune donnée dans "transaction"</td>
+    </tbody>
+    <tbody *ngIf="!isLoading && filteredTransactions.length === 0">
+      <tr>
+        <td colspan="6" class="p-4 text-center text-gray-500">Aucune donnée dans "transaction"</td>
+      </tr>
+    </tbody>
+    <tbody *ngIf="isLoading">
+      <tr *ngFor="let skeleton of skeletonArray">
+        <td class="skeleton-cell" colspan="6">
+          <div class="skeleton skeleton-text"></div>
+        </td>
       </tr>
     </tbody>
   </table>

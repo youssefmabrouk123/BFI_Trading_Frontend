@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-// import {  NgChartsModule } from 'ng2-charts';
+import {  NgChartsModule } from 'ng2-charts';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
@@ -29,7 +29,14 @@ import { ClosePositionDialogComponent } from './components/close-position-dialog
 import { ClosedPositionsTableComponent } from './components/closed-positions-table/closed-positions-table.component';
 import { TransactionTableComponent } from './components/transaction-table/transaction-table.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
-
+import { AnalyticsComponent } from './pages/analytics/analytics.component';
+import { MainComponent } from './pages/main/main.component';
+import { AccountComponent } from './pages/account/account.component';
+import { StopLossTakeProfitPopupComponent } from './components/stop-loss-take-profit-popup/stop-loss-take-profit-popup.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { PendingOrderTableComponent } from './components/pending-order-table/pending-order-table.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +53,11 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     ClosePositionDialogComponent,
     ClosedPositionsTableComponent,
     TransactionTableComponent,
+    AnalyticsComponent,
+    MainComponent,
+    AccountComponent,
+    StopLossTakeProfitPopupComponent,
+    PendingOrderTableComponent,
     
   
   ],
@@ -69,8 +81,11 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     MatDialogModule,
     MatIconModule,
     MatButtonModule,
-    NgxChartsModule
-    
+    NgxChartsModule,
+    NgChartsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule 
   ],
   providers: [],
   bootstrap: [AppComponent]

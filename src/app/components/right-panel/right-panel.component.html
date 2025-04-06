@@ -92,7 +92,7 @@
               <button 
                 type="button" 
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-[#E5BF7D]/60 hover:text-[#E5BF7D]"
-                (click)="togglePasswordVisibility()"
+               
               >
                 <svg *ngIf="!showPassword" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -122,12 +122,13 @@
 
           <!-- Submit Button -->
           <button 
-            type="submit" 
-            class="w-full px-4 py-2 text-xs font-semibold uppercase tracking-wider text-[#111111] bg-gradient-to-r from-[#E5BF7D] to-[#D4AF37] rounded disabled:opacity-50 disabled:cursor-not-allowed"
-            [disabled]="authForm.invalid"
-          >
-            {{ activeTab === 'login' ? 'Sign In' : 'Create Account' }}
-          </button>
+          type="submit" 
+          class="w-full px-4 py-2 text-xs font-semibold uppercase tracking-wider text-[#111111] bg-gradient-to-r from-[#E5BF7D] to-[#D4AF37] rounded disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+          [disabled]="authForm.invalid || isLoading"
+        >
+          <span *ngIf="isLoading" class="inline-block w-4 h-4 border-2 border-[#111111] border-t-transparent rounded-full animate-spin"></span>
+          {{ activeTab === 'login' ? 'Sign In' : 'Create Account' }}
+        </button>
 
           <!-- Settings Option -->
           <div *ngIf="activeTab === 'login'" class="flex justify-between items-center text-xs">
