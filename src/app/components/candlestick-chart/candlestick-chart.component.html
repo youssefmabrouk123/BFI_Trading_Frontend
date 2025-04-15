@@ -1,130 +1,153 @@
-<!-- <div class="chart-container">
-    <div *ngIf="loading" class="loading-overlay">
-      <div class="spinner"></div>
-      <span>Loading chart...</span>
-    </div>
-  
-    <div *ngIf="updating && !loading" class="updating-indicator">
-      <span>Updating...</span>
-    </div>
-  
-    <div class="chart-header">
-      <div class="pair-info">
-        <h3 class="pair-name">{{ pairName }}</h3>
-        <div class="price-info">
-          <span class="latest-price">{{ latestPrice | number:'1.2-6' }}</span>
-          <span class="price-change" [ngClass]="{'text-green-500': priceDirection === 'up', 'text-red-500': priceDirection === 'down'}">
-            <i class="material-icons">{{ priceDirection === 'up' ? 'arrow_upward' : 'arrow_downward' }}</i>
-            {{ priceChange | number:'1.2-6' }} ({{ priceChangePercent | number:'1.2-2' }}%)
-          </span>
-        </div>
-      </div>
-      <div class="controls">
-        <div class="timeframe-selector">
-          <button *ngFor="let timeframe of availableTimeframes" 
-                  [class.active]="timeframe === selectedTimeframe"
-                  (click)="changeTimeframe(timeframe)">
-            {{ timeframe }}
-          </button>
-        </div>
-        <div class="indicator-selector">
-          <button [class.active]="showSMA" (click)="toggleIndicator('sma')">SMA</button>
-          <button [class.active]="showEMA" (click)="toggleIndicator('ema')">EMA</button>
-          <button [class.active]="showVolume" (click)="toggleIndicator('volume')">VOL</button>
-          <button [class.active]="showRSI" (click)="toggleIndicator('rsi')">RSI</button>
-          <button [class.active]="showMACD" (click)="toggleIndicator('macd')">MACD</button>
-        </div>
-      </div>
-    </div>
-  
-    <div class="chart-controls">
-      <div class="left-controls">
-        <button [class.active]="isDrawing" (click)="toggleDrawing()">
-          <i class="material-icons">edit</i> Draw
-        </button>
-        <button (click)="zoomChart('in')"><i class="material-icons">zoom_in</i></button>
-        <button (click)="zoomChart('out')"><i class="material-icons">zoom_out</i></button>
-        <button (click)="zoomChart('reset')"><i class="material-icons">fit_screen</i></button>
-      </div>
-      <div class="right-controls">
-        <button class="buy" (click)="placeOrder('buy')">Buy</button>
-        <button class="sell" (click)="placeOrder('sell')">Sell</button>
-      </div>
-    </div>
-  
-    <div class="">
-      <div #chartElement class="chart-element"></div>
-    </div>
-  
-    <div class="alerts-section">
-      <div class="alert-form">
-        <input type="number" 
-               [(ngModel)]="alertPrice"
-               placeholder="Set alert price" 
-               step="0.000001">
-        <select [(ngModel)]="alertCondition">
-          <option value="above">Above</option>
-          <option value="below">Below</option>
-        </select>
-        <button (click)="addAlert()">Add Alert</button>
-      </div>
-      <div *ngIf="alerts.length" class="alert-list">
-        <div *ngFor="let alert of alerts" class="alert-item">
-          <span>Alert: Price {{ alert.condition }} {{ alert.price | number:'1.2-6' }} {{ alert.triggered ? '(Triggered)' : '' }}</span>
-          <button (click)="removeAlert(alert.id)">
-            <i class="material-icons">delete</i>
-          </button>
-        </div>
-      </div>
-    </div>
-  
-    <div class="chart-footer">
-      <div class="ohlc-info">
-        <span>O: {{ latestOHLC?.open | number:'1.2-6' }}</span>
-        <span>H: {{ latestOHLC?.high | number:'1.2-6' }}</span>
-        <span>L: {{ latestOHLC?.low | number:'1.2-6' }}</span>
-        <span>C: {{ latestOHLC?.close | number:'1.2-6' }}</span>
-        <span>Vol: {{ formatVolume(latestOHLC?.volume) }}</span>
-      </div>
-      <div class="indicator-info">
-        <span *ngIf="showSMA"><i class="indicator-dot sma"></i> SMA(20): {{ currentSMA | number:'1.2-6' }}</span>
-        <span *ngIf="showEMA"><i class="indicator-dot ema"></i> EMA(50): {{ currentEMA | number:'1.2-6' }}</span>
-        <span *ngIf="showRSI"><i class="indicator-dot rsi"></i> RSI(14): {{ currentRSI | number:'1.2-2' }}</span>
-        <span *ngIf="showMACD"><i class="indicator-dot macd"></i> MACD: {{ currentMACD | number:'1.2-6' }}</span>
-        <span *ngIf="showMACD"><i class="indicator-dot signal"></i> Signal: {{ currentSignal | number:'1.2-6' }}</span>
-      </div>
-    </div>
-  </div> -->
-
-
-  <div class="chart-container">
-    <!-- Loading Overlay -->
-    <div *ngIf="loading" class="loading-overlay">
-      <div class="spinner"></div>
-      <span>Loading chart...</span>
-    </div>
-  
-    <!-- Updating Indicator -->
-    <div *ngIf="updating && !loading" class="updating-indicator">
-      <span>Updating...</span>
-    </div>
-    
-    <!-- Header -->
-    <div class="chart-header">
-      <div class="pair-info">
-        <h3 class="pair-name">{{ pairName }}</h3>
-        <div class="price-info">
-          <span class="latest-price">{{ latestPrice | number:'1.2-6' }}</span>
-          <span class="price-change" [ngClass]="{'text-green-500': priceDirection === 'up', 'text-red-500': priceDirection === 'down'}">
-            <i class="material-icons">{{ priceDirection === 'up' ? 'arrow_upward' : 'arrow_downward' }}</i>
-            {{ priceChange | number:'1.2-6' }} ({{ priceChangePercent | number:'1.2-2' }}%)
-          </span>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Chart -->
-    <div class="chart-wrapper">
-      <div #chartElement class="chart-element"></div>
+<div class="chart-container relative bg-slate-900 rounded-xl shadow-xl p-4 border border-slate-800">
+  <!-- Loading Overlay -->
+  <div *ngIf="loading" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-xl">
+    <div class="flex flex-col items-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <span class="text-slate-200 mt-3 font-medium">Loading chart data...</span>
     </div>
   </div>
+
+  <!-- Live Update Indicator -->
+  <div *ngIf="updating && !loading" 
+       class="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center animate-pulse z-10">
+    <span class="mr-1 h-2 w-2 bg-white rounded-full inline-block"></span>
+    Live updating
+  </div>
+
+  <!-- Chart Header -->
+  <div class="chart-header flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 space-y-4 lg:space-y-0 border-b border-slate-800 pb-4">
+    <!-- Pair Info -->
+    <div class="pair-info">
+      <div class="flex items-center">
+        <h3 class="pair-name text-xl font-bold text-slate-100">{{ pairName }}</h3>
+        <span class="ml-2 px-2 py-0.5 text-xs font-semibold rounded-full" 
+              [ngClass]="{'bg-emerald-500/20 text-emerald-400': priceDirection === 'up', 
+                         'bg-red-500/20 text-red-400': priceDirection === 'down', 
+                         'bg-slate-500/20 text-slate-400': priceDirection === null}">
+          {{ selectedTimeframe }}
+        </span>
+      </div>
+      
+      <div class="price-info flex items-center mt-1 space-x-3">
+        <span class="latest-price text-2xl font-bold" 
+              [ngClass]="{'text-emerald-400': priceDirection === 'up', 
+                         'text-red-400': priceDirection === 'down', 
+                         'text-slate-300': priceDirection === null}">
+          {{ latestPrice | number:'1.2-6' }}
+        </span>
+        <span class="price-change flex items-center text-sm" 
+              [ngClass]="{'text-emerald-400': priceDirection === 'up', 
+                         'text-red-400': priceDirection === 'down', 
+                         'text-slate-400': priceDirection === null}">
+          <svg *ngIf="priceDirection === 'up'" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+          </svg>
+          <svg *ngIf="priceDirection === 'down'" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+          <span>{{ priceChange | number:'1.2-6' }}</span>
+          <span class="mx-1">•</span>
+          <span>{{ priceChangePercent | number:'1.2-2' }}%</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls flex flex-wrap gap-2">
+      <!-- Timeframe Selection -->
+      <div class="relative">
+        <select [(ngModel)]="selectedTimeframe" 
+                (change)="changeTimeframe(selectedTimeframe)" 
+                class="bg-slate-800 text-slate-200 border border-slate-700 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8">
+          <option *ngFor="let timeframe of availableTimeframes" [value]="timeframe">{{ timeframe }}</option>
+        </select>
+        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Indicators -->
+      <div class="indicators inline-flex rounded-lg shadow-sm">
+        <button (click)="toggleIndicator('sma')" 
+                class="px-3 py-2 text-sm font-medium border border-r-0 first:rounded-l-lg"
+                [ngClass]="{'bg-blue-600 text-white border-blue-600': showSMA, 
+                           'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700': !showSMA}">
+          SMA
+        </button>
+        <button (click)="toggleIndicator('ema')" 
+                class="px-3 py-2 text-sm font-medium border border-r-0"
+                [ngClass]="{'bg-pink-600 text-white border-pink-600': showEMA, 
+                           'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700': !showEMA}">
+          EMA
+        </button>
+        <button (click)="toggleIndicator('volume')" 
+                class="px-3 py-2 text-sm font-medium border last:rounded-r-lg"
+                [ngClass]="{'bg-emerald-600 text-white border-emerald-600': showVolume, 
+                           'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700': !showVolume}">
+          VOL
+        </button>
+      </div>
+
+      <!-- Zoom Controls -->
+      <div class="zoom-controls inline-flex rounded-lg shadow-sm">
+        <button (click)="zoomChart('in')" 
+                class="bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2 rounded-l-lg text-sm font-medium hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
+        </button>
+        <button (click)="zoomChart('out')" 
+                class="bg-slate-800 border-t border-b border-slate-700 text-slate-200 px-3 py-2 text-sm font-medium hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6"></path>
+          </svg>
+        </button>
+        <button (click)="zoomChart('reset')" 
+                class="bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2 rounded-r-lg text-sm font-medium hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OHLC & Indicators Values -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-6 gap-4 mb-4">
+    <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+      <div class="text-xs text-slate-400 mb-1">Open</div>
+      <div class="text-slate-200 font-medium">{{ latestOHLC?.open | number:'1.2-6' || '—' }}</div>
+    </div>
+    <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+      <div class="text-xs text-slate-400 mb-1">High</div>
+      <div class="text-slate-200 font-medium">{{ latestOHLC?.high | number:'1.2-6' || '—' }}</div>
+    </div>
+    <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+      <div class="text-xs text-slate-400 mb-1">Low</div>
+      <div class="text-slate-200 font-medium">{{ latestOHLC?.low | number:'1.2-6' || '—' }}</div>
+    </div>
+    <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+      <div class="text-xs text-slate-400 mb-1">Close</div>
+      <div class="text-slate-200 font-medium">{{ latestOHLC?.close | number:'1.2-6' || '—' }}</div>
+    </div>
+    <div *ngIf="showVolume" class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+      <div class="text-xs text-slate-400 mb-1">Volume</div>
+      <div class="text-slate-200 font-medium">{{ formatVolume(latestOHLC?.volume || 0) }}</div>
+    </div>
+    <div *ngIf="showSMA" class="bg-blue-900/20 rounded-lg p-3 border border-blue-700/30">
+      <div class="text-xs text-blue-400 mb-1">SMA (20)</div>
+      <div class="text-blue-200 font-medium">{{ currentSMA | number:'1.2-6' || '—' }}</div>
+    </div>
+    <div *ngIf="showEMA" class="bg-pink-900/20 rounded-lg p-3 border border-pink-700/30">
+      <div class="text-xs text-pink-400 mb-1">EMA (50)</div>
+      <div class="text-pink-200 font-medium">{{ currentEMA | number:'1.2-6' || '—' }}</div>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-wrapper relative rounded-lg overflow-hidden border border-slate-800">
+    <div #chartElement class="chart-element w-full h-[500px]"></div>
+  </div>
+</div>

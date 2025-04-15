@@ -1,882 +1,6 @@
-// import { Component, OnInit, OnDestroy, Input, ElementRef, ViewChild, AfterViewInit, HostListener } from '@angular/core';
-// import { Subscription } from 'rxjs';
-// import { Candlestick } from '../../models/candlestick.model';
-// import { CandlestickService } from 'src/app/services/candlestickService/candlestick-service.service';
-// import {
-//   createChart,
-//   IChartApi,
-//   ISeriesApi,
-//   CandlestickData,
-//   HistogramData,
-//   LineData,
-//   Time,
-//   WhitespaceData,
-//   CrosshairMode,
-//   LineStyle,
-//   MouseEventParams,
-// } from 'lightweight-charts';
-
-// interface OHLC {
-//   open: number;
-//   high: number;
-//   low: number;
-//   close: number;
-//   volume: number;
-// }
-
-// interface TrendLine {
-//   id: string;
-//   start: { time: number; price: number };
-//   end: { time: number; price: number };
-// }
-
-// interface Alert {
-//   id: string;
-//   price: number;
-//   condition: 'above' | 'below';
-//   triggered: boolean;
-// }
-
-// @Component({
-//   selector: 'app-candlestick-chart',
-//   templateUrl: './candlestick-chart.component.html',
-//   styleUrls: ['./candlestick-chart.component.css'], // Updated to .scss for better styling
-// })
-// export class CandlestickChartComponent implements OnInit, AfterViewInit, OnDestroy {
-//   @ViewChild('chartElement') chartElement!: ElementRef;
-
-//   @Input() crossParityId!: number;
-//   @Input() pairName: string = 'BTC/USDT';
-
-//   // Chart components
-//   private chart!: IChartApi;
-//   private candleSeries!: ISeriesApi<'Candlestick'>;
-//   private volumeSeries!: ISeriesApi<'Histogram'>;
-//   private smaLine!: ISeriesApi<'Line'>;
-//   private emaLine!: ISeriesApi<'Line'>;
-//   private rsiLine!: ISeriesApi<'Line'>;
-//   private macdLine!: ISeriesApi<'Line'>;
-//   private signalLine!: ISeriesApi<'Line'>;
-//   private macdHistogram!: ISeriesApi<'Histogram'>;
-//   private trendLineSeries: ISeriesApi<'Line'>[] = [];
-
-//   // Tooltip
-//   private tooltipElement: HTMLElement | null = null;
-
-//   // Subscriptions
-//   private subscription?: Subscription;
-//   private updateSubscription?: Subscription;
-
-//   // Chart data
-//   availableTimeframes = ['1m', '5m', '15m', '30m', '1h', '4h', '1d', '1w'];
-//   selectedTimeframe = '1m';
-
-//   // Toggle indicators
-//   showSMA = true;
-//   showEMA = true;
-//   showVolume = true;
-//   showRSI = false;
-//   showMACD = false;
-
-//   // Trading controls
-//   isDrawing = false;
-//   trendLines: TrendLine[] = [];
-//   private drawingStart: { time: number; price: number } | null = null;
-//   alerts: Alert[] = [];
-//   alertPrice: number | null = null;
-//   alertCondition: 'above' | 'below' = 'above';
-
-//   // Price information
-//   latestPrice: number = 0;
-//   priceChange: number = 0;
-//   priceChangePercent: number = 0;
-//   priceDirection: 'up' | 'down' | null = null;
-//   latestOHLC: OHLC | null = null;
-//   currentSMA: number = 0;
-//   currentEMA: number = 0;
-//   currentRSI: number = 0;
-//   currentMACD: number = 0;
-//   currentSignal: number = 0;
-
-//   // Chart data storage
-//   private previousClose: number | null = null;
-//   private previousCandleTimestamp: number | null = null;
-//   public candleData: (CandlestickData | WhitespaceData)[] = [];
-//   private volumeData: (HistogramData | WhitespaceData)[] = [];
-//   private smaData: LineData[] = [];
-//   private emaData: LineData[] = [];
-//   private rsiData: LineData[] = [];
-//   private macdData: LineData[] = [];
-//   private signalData: LineData[] = [];
-//   private macdHistogramData: HistogramData[] = [];
-
-//   // Loading state
-//   loading = true;
-//   updating = false;
-
-//   constructor(private candlestickService: CandlestickService) {}
-
-//   ngOnInit(): void {
-//     this.loadChartPreferences();
-//     this.setupLiveUpdates();
-//   }
-
-//   ngAfterViewInit(): void {
-//     this.loadChartData();
-//   }
-
-//   ngOnDestroy(): void {
-//     this.subscription?.unsubscribe();
-//     this.updateSubscription?.unsubscribe();
-//     this.chart?.remove();
-//     if (this.tooltipElement) {
-//       this.tooltipElement.remove();
-//     }
-//     window.removeEventListener('resize', this.resizeHandler);
-//   }
-
-//   @HostListener('window:resize')
-//   onResize() {
-//     this.resizeHandler();
-//   }
-
-//   private debounce(fn: Function, wait: number) {
-//     let timeout: any;
-//     return (...args: any[]) => {
-//       clearTimeout(timeout);
-//       timeout = setTimeout(() => fn(...args), wait);
-//     };
-//   }
-
-//   private resizeHandler = this.debounce(() => {
-//     if (this.chart && this.chartElement?.nativeElement) {
-//       this.chart.applyOptions({
-//         width: this.chartElement.nativeElement.clientWidth,
-//         height: this.chartElement.nativeElement.clientHeight || 600,
-//       });
-//     }
-//   }, 100);
-
-//   changeTimeframe(timeframe: string): void {
-//     if (this.selectedTimeframe === timeframe) return;
-//     this.loading = true;
-//     this.selectedTimeframe = timeframe;
-//     this.saveChartPreferences();
-//     this.loadChartData();
-//   }
-
-//   toggleIndicator(indicator: 'sma' | 'ema' | 'volume' | 'rsi' | 'macd'): void {
-//     if (indicator === 'sma') {
-//       this.showSMA = !this.showSMA;
-//       this.smaLine?.applyOptions({ visible: this.showSMA });
-//     } else if (indicator === 'ema') {
-//       this.showEMA = !this.showEMA;
-//       this.emaLine?.applyOptions({ visible: this.showEMA });
-//     } else if (indicator === 'volume') {
-//       this.showVolume = !this.showVolume;
-//       this.volumeSeries?.applyOptions({ visible: this.showVolume });
-//       this.chart?.priceScale('volume').applyOptions({ visible: this.showVolume });
-//     } else if (indicator === 'rsi') {
-//       this.showRSI = !this.showRSI;
-//       this.rsiLine?.applyOptions({ visible: this.showRSI });
-//       this.chart?.priceScale('rsi').applyOptions({ visible: this.showRSI });
-//     } else if (indicator === 'macd') {
-//       this.showMACD = !this.showMACD;
-//       if (this.macdLine && this.signalLine && this.macdHistogram) {
-//         this.macdLine.applyOptions({ visible: this.showMACD });
-//         this.signalLine.applyOptions({ visible: this.showMACD });
-//         this.macdHistogram.applyOptions({ visible: this.showMACD });
-//         this.chart.priceScale('macd').applyOptions({ visible: this.showMACD });
-//       }
-//     }
-//     this.saveChartPreferences();
-//   }
-
-//   toggleDrawing(): void {
-//     this.isDrawing = !this.isDrawing;
-//   }
-
-//   placeOrder(side: 'buy' | 'sell'): void {
-//     console.log(`Placed ${side} order for ${this.pairName} at ${this.latestPrice}`);
-//     // Integrate with trading API here
-//   }
-
-//   addAlert(): void {
-//     if (this.alertPrice !== null && this.alertPrice > 0) {
-//       this.setAlert(this.alertPrice, this.alertCondition);
-//       this.alertPrice = null;
-//       this.alertCondition = 'above';
-//     }
-//   }
-
-//   setAlert(price: number, condition: 'above' | 'below'): void {
-//     const alert: Alert = {
-//       id: `alert-${Date.now()}`,
-//       price,
-//       condition,
-//       triggered: false,
-//     };
-//     this.alerts.push(alert);
-//     this.saveChartPreferences();
-//   }
-
-//   removeAlert(id: string): void {
-//     this.alerts = this.alerts.filter((alert) => alert.id !== id);
-//     this.saveChartPreferences();
-//   }
-
-//   zoomChart(level: 'in' | 'out' | 'reset'): void {
-//     if (!this.chart) return;
-//     const timeScale = this.chart.timeScale();
-//     if (level === 'in') {
-//       const currentOptions = timeScale.options();
-//       timeScale.applyOptions({ barSpacing: (currentOptions.barSpacing || 10) * 1.2 });
-//     } else if (level === 'out') {
-//       const currentOptions = timeScale.options();
-//       timeScale.applyOptions({ barSpacing: (currentOptions.barSpacing || 10) * 0.8 });
-//     } else {
-//       timeScale.fitContent();
-//     }
-//   }
-
-//   formatVolume(volume?: number): string {
-//     if (!volume) return '0';
-//     if (volume >= 1_000_000) return (volume / 1_000_000).toFixed(2) + 'M';
-//     if (volume >= 1_000) return (volume / 1_000).toFixed(2) + 'K';
-//     return volume.toFixed(2);
-//   }
-
-//   private setupLiveUpdates(): void {
-//     this.updateSubscription = this.candlestickService.getCandlestickUpdates().subscribe((update) => {
-//       if (update.crossParityId === this.crossParityId && update.timeframe === this.selectedTimeframe) {
-//         this.handleCandlestickUpdate(update.candlestick);
-//       }
-//     });
-//   }
-
-//   private loadChartData(): void {
-//     this.loading = true;
-//     this.subscription?.unsubscribe();
-
-//     this.candleData = [];
-//     this.volumeData = [];
-//     this.smaData = [];
-//     this.emaData = [];
-//     this.rsiData = [];
-//     this.macdData = [];
-//     this.signalData = [];
-//     this.macdHistogramData = [];
-
-//     this.subscription = this.candlestickService
-//       .getCandlesticks(this.crossParityId, this.selectedTimeframe, 500)
-//       .subscribe({
-//         next: (data) => {
-//           if (data.length > 0) {
-//             this.processChartData(data);
-//             this.initOrUpdateChart();
-//             const latest = data[data.length - 1];
-//             this.updatePriceInfo(latest);
-//             this.loading = false;
-//           }
-//         },
-//         error: (error) => {
-//           console.error('Error loading candlestick data', error);
-//           this.loading = false;
-//         },
-//       });
-//   }
-
-//   private processChartData(data: Candlestick[]): void {
-//     if (!data || data.length === 0) return;
-
-//     const processedCandles: (CandlestickData | WhitespaceData)[] = [];
-//     const processedVolumes: (HistogramData | WhitespaceData)[] = [];
-
-//     const timeIntervalMap: Record<string, number> = {
-//       '1m': 60,
-//       '5m': 300,
-//       '15m': 900,
-//       '30m': 1800,
-//       '1h': 3600,
-//       '4h': 14400,
-//       '1d': 86400,
-//       '1w': 604800,
-//     };
-
-//     const timeInterval = timeIntervalMap[this.selectedTimeframe] || 60;
-//     const sortedData = [...data].sort((a, b) => a.timestamp - b.timestamp);
-//     let lastTime = Math.floor(sortedData[0]?.timestamp / 1000);
-
-//     for (const candle of sortedData) {
-//       const currentTime = Math.floor(candle.timestamp / 1000);
-
-//       while (lastTime && currentTime > lastTime + timeInterval) {
-//         lastTime += timeInterval;
-//         processedCandles.push({ time: lastTime as Time });
-//         processedVolumes.push({ time: lastTime as Time });
-//       }
-
-//       const isGreen = Number(candle.close) >= Number(candle.open);
-
-//       processedCandles.push({
-//         time: currentTime as Time,
-//         open: Number(candle.open),
-//         high: Number(candle.high),
-//         low: Number(candle.low),
-//         close: Number(candle.close),
-//       });
-
-//       processedVolumes.push({
-//         time: currentTime as Time,
-//         value: Number(candle.volume),
-//         color: isGreen ? 'rgba(38, 166, 154, 0.5)' : 'rgba(239, 83, 80, 0.5)',
-//       });
-
-//       lastTime = currentTime;
-//     }
-
-//     this.candleData = processedCandles;
-//     this.volumeData = processedVolumes;
-
-//     const candlesForIndicators = this.candleData.filter((c) => 'close' in c) as CandlestickData[];
-//     this.smaData = this.calculateSMA(candlesForIndicators, 20);
-//     this.emaData = this.calculateEMA(candlesForIndicators, 50);
-//     this.rsiData = this.calculateRSI(candlesForIndicators, 14);
-//     const { macd, signal, histogram } = this.calculateMACD(candlesForIndicators, 12, 26, 9);
-//     this.macdData = macd;
-//     this.signalData = signal;
-//     this.macdHistogramData = histogram;
-
-//     // Sort all data to ensure ascending time order
-//     this.candleData.sort((a, b) => Number(a.time) - Number(b.time));
-//     this.volumeData.sort((a, b) => Number(a.time) - Number(b.time));
-//     this.smaData.sort((a, b) => Number(a.time) - Number(b.time));
-//     this.emaData.sort((a, b) => Number(a.time) - Number(b.time));
-//     this.rsiData.sort((a, b) => Number(a.time) - Number(b.time));
-//     this.macdData.sort((a, b) => Number(a.time) - Number(b.time));
-//     this.signalData.sort((a, b) => Number(a.time) - Number(b.time));
-//     this.macdHistogramData.sort((a, b) => Number(a.time) - Number(b.time));
-
-//     if (this.smaData.length > 0) this.currentSMA = this.smaData[this.smaData.length - 1].value;
-//     if (this.emaData.length > 0) this.currentEMA = this.emaData[this.emaData.length - 1].value;
-//     if (this.rsiData.length > 0) this.currentRSI = this.rsiData[this.rsiData.length - 1].value;
-//     if (this.macdData.length > 0) this.currentMACD = this.macdData[this.macdData.length - 1].value;
-//     if (this.signalData.length > 0) this.currentSignal = this.signalData[this.signalData.length - 1].value;
-//   }
-
-//   private calculateSMA(data: CandlestickData[], period: number): LineData[] {
-//     const result: LineData[] = [];
-//     if (data.length < period) return result;
-
-//     for (let i = period - 1; i < data.length; i++) {
-//       const sum = data.slice(i - period + 1, i + 1).reduce((acc, d) => acc + d.close, 0);
-//       result.push({
-//         time: data[i].time,
-//         value: sum / period,
-//       });
-//     }
-//     return result;
-//   }
-
-//   private calculateEMA(data: CandlestickData[], period: number): LineData[] {
-//     const result: LineData[] = [];
-//     if (data.length < period) return result;
-
-//     let sum = data.slice(0, period).reduce((acc, d) => acc + d.close, 0);
-//     let prevEma = sum / period;
-//     const multiplier = 2 / (period + 1);
-
-//     result.push({ time: data[period - 1].time, value: prevEma });
-
-//     for (let i = period; i < data.length; i++) {
-//       const currentClose = data[i].close;
-//       const currentEma = (currentClose - prevEma) * multiplier + prevEma;
-//       prevEma = currentEma;
-//       result.push({ time: data[i].time, value: currentEma });
-//     }
-//     return result;
-//   }
-
-//   private calculateRSI(data: CandlestickData[], period: number = 14): LineData[] {
-//     const result: LineData[] = [];
-//     if (data.length < period + 1) return result;
-
-//     let gainSum = 0;
-//     let lossSum = 0;
-
-//     for (let i = 1; i <= period; i++) {
-//       const change = data[i].close - data[i - 1].close;
-//       if (change > 0) gainSum += change;
-//       else lossSum += Math.abs(change);
-//     }
-
-//     let avgGain = gainSum / period;
-//     let avgLoss = lossSum / period;
-//     let rsi = avgLoss === 0 ? 100 : 100 - 100 / (1 + avgGain / avgLoss);
-
-//     result.push({ time: data[period].time, value: rsi });
-
-//     for (let i = period + 1; i < data.length; i++) {
-//       const change = data[i].close - data[i - 1].close;
-//       const gain = change > 0 ? change : 0;
-//       const loss = change < 0 ? Math.abs(change) : 0;
-
-//       avgGain = (avgGain * (period - 1) + gain) / period;
-//       avgLoss = (avgLoss * (period - 1) + loss) / period;
-
-//       rsi = avgLoss === 0 ? 100 : 100 - 100 / (1 + avgGain / avgLoss);
-//       result.push({ time: data[i].time, value: rsi });
-//     }
-//     return result;
-//   }
-
-//   private calculateMACD(data: CandlestickData[], shortPeriod: number = 12, longPeriod: number = 26, signalPeriod: number = 9) {
-//     const macd: LineData[] = [];
-//     const signal: LineData[] = [];
-//     const histogram: HistogramData[] = [];
-
-//     if (data.length < longPeriod + signalPeriod) return { macd, signal, histogram };
-
-//     const shortEMA = this.calculateEMA(data, shortPeriod);
-//     const longEMA = this.calculateEMA(data, longPeriod);
-
-//     for (let i = longPeriod - 1; i < data.length; i++) {
-//       const shortVal = shortEMA.find((d) => d.time === data[i].time)?.value || 0;
-//       const longVal = longEMA.find((d) => d.time === data[i].time)?.value || 0;
-//       const macdVal = shortVal - longVal;
-//       macd.push({ time: data[i].time, value: macdVal });
-//     }
-
-//     const signalEMA = this.calculateEMA(
-//       macd.map((d) => ({ time: d.time, close: d.value } as CandlestickData)),
-//       signalPeriod
-//     );
-
-//     for (let i = 0; i < macd.length; i++) {
-//       const signalVal = signalEMA.find((d) => d.time === macd[i].time)?.value || 0;
-//       signal.push({ time: macd[i].time, value: signalVal });
-//       histogram.push({
-//         time: macd[i].time,
-//         value: macd[i].value - signalVal,
-//         color: macd[i].value >= signalVal ? 'rgba(38, 166, 154, 0.5)' : 'rgba(239, 83, 80, 0.5)',
-//       });
-//     }
-
-//     return { macd, signal, histogram };
-//   }
-
-//   private initOrUpdateChart(): void {
-//     if (!this.chartElement?.nativeElement) return;
-
-//     if (this.chart) {
-//       this.chart.remove();
-//     }
-
-//     const chartOptions = {
-//       layout: {
-//         background: { color: '#1f2937' }, // Softer dark background
-//         textColor: '#e5e7eb',
-//         fontSize: 12,
-//         fontFamily: '"Inter", sans-serif',
-//       },
-//       grid: {
-//         vertLines: { color: 'rgba(75, 85, 99, 0.2)', style: LineStyle.Dashed },
-//         horzLines: { color: 'rgba(75, 85, 99, 0.2)', style: LineStyle.Dashed },
-//       },
-//       crosshair: {
-//         mode: CrosshairMode.Magnet,
-//         vertLine: { color: '#3b82f6', width: 1 as 1 | 2 | 3 | 4, style: LineStyle.Dashed }, // Explicitly cast width
-//         horzLine: { color: '#3b82f6', width: 1 as 1 | 2 | 3 | 4, style: LineStyle.Dashed }, // Explicitly cast width
-//       },
-//       handleScale: { axisPressedMouseMove: true, mouseWheel: true, pinch: true },
-//       handleScroll: { mouseWheel: true, pressedMouseMove: true },
-//       timeScale: { rightOffset: 10, fixLeftEdge: false, borderColor: '#4b5563' },
-//       rightPriceScale: { borderColor: '#4b5563' },
-//     };
-
-//     this.chart = createChart(this.chartElement.nativeElement, chartOptions);
-//     this.chart.applyOptions({
-//       width: this.chartElement.nativeElement.clientWidth,
-//       height: 600,
-//     });
-
-//     this.candleSeries = this.chart.addCandlestickSeries({
-//       upColor: '#10b981',
-//       downColor: '#ef4444',
-//       borderUpColor: '#10b981',
-//       borderDownColor: '#ef4444',
-//       wickUpColor: 'rgba(16, 185, 129, 0.8)',
-//       wickDownColor: 'rgba(239, 68, 68, 0.8)',
-//       priceFormat: { type: 'price', precision: 6, minMove: 0.000001 },
-//     });
-
-//     this.volumeSeries = this.chart.addHistogramSeries({
-//       color: '#3b82f6',
-//       priceFormat: { type: 'volume' },
-//       priceScaleId: 'volume',
-//       visible: this.showVolume,
-//     });
-
-//     this.chart.priceScale('volume').applyOptions({
-//       scaleMargins: { top: 0.8, bottom: 0 },
-//       visible: this.showVolume,
-//     });
-
-//     this.smaLine = this.chart.addLineSeries({
-//       color: '#f59e0b',
-//       lineWidth: 2,
-//       priceLineVisible: false,
-//       lastValueVisible: false,
-//       crosshairMarkerVisible: true,
-//       visible: this.showSMA,
-//     });
-
-//     this.emaLine = this.chart.addLineSeries({
-//       color: '#3b82f6',
-//       lineWidth: 2,
-//       priceLineVisible: false,
-//       lastValueVisible: false,
-//       crosshairMarkerVisible: true,
-//       visible: this.showEMA,
-//     });
-
-//     this.rsiLine = this.chart.addLineSeries({
-//       color: '#a855f7',
-//       lineWidth: 2,
-//       priceLineVisible: false,
-//       lastValueVisible: false,
-//       crosshairMarkerVisible: true,
-//       visible: this.showRSI,
-//       priceScaleId: 'rsi',
-//     });
-
-//     this.chart.priceScale('rsi').applyOptions({
-//       scaleMargins: { top: 0.9, bottom: 0 },
-//       visible: this.showRSI,
-//     });
-
-//     this.macdLine = this.chart.addLineSeries({
-//       color: '#06b6d4',
-//       lineWidth: 2,
-//       priceLineVisible: false,
-//       lastValueVisible: false,
-//       crosshairMarkerVisible: true,
-//       visible: this.showMACD,
-//       priceScaleId: 'macd',
-//     });
-
-//     this.signalLine = this.chart.addLineSeries({
-//       color: '#f97316',
-//       lineWidth: 2,
-//       priceLineVisible: false,
-//       lastValueVisible: false,
-//       crosshairMarkerVisible: true,
-//       visible: this.showMACD,
-//       priceScaleId: 'macd',
-//     });
-
-//     this.macdHistogram = this.chart.addHistogramSeries({
-//       priceScaleId: 'macd',
-//       visible: this.showMACD,
-//     });
-
-//     this.chart.priceScale('macd').applyOptions({
-//       scaleMargins: { top: 0.85, bottom: 0 },
-//       visible: this.showMACD,
-//     });
-
-//     this.candleSeries.setData(this.candleData);
-//     this.volumeSeries.setData(this.volumeData);
-//     this.smaLine.setData(this.smaData);
-//     this.emaLine.setData(this.emaData);
-//     this.rsiLine.setData(this.rsiData);
-//     this.macdLine.setData(this.macdData);
-//     this.signalLine.setData(this.signalData);
-//     this.macdHistogram.setData(this.macdHistogramData);
-
-//     // Tooltip
-//     this.tooltipElement = document.createElement('div');
-//     this.tooltipElement.className = 'chart-tooltip';
-//     this.chartElement.nativeElement.appendChild(this.tooltipElement);
-
-//     this.chart.subscribeCrosshairMove((param: MouseEventParams) => {
-//       if (!this.tooltipElement) return;
-
-//       if (param.time && param.point) {
-//         const price = param.seriesData.get(this.candleSeries);
-//         if (price && 'open' in price) {
-//           this.latestOHLC = {
-//             open: price.open,
-//             high: price.high,
-//             low: price.low,
-//             close: price.close,
-//             volume: 0,
-//           };
-
-//           const volumeData = this.volumeData.find((v) => 'time' in v && v.time === param.time);
-//           const smaPoint = this.smaData.find((p) => p.time === param.time);
-//           const emaPoint = this.emaData.find((p) => p.time === param.time);
-//           const rsiPoint = this.rsiData.find((p) => p.time === param.time);
-//           const macdPoint = this.macdData.find((p) => p.time === param.time);
-//           const signalPoint = this.signalData.find((p) => p.time === param.time);
-
-//           if (volumeData && 'value' in volumeData) this.latestOHLC.volume = volumeData.value;
-//           if (smaPoint) this.currentSMA = smaPoint.value;
-//           if (emaPoint) this.currentEMA = emaPoint.value;
-//           if (rsiPoint) this.currentRSI = rsiPoint.value;
-//           if (macdPoint) this.currentMACD = macdPoint.value;
-//           if (signalPoint) this.currentSignal = signalPoint.value;
-
-//           this.tooltipElement.innerHTML = `
-//             <div class="font-semibold mb-2">${new Date(Number(param.time) * 1000).toLocaleString()}</div>
-//             <div>Open: ${price.open.toFixed(6)}</div>
-//             <div>High: ${price.high.toFixed(6)}</div>
-//             <div>Low: ${price.low.toFixed(6)}</div>
-//             <div>Close: ${price.close.toFixed(6)}</div>
-//             <div>Volume: ${this.formatVolume(volumeData && 'value' in volumeData ? volumeData.value : 0)}</div>
-//             ${smaPoint ? `<div>SMA(20): ${smaPoint.value.toFixed(6)}</div>` : ''}
-//             ${emaPoint ? `<div>EMA(50): ${emaPoint.value.toFixed(6)}</div>` : ''}
-//             ${rsiPoint ? `<div>RSI(14): ${rsiPoint.value.toFixed(2)}</div>` : ''}
-//             ${macdPoint && signalPoint ? `<div>MACD: ${macdPoint.value.toFixed(6)}</div><div>Signal: ${signalPoint.value.toFixed(6)}</div>` : ''}
-//           `;
-//           this.tooltipElement.style.display = 'block';
-//           this.tooltipElement.style.left = `${param.point.x + 15}px`;
-//           this.tooltipElement.style.top = `${param.point.y + 15}px`;
-
-//           const chartRect = this.chartElement.nativeElement.getBoundingClientRect();
-//           const tooltipRect = this.tooltipElement.getBoundingClientRect();
-//           if (tooltipRect.right > chartRect.right) {
-//             this.tooltipElement.style.left = `${param.point.x - tooltipRect.width - 15}px`;
-//           }
-//           if (tooltipRect.bottom > chartRect.bottom) {
-//             this.tooltipElement.style.top = `${param.point.y - tooltipRect.height - 15}px`;
-//           }
-//         }
-//       } else {
-//         this.tooltipElement.style.display = 'none';
-//         const latestCandle = this.candleData[this.candleData.length - 1];
-//         if (latestCandle && 'close' in latestCandle) {
-//           this.latestOHLC = {
-//             open: latestCandle.open,
-//             high: latestCandle.high,
-//             low: latestCandle.low,
-//             close: latestCandle.close,
-//             volume: 0,
-//           };
-//           const latestVolume = this.volumeData[this.volumeData.length - 1];
-//           if (latestVolume && 'value' in latestVolume) this.latestOHLC.volume = latestVolume.value;
-//           if (this.smaData.length > 0) this.currentSMA = this.smaData[this.smaData.length - 1].value;
-//           if (this.emaData.length > 0) this.currentEMA = this.emaData[this.emaData.length - 1].value;
-//           if (this.rsiData.length > 0) this.currentRSI = this.rsiData[this.rsiData.length - 1].value;
-//           if (this.macdData.length > 0) this.currentMACD = this.macdData[this.macdData.length - 1].value;
-//           if (this.signalData.length > 0) this.currentSignal = this.signalData[this.signalData.length - 1].value;
-//         }
-//       }
-//     });
-
-//     // Drawing logic
-//     this.chart.subscribeClick((param: MouseEventParams) => {
-//       if (!this.isDrawing || !param.time || !param.point) return;
-
-//       const price = this.candleSeries.coordinateToPrice(param.point.y) || 0;
-//       const time = Number(param.time);
-//       if (!this.drawingStart) {
-//         this.drawingStart = { time, price };
-//       } else {
-//         const trendLine: TrendLine = {
-//           id: `trend-${Date.now()}`,
-//           start: this.drawingStart,
-//           end: { time, price },
-//         };
-//         this.trendLines.push(trendLine);
-//         this.drawTrendLines();
-//         this.drawingStart = null;
-//         this.isDrawing = false;
-//         this.saveChartPreferences();
-//       }
-//     });
-
-//     this.drawTrendLines();
-//     this.chart.timeScale().fitContent();
-//   }
-
-//   private drawTrendLines(): void {
-//     this.trendLineSeries.forEach((series) => this.chart.removeSeries(series));
-//     this.trendLineSeries = [];
-
-//     this.trendLines
-//       .filter((line) => line.start.time && line.end.time && line.start.price && line.end.price)
-//       .forEach((line) => {
-//         const series = this.chart.addLineSeries({
-//           color: '#ffffff',
-//           lineWidth: 1,
-//           lineStyle: LineStyle.Dashed,
-//           priceLineVisible: false,
-//           lastValueVisible: false,
-//         });
-
-//         const data = [
-//           { time: line.start.time as Time, value: line.start.price },
-//           { time: line.end.time as Time, value: line.end.price },
-//         ].sort((a, b) => Number(a.time) - Number(b.time));
-
-//         series.setData(data);
-//         this.trendLineSeries.push(series);
-//       });
-//   }
-
-//   private handleCandlestickUpdate(candlestick: Candlestick): void {
-//     if (!this.chart || !this.candleSeries || !this.volumeSeries) return;
-
-//     this.updating = true;
-//     const timestamp = Math.floor(candlestick.timestamp / 1000) as Time;
-//     const candlePoint: CandlestickData = {
-//       time: timestamp,
-//       open: Number(candlestick.open),
-//       high: Number(candlestick.high),
-//       low: Number(candlestick.low),
-//       close: Number(candlestick.close),
-//     };
-
-//     const isGreen = Number(candlestick.close) >= Number(candlestick.open);
-//     const volumePoint: HistogramData = {
-//       time: timestamp,
-//       value: Number(candlestick.volume),
-//       color: isGreen ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)',
-//     };
-
-//     const existingCandleIndex = this.candleData.findIndex((c) => 'time' in c && c.time === timestamp);
-
-//     if (existingCandleIndex >= 0) {
-//       this.candleData[existingCandleIndex] = candlePoint;
-//       this.volumeData[existingCandleIndex] = volumePoint;
-//     } else {
-//       this.candleData.push(candlePoint);
-//       this.volumeData.push(volumePoint);
-//       if (this.candleData.length > 500) {
-//         this.candleData = this.candleData.slice(-500);
-//         this.volumeData = this.volumeData.slice(-500);
-//       }
-//     }
-
-//     this.candleSeries.update(candlePoint);
-//     this.volumeSeries.update(volumePoint);
-
-//     const candlesForIndicators = this.candleData.filter((c) => 'close' in c) as CandlestickData[];
-//     this.smaData = this.calculateSMA(candlesForIndicators, 20);
-//     this.emaData = this.calculateEMA(candlesForIndicators, 50);
-//     this.rsiData = this.calculateRSI(candlesForIndicators, 14);
-//     const { macd, signal, histogram } = this.calculateMACD(candlesForIndicators, 12, 26, 9);
-//     this.macdData = macd;
-//     this.signalData = signal;
-//     this.macdHistogramData = histogram;
-
-//     this.smaLine?.setData(this.smaData);
-//     this.emaLine?.setData(this.emaData);
-//     this.rsiLine?.setData(this.rsiData);
-//     this.macdLine?.setData(this.macdData);
-//     this.signalLine?.setData(this.signalData);
-//     this.macdHistogram?.setData(this.macdHistogramData);
-
-//     if (this.smaData.length > 0) this.currentSMA = this.smaData[this.smaData.length - 1].value;
-//     if (this.emaData.length > 0) this.currentEMA = this.emaData[this.emaData.length - 1].value;
-//     if (this.rsiData.length > 0) this.currentRSI = this.rsiData[this.rsiData.length - 1].value;
-//     if (this.macdData.length > 0) this.currentMACD = this.macdData[this.macdData.length - 1].value;
-//     if (this.signalData.length > 0) this.currentSignal = this.signalData[this.signalData.length - 1].value;
-
-//     this.updatePriceInfo(candlestick);
-
-//     this.latestOHLC = {
-//       open: Number(candlestick.open),
-//       high: Number(candlestick.high),
-//       low: Number(candlestick.low),
-//       close: Number(candlestick.close),
-//       volume: Number(candlestick.volume),
-//     };
-
-//     this.alerts.forEach((alert) => {
-//       if (!alert.triggered) {
-//         if (alert.condition === 'above' && this.latestPrice >= alert.price) {
-//           alert.triggered = true;
-//           console.log(`Alert triggered: Price above ${alert.price}`);
-//           // Add notification logic
-//         } else if (alert.condition === 'below' && this.latestPrice <= alert.price) {
-//           alert.triggered = true;
-//           console.log(`Alert triggered: Price below ${alert.price}`);
-//           // Add notification logic
-//         }
-//       }
-//     });
-
-//     this.chart.timeScale().scrollToRealTime();
-//     this.updating = false;
-//   }
-
-//   private updatePriceInfo(candlestick: Candlestick): void {
-//     this.latestPrice = Number(candlestick.close);
-
-//     if (this.previousClose === null) {
-//       this.previousClose = Number(candlestick.open);
-//     }
-
-//     this.priceChange = this.latestPrice - this.previousClose;
-//     this.priceChangePercent = (this.priceChange / this.previousClose) * 100;
-//     this.priceDirection = this.priceChange > 0 ? 'up' : this.priceChange < 0 ? 'down' : null;
-
-//     const timeIntervalMap: Record<string, number> = {
-//       '1m': 60000,
-//       '5m': 300000,
-//       '15m': 900000,
-//       '30m': 1800000,
-//       '1h': 3600000,
-//       '4h': 14400000,
-//       '1d': 86400000,
-//       '1w': 604800000,
-//     };
-
-//     const timeInterval = timeIntervalMap[this.selectedTimeframe] || 60000;
-//     const currentCandleStartTime = Math.floor(candlestick.timestamp / timeInterval) * timeInterval;
-//     const isPreviousCandleUpdate = this.previousCandleTimestamp === currentCandleStartTime;
-
-//     if (!isPreviousCandleUpdate) {
-//       this.previousClose = this.latestPrice;
-//       this.previousCandleTimestamp = currentCandleStartTime;
-//     }
-//   }
-
-//   saveChartPreferences(): void {
-//     const preferences = {
-//       timeframe: this.selectedTimeframe,
-//       showSMA: this.showSMA,
-//       showEMA: this.showEMA,
-//       showVolume: this.showVolume,
-//       showRSI: this.showRSI,
-//       showMACD: this.showMACD,
-//       trendLines: this.trendLines,
-//       alerts: this.alerts,
-//     };
-//     localStorage.setItem(`chart_prefs_${this.crossParityId}`, JSON.stringify(preferences));
-//   }
-
-//   loadChartPreferences(): void {
-//     const savedPrefs = localStorage.getItem(`chart_prefs_${this.crossParityId}`);
-//     if (savedPrefs) {
-//       const prefs = JSON.parse(savedPrefs);
-//       this.selectedTimeframe = prefs.timeframe || '1m';
-//       this.showSMA = prefs.showSMA ?? true;
-//       this.showEMA = prefs.showEMA ?? true;
-//       this.showVolume = prefs.showVolume ?? true;
-//       this.showRSI = prefs.showRSI ?? false;
-//       this.showMACD = prefs.showMACD ?? false;
-//       this.trendLines = prefs.trendLines || [];
-//       this.alerts = prefs.alerts || [];
-//     }
-//   }
-// }
-
-
-import { Component, OnInit, OnDestroy, Input, ElementRef, ViewChild, AfterViewInit, HostListener } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy, Input, ElementRef, ViewChild, AfterViewInit, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Subscription, Subject } from 'rxjs';
+import { debounceTime, takeUntil, distinctUntilChanged } from 'rxjs/operators';
 import { Candlestick } from '../../models/candlestick.model';
 import { CandlestickService } from 'src/app/services/candlestickService/candlestick-service.service';
 import {
@@ -887,7 +11,12 @@ import {
   Time,
   WhitespaceData,
   CrosshairMode,
-  LineStyle
+  LineStyle,
+  MouseEventParams,
+  HistogramData,
+  LineData,
+  DeepPartial,
+  ChartOptions
 } from 'lightweight-charts';
 
 @Component({
@@ -897,104 +26,354 @@ import {
 })
 export class CandlestickChartComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('chartElement') chartElement!: ElementRef;
+  @ViewChild('rsiElement') rsiElement!: ElementRef;
+  @ViewChild('macdElement') macdElement!: ElementRef;
 
-  @Input() crossParityId!: number;
-  @Input() pairName: string = 'BTC/USDT';
+  @Input() crossParityId: number = 1;
+  @Input() pairName: string = 'EUR/USD';
 
-  // Chart components
   private chart!: IChartApi;
+  private rsiChart!: IChartApi;
+  private macdChart!: IChartApi;
   private candleSeries!: ISeriesApi<'Candlestick'>;
-
-  // Subscriptions
+  private volumeSeries!: ISeriesApi<'Histogram'>;
+  private smaSeries!: ISeriesApi<'Line'>;
+  private emaSeries!: ISeriesApi<'Line'>;
+  private rsiSeries!: ISeriesApi<'Line'>;
+  private macdSeries!: ISeriesApi<'Line'>;
+  private signalSeries!: ISeriesApi<'Line'>;
+  private macdHistogramSeries!: ISeriesApi<'Histogram'>;
+  
   private subscription?: Subscription;
   private updateSubscription?: Subscription;
+  private destroy$ = new Subject<void>();
+  private updateSubject = new Subject<Candlestick>();
+  private resizeSubject = new Subject<void>();
 
-  // Chart data
+  availableTimeframes = ['1m', '5m', '15m', '30m', '1h', '4h', '1d'];
   selectedTimeframe = '1m';
-  
-  // Price information
   latestPrice: number = 0;
   priceChange: number = 0;
   priceChangePercent: number = 0;
   priceDirection: 'up' | 'down' | null = null;
-
-  // Chart data storage
+  loading = false;
+  updating = false;
+  chartError = false;
+  
+  showSMA = false;
+  showEMA = false;
+  showVolume = false;
+  showRSI = false;
+  showMACD = false;
+  
+  latestOHLC: {
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    volume?: number;
+  } | null = null;
+  
+  currentSMA: number | null = null;
+  currentEMA: number | null = null;
+  currentRSI: number | null = null;
+  currentMACD: number | null = null;
+  currentSignal: number | null = null;
+  
+  public candleData: (CandlestickData | WhitespaceData)[] = [];
+  public volumeData: HistogramData[] = [];
+  public smaData: LineData[] = [];
+  public emaData: LineData[] = [];
+  public rsiData: LineData[] = [];
+  public macdData: LineData[] = [];
+  public signalData: LineData[] = [];
+  public macdHistogramData: HistogramData[] = [];
+  
   private previousClose: number | null = null;
   private previousCandleTimestamp: number | null = null;
-  public candleData: (CandlestickData | WhitespaceData)[] = [];
+  private tooltipElement: HTMLElement | null = null;
 
-  // Loading state
-  loading = true;
-  updating = false;
+  private readonly chartTheme = {
+    backgroundColor: '#1e293b',
+    textColor: '#f1f5f9',
+    upColor: '#10b981',
+    upBorderColor: '#10b981',
+    upWickColor: 'rgba(16, 185, 129, 0.8)',
+    downColor: '#ef4444',
+    downBorderColor: '#ef4444',
+    downWickColor: 'rgba(239, 68, 68, 0.8)',
+    gridColor: 'rgba(71, 85, 105, 0.2)',
+    smaColor: '#60a5fa',
+    emaColor: '#f472b6',
+    rsiColor: '#a855f7', // purple-500
+    macdColor: '#22d3ee', // cyan-400
+    signalColor: '#f59e0b', // amber-500
+    macdHistogramUpColor: 'rgba(34, 211, 238, 0.5)', // cyan-400 with opacity
+    macdHistogramDownColor: 'rgba(245, 158, 11, 0.5)', // amber-500 with opacity
+    crosshairColor: '#3b82f6',
+  };
 
-  constructor(private candlestickService: CandlestickService) {}
+  constructor(
+    private candlestickService: CandlestickService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
+    if (!this.crossParityId) {
+      console.error('crossParityId is required');
+      this.chartError = true;
+      this.loading = false;
+      this.cdr.detectChanges();
+      return;
+    }
+    this.chart.timeScale().subscribeVisibleTimeRangeChange(() => {
+      this.synchronizeCharts();
+  });
+
+    this.updateSubscription = this.updateSubject.pipe(
+      debounceTime(100),
+      takeUntil(this.destroy$)
+    ).subscribe(candlestick => {
+      this.handleCandlestickUpdate(candlestick);
+    });
+    
+    this.resizeSubject.pipe(
+      debounceTime(200),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.resizeChart();
+    });
+
     this.setupLiveUpdates();
   }
 
   ngAfterViewInit(): void {
-    this.loadChartData();
+    setTimeout(() => {
+      this.loadChartData();
+    });
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    
     this.subscription?.unsubscribe();
     this.updateSubscription?.unsubscribe();
-    this.chart?.remove();
+    
+    if (this.chart) this.chart.remove();
+    if (this.rsiChart) this.rsiChart.remove();
+    if (this.macdChart) this.macdChart.remove();
+    if (this.tooltipElement) this.tooltipElement.remove();
   }
 
   @HostListener('window:resize')
   onResize() {
-    this.resizeHandler();
+    this.resizeSubject.next();
   }
 
-  private debounce(fn: Function, wait: number) {
-    let timeout: any;
-    return (...args: any[]) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => fn(...args), wait);
-    };
-  }
 
-  private resizeHandler = this.debounce(() => {
-    if (this.chart && this.chartElement?.nativeElement) {
-      this.chart.applyOptions({
-        width: this.chartElement.nativeElement.clientWidth,
-        height: this.chartElement.nativeElement.clientHeight || 500,
-      });
+  private synchronizeCharts(): void {
+    if (!this.chart) return;
+    
+    const mainTimeScale = this.chart.timeScale();
+    const visibleRange = mainTimeScale.getVisibleRange();
+    
+    if (this.rsiChart && visibleRange) {
+        this.rsiChart.timeScale().setVisibleRange(visibleRange);
     }
-  }, 100);
+    
+    if (this.macdChart && visibleRange) {
+        this.macdChart.timeScale().setVisibleRange(visibleRange);
+    }
+}
+
+
+  private resizeChart(): void {
+    if (this.chart && this.chartElement?.nativeElement) {
+      const width = this.chartElement.nativeElement.clientWidth;
+      const height = this.chartElement.nativeElement.clientHeight || 500;
+      this.chart.applyOptions({ width, height });
+      this.chart.timeScale().fitContent();
+    }
+    if (this.rsiChart && this.rsiElement?.nativeElement) {
+      const width = this.rsiElement.nativeElement.clientWidth;
+      const height = 100;
+      this.rsiChart.applyOptions({ width, height });
+      this.rsiChart.timeScale().fitContent();
+    }
+    if (this.macdChart && this.macdElement?.nativeElement) {
+      const width = this.macdElement.nativeElement.clientWidth;
+      const height = 150;
+      this.macdChart.applyOptions({ width, height });
+      this.macdChart.timeScale().fitContent();
+    }
+  }
+
+  changeTimeframe(timeframe: string): void {
+    if (this.selectedTimeframe === timeframe) return;
+    
+    this.selectedTimeframe = timeframe;
+    this.loading = true;
+    this.chartError = false;
+    this.cdr.detectChanges();
+    this.resetChartData();
+    this.loadChartData();
+  }
+
+  toggleIndicator(indicator: string): void {
+    switch (indicator) {
+      case 'sma':
+        this.showSMA = !this.showSMA;
+        this.updateSMAIndicator();
+        break;
+      case 'ema':
+        this.showEMA = !this.showEMA;
+        this.updateEMAIndicator();
+        break;
+      case 'volume':
+        this.showVolume = !this.showVolume;
+        this.updateVolumeIndicator();
+        break;
+      case 'rsi':
+        this.showRSI = !this.showRSI;
+        this.updateRSIIndicator();
+        break;
+      case 'macd':
+        this.showMACD = !this.showMACD;
+        this.updateMACDIndicator();
+        break;
+    }
+    this.cdr.detectChanges();
+  }
+
+  zoomChart(action: 'in' | 'out' | 'reset'): void {
+    if (!this.chart) return;
+    
+    const timeScale = this.chart.timeScale();
+    const options = timeScale.options();
+    switch (action) {
+      case 'in':
+        timeScale.applyOptions({ barSpacing: (options.barSpacing || 6) * 1.4 });
+        break;
+      case 'out':
+        timeScale.applyOptions({ barSpacing: (options.barSpacing || 6) / 1.4 });
+        break;
+      case 'reset':
+        timeScale.applyOptions({ barSpacing: 6 });
+        timeScale.fitContent();
+        break;
+    }
+    if (this.rsiChart) this.rsiChart.timeScale().applyOptions(options);
+    if (this.macdChart) this.macdChart.timeScale().applyOptions(options);
+  }
+
+  formatVolume(volume?: number): string {
+    if (!volume) return '0';
+    if (volume >= 1000000000) return (volume / 1000000000).toFixed(2) + 'B';
+    if (volume >= 1000000) return (volume / 1000000).toFixed(2) + 'M';
+    if (volume >= 1000) return (volume / 1000).toFixed(2) + 'K';
+    return volume.toFixed(2);
+  }
 
   private setupLiveUpdates(): void {
-    this.updateSubscription = this.candlestickService.getCandlestickUpdates().subscribe((update) => {
-      if (update.crossParityId === this.crossParityId && update.timeframe === this.selectedTimeframe) {
-        this.handleCandlestickUpdate(update.candlestick);
-      }
-    });
-  }
-
-  private loadChartData(): void {
-    this.loading = true;
-    this.subscription?.unsubscribe();
-
-    this.candleData = [];
-
-    this.subscription = this.candlestickService
-      .getCandlesticks(this.crossParityId, this.selectedTimeframe, 300)
+    this.subscription = this.candlestickService.getCandlestickUpdates()
+      .pipe(
+        takeUntil(this.destroy$),
+        distinctUntilChanged((prev, curr) => 
+          prev.crossParityId === curr.crossParityId && 
+          prev.timeframe === curr.timeframe && 
+          prev.candlestick.timestamp === curr.candlestick.timestamp && 
+          prev.candlestick.close === curr.candlestick.close
+        )
+      )
       .subscribe({
-        next: (data) => {
-          if (data.length > 0) {
-            this.processChartData(data);
-            this.initChart();
-            const latest = data[data.length - 1];
-            this.updatePriceInfo(latest);
-            this.loading = false;
+        next: (update) => {
+          if (update.crossParityId === this.crossParityId && 
+              update.timeframe === this.selectedTimeframe) {
+            console.log('Received update:', update);
+            
+            // Store the update timestamp to compare for new candle periods
+            const updateTimestamp = Math.floor(update.candlestick.timestamp / 1000);
+            const timeIntervalMap: Record<string, number> = {
+              '1m': 60,
+              '5m': 300,
+              '15m': 900,
+              '30m': 1800,
+              '1h': 3600,
+              '4h': 14400,
+              '1d': 86400
+            };
+            
+            const timeInterval = timeIntervalMap[this.selectedTimeframe] || 60;
+            const currentPeriodStart = Math.floor(updateTimestamp / timeInterval) * timeInterval;
+            
+            // Handle the case where this is a new candle period
+            if (this.previousCandleTimestamp !== null && 
+                currentPeriodStart > this.previousCandleTimestamp) {
+                // The previous candle is complete, make sure it's saved
+                console.log('Period completed, saving candle');
+            }
+            
+            this.updateSubject.next(update.candlestick);
           }
         },
         error: (error) => {
-          console.error('Error loading candlestick data', error);
-          this.loading = false;
+          console.error('Error in live updates:', error);
+          this.chartError = true;
+          this.cdr.detectChanges();
+        }
+      });
+}
+
+  private loadChartData(): void {
+    if (!this.crossParityId) {
+      console.error('Cannot load chart data: crossParityId is undefined');
+      this.chartError = true;
+      this.loading = false;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.loading = true;
+    this.cdr.detectChanges();
+
+    if (this.subscription) this.subscription.unsubscribe();
+
+    this.subscription = this.candlestickService
+      .getCandlesticks(this.crossParityId, this.selectedTimeframe, 300)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          if (data && data.length > 0) {
+            console.log('Loaded candlesticks:', data.length);
+            this.processChartData(data);
+            this.initChart();
+            
+            const latest = data[data.length - 1];
+            this.updatePriceInfo(latest);
+            this.updateOHLCInfo(latest);
+            
+            if (this.showSMA) this.calculateSMA();
+            if (this.showEMA) this.calculateEMA();
+            if (this.showVolume) this.calculateVolume(data);
+            if (this.showRSI) this.calculateRSI();
+            if (this.showMACD) this.calculateMACD();
+          } else {
+            console.warn('No candlestick data received');
+            this.chartError = true;
+          }
+          
+          setTimeout(() => {
+            this.loading = false;
+            this.cdr.detectChanges();
+          }, 0);
         },
+        error: (error) => {
+          console.error('Error loading candlestick data:', error);
+          this.chartError = true;
+          this.loading = false;
+          this.cdr.detectChanges();
+        }
       });
   }
 
@@ -1002,17 +381,22 @@ export class CandlestickChartComponent implements OnInit, AfterViewInit, OnDestr
     if (!data || data.length === 0) return;
 
     const processedCandles: (CandlestickData | WhitespaceData)[] = [];
-
     const timeIntervalMap: Record<string, number> = {
-      '1m': 60
+      '1m': 60,
+      '5m': 300,
+      '15m': 900,
+      '30m': 1800,
+      '1h': 3600,
+      '4h': 14400,
+      '1d': 86400
     };
 
     const timeInterval = timeIntervalMap[this.selectedTimeframe] || 60;
     const sortedData = [...data].sort((a, b) => a.timestamp - b.timestamp);
     let lastTime = Math.floor(sortedData[0]?.timestamp / 1000);
 
-    for (const candle of sortedData) {
-      const currentTime = Math.floor(candle.timestamp / 1000);
+    for (const candlestick of sortedData) {
+      const currentTime = Math.floor(candlestick.timestamp / 1000);
 
       while (lastTime && currentTime > lastTime + timeInterval) {
         lastTime += timeInterval;
@@ -1021,98 +405,421 @@ export class CandlestickChartComponent implements OnInit, AfterViewInit, OnDestr
 
       processedCandles.push({
         time: currentTime as Time,
-        open: Number(candle.open),
-        high: Number(candle.high),
-        low: Number(candle.low),
-        close: Number(candle.close),
+        open: Number(candlestick.open),
+        high: Number(candlestick.high),
+        low: Number(candlestick.low),
+        close: Number(candlestick.close),
       });
 
       lastTime = currentTime;
     }
 
     this.candleData = processedCandles;
-
-    // Sort data to ensure ascending time order
     this.candleData.sort((a, b) => Number(a.time) - Number(b.time));
+  }
+
+  private resetChartData(): void {
+    this.candleData = [];
+    this.volumeData = [];
+    this.smaData = [];
+    this.emaData = [];
+    this.rsiData = [];
+    this.macdData = [];
+    this.signalData = [];
+    this.macdHistogramData = [];
+    this.previousClose = null;
+    this.previousCandleTimestamp = null;
+    this.currentSMA = null;
+    this.currentEMA = null;
+    this.currentRSI = null;
+    this.currentMACD = null;
+    this.currentSignal = null;
+
+    if (this.chart) {
+      this.chart.remove();
+      this.chart = undefined as any;
+    }
+    if (this.rsiChart) {
+      this.rsiChart.remove();
+      this.rsiChart = undefined as any;
+    }
+    if (this.macdChart) {
+      this.macdChart.remove();
+      this.macdChart = undefined as any;
+    }
+    if (this.tooltipElement) {
+      this.tooltipElement.remove();
+      this.tooltipElement = null;
+    }
   }
 
   private initChart(): void {
     if (!this.chartElement?.nativeElement) return;
 
-    if (this.chart) {
-      this.chart.remove();
-    }
+    if (this.chart) this.chart.remove();
 
-    const chartOptions = {
+    const chartOptions: DeepPartial<ChartOptions> = {
       layout: {
-        background: { color: '#1f2937' },
-        textColor: '#e5e7eb',
+        background: { color: this.chartTheme.backgroundColor },
+        textColor: this.chartTheme.textColor,
         fontSize: 12,
-        fontFamily: '"Inter", sans-serif',
+        fontFamily: '"Inter", system-ui, sans-serif',
       },
       grid: {
-        vertLines: { color: 'rgba(75, 85, 99, 0.2)', style: LineStyle.Dashed },
-        horzLines: { color: 'rgba(75, 85, 99, 0.2)', style: LineStyle.Dashed },
+        vertLines: { color: this.chartTheme.gridColor, style: LineStyle.Dotted },
+        horzLines: { color: this.chartTheme.gridColor, style: LineStyle.Dotted },
       },
       crosshair: {
-        mode: CrosshairMode.Magnet,
-        vertLine: { color: '#3b82f6', width: 1 as 1 | 2 | 3 | 4, style: LineStyle.Dashed },
-        horzLine: { color: '#3b82f6', width: 1 as 1 | 2 | 3 | 4, style: LineStyle.Dashed },
+        mode: CrosshairMode.Normal,
+        vertLine: { 
+          color: this.chartTheme.crosshairColor, 
+          width: 1 as 1 | 2 | 3 | 4, 
+          style: LineStyle.Dashed,
+          labelBackgroundColor: this.chartTheme.crosshairColor
+        },
+        horzLine: { 
+          color: this.chartTheme.crosshairColor, 
+          width: 1 as 1 | 2 | 3 | 4, 
+          style: LineStyle.Dashed,
+          labelBackgroundColor: this.chartTheme.crosshairColor
+        },
       },
-      handleScale: { axisPressedMouseMove: true, mouseWheel: true, pinch: true },
-      handleScroll: { mouseWheel: true, pressedMouseMove: true },
-      timeScale: { rightOffset: 10, fixLeftEdge: false, borderColor: '#4b5563' },
-      rightPriceScale: { borderColor: '#4b5563' },
+      handleScale: { 
+        axisPressedMouseMove: { time: true, price: true },
+        mouseWheel: true, 
+        pinch: true 
+      },
+      handleScroll: { 
+        mouseWheel: true, 
+        pressedMouseMove: true,
+        horzTouchDrag: true,
+        vertTouchDrag: true
+      },
+      timeScale: { 
+        rightOffset: 12,
+        borderColor: '#475569',
+        timeVisible: true,
+        secondsVisible: false
+      },
+      rightPriceScale: { 
+        borderColor: '#475569',
+        autoScale: true,
+        scaleMargins: {
+          top: 0.1,
+          bottom: this.showVolume ? 0.3 : 0.2,
+        },
+      },
     };
 
     this.chart = createChart(this.chartElement.nativeElement, chartOptions);
-    this.chart.applyOptions({
-      width: this.chartElement.nativeElement.clientWidth,
-      height: 500,
-    });
+    
+    const width = this.chartElement.nativeElement.clientWidth;
+    const height = this.chartElement.nativeElement.clientHeight || 500;
+    this.chart.applyOptions({ width, height });
 
     this.candleSeries = this.chart.addCandlestickSeries({
-      upColor: '#10b981',
-      downColor: '#ef4444',
-      borderUpColor: '#10b981',
-      borderDownColor: '#ef4444',
-      wickUpColor: 'rgba(16, 185, 129, 0.8)',
-      wickDownColor: 'rgba(239, 68, 68, 0.8)',
+      upColor: this.chartTheme.upColor,
+      downColor: this.chartTheme.downColor,
+      borderUpColor: this.chartTheme.upBorderColor,
+      borderDownColor: this.chartTheme.downBorderColor,
+      wickUpColor: this.chartTheme.upWickColor,
+      wickDownColor: this.chartTheme.downWickColor,
       priceFormat: { type: 'price', precision: 6, minMove: 0.000001 },
     });
 
     this.candleSeries.setData(this.candleData);
+
+    if (this.showRSI) this.initRSIChart();
+    if (this.showMACD) this.initMACDChart();
+
+    this.setupTooltip();
     this.chart.timeScale().fitContent();
+    this.chart.timeScale().scrollToRealTime();
+  }
+
+  private initRSIChart(): void {
+    if (!this.rsiElement?.nativeElement) return;
+
+    if (this.rsiChart) this.rsiChart.remove();
+
+    const rsiOptions: DeepPartial<ChartOptions> = {
+      layout: {
+        background: { color: this.chartTheme.backgroundColor },
+        textColor: this.chartTheme.textColor,
+        fontSize: 12,
+        fontFamily: '"Inter", system-ui, sans-serif',
+      },
+      grid: {
+        vertLines: { color: this.chartTheme.gridColor, style: LineStyle.Dotted },
+        horzLines: { color: this.chartTheme.gridColor, style: LineStyle.Dotted },
+      },
+      timeScale: {
+        rightOffset: 12,
+        borderColor: '#475569',
+        timeVisible: true,
+        secondsVisible: false
+      },
+      rightPriceScale: {
+        borderColor: '#475569',
+        autoScale: true,
+        scaleMargins: { top: 0.1, bottom: 0.1 },
+        mode: 0, // Normal mode
+      },
+    };
+
+    this.rsiChart = createChart(this.rsiElement.nativeElement, rsiOptions);
+    this.rsiChart.applyOptions({ width: this.rsiElement.nativeElement.clientWidth, height: 100 });
+
+    this.rsiSeries = this.rsiChart.addLineSeries({
+      color: this.chartTheme.rsiColor,
+      lineWidth: 2,
+      priceLineVisible: false,
+      lastValueVisible: false,
+    });
+
+    this.rsiSeries.setData(this.rsiData);
+    this.rsiChart.timeScale().fitContent();
+  }
+
+  private initMACDChart(): void {
+    if (!this.macdElement?.nativeElement) return;
+
+    if (this.macdChart) this.macdChart.remove();
+
+    const macdOptions: DeepPartial<ChartOptions> = {
+      layout: {
+        background: { color: this.chartTheme.backgroundColor },
+        textColor: this.chartTheme.textColor,
+        fontSize: 12,
+        fontFamily: '"Inter", system-ui, sans-serif',
+      },
+      grid: {
+        vertLines: { color: this.chartTheme.gridColor, style: LineStyle.Dotted },
+        horzLines: { color: this.chartTheme.gridColor, style: LineStyle.Dotted },
+      },
+      timeScale: {
+        rightOffset: 12,
+        borderColor: '#475569',
+        timeVisible: true,
+        secondsVisible: false
+      },
+      rightPriceScale: {
+        borderColor: '#475569',
+        autoScale: true,
+        scaleMargins: { top: 0.1, bottom: 0.1 },
+      },
+    };
+
+    this.macdChart = createChart(this.macdElement.nativeElement, macdOptions);
+    this.macdChart.applyOptions({ width: this.macdElement.nativeElement.clientWidth, height: 150 });
+
+    this.macdSeries = this.macdChart.addLineSeries({
+      color: this.chartTheme.macdColor,
+      lineWidth: 2,
+      priceLineVisible: false,
+      lastValueVisible: false,
+    });
+
+    this.signalSeries = this.macdChart.addLineSeries({
+      color: this.chartTheme.signalColor,
+      lineWidth: 2,
+      priceLineVisible: false,
+      lastValueVisible: false,
+    });
+
+    this.macdHistogramSeries = this.macdChart.addHistogramSeries({
+      priceFormat: { type: 'price', precision: 6, minMove: 0.000001 },
+    });
+
+    this.macdSeries.setData(this.macdData);
+    this.signalSeries.setData(this.signalData);
+    this.macdHistogramSeries.setData(this.macdHistogramData);
+    this.macdChart.timeScale().fitContent();
+  }
+
+  private setupTooltip(): void {
+    if (!this.chartElement?.nativeElement) return;
+    
+    if (this.tooltipElement) this.tooltipElement.remove();
+
+    this.tooltipElement = document.createElement('div');
+    this.tooltipElement.className = 'absolute hidden bg-slate-800 text-slate-100 p-3 rounded shadow-lg text-xs border border-slate-700 z-50';
+    this.chartElement.nativeElement.appendChild(this.tooltipElement);
+
+    this.chart.subscribeCrosshairMove((param: MouseEventParams) => {
+      if (!this.tooltipElement) return;
+
+      if (param.time && param.point) {
+        const price = param.seriesData.get(this.candleSeries);
+        if (price && 'open' in price) {
+          const volumeData = this.showVolume ? param.seriesData.get(this.volumeSeries) as HistogramData | null : null;
+          const smaData = this.showSMA ? param.seriesData.get(this.smaSeries) : null;
+          const emaData = this.showEMA ? param.seriesData.get(this.emaSeries) : null;
+          const rsiData = this.showRSI && this.rsiSeries ? param.seriesData.get(this.rsiSeries) : null;
+          const macdData = this.showMACD && this.macdSeries ? param.seriesData.get(this.macdSeries) : null;
+          const signalData = this.showMACD && this.signalSeries ? param.seriesData.get(this.signalSeries) : null;
+          
+          const date = new Date(Number(param.time) * 1000);
+          const formattedDate = date.toLocaleDateString(undefined, { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+          });
+          const formattedTime = date.toLocaleTimeString(undefined, { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            second: '2-digit'
+          });
+          
+          let tooltipHtml = `
+            <div class="font-semibold mb-2 text-blue-400">${formattedDate} ${formattedTime}</div>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+              <div class="text-slate-300">Open:</div>
+              <div class="text-right">${price.open.toFixed(6)}</div>
+              <div class="text-slate-300">High:</div>
+              <div class="text-right">${price.high.toFixed(6)}</div>
+              <div class="text-slate-300">Low:</div>
+              <div class="text-right">${price.low.toFixed(6)}</div>
+              <div class="text-slate-300">Close:</div>
+              <div class="text-right">${price.close.toFixed(6)}</div>
+          `;
+          
+          if (volumeData && 'value' in volumeData) {
+            tooltipHtml += `
+              <div class="text-slate-300">Volume:</div>
+              <div class="text-right">${this.formatVolume(volumeData?.value)}</div>
+            `;
+          }
+          
+          if (smaData && 'value' in smaData) {
+            tooltipHtml += `
+              <div class="text-slate-300">SMA(20):</div>
+              <div class="text-right">${(smaData as LineData).value.toFixed(6)}</div>
+            `;
+          }
+          
+          if (emaData && 'value' in emaData) {
+            tooltipHtml += `
+              <div class="text-slate-300">EMA(50):</div>
+              <div class="text-right">${(emaData as LineData).value.toFixed(6)}</div>
+            `;
+          }
+          
+          if (rsiData && 'value' in rsiData) {
+            tooltipHtml += `
+              <div class="text-slate-300">RSI(14):</div>
+              <div class="text-right">${(rsiData as LineData).value.toFixed(2)}</div>
+            `;
+          }
+          
+          if (macdData && 'value' in macdData && signalData && 'value' in signalData) {
+            tooltipHtml += `
+              <div class="text-slate-300">MACD:</div>
+              <div class="text-right">${(macdData as LineData).value.toFixed(6)}</div>
+              <div class="text-slate-300">Signal:</div>
+              <div class="text-right">${(signalData as LineData).value.toFixed(6)}</div>
+            `;
+          }
+          
+          tooltipHtml += `</div>`;
+          
+          this.tooltipElement.innerHTML = tooltipHtml;
+          this.tooltipElement.style.display = 'block';
+          
+          const chartRect = this.chartElement.nativeElement.getBoundingClientRect();
+          const tooltipRect = this.tooltipElement.getBoundingClientRect();
+          
+          let left = param.point.x + 15;
+          let top = param.point.y + 15;
+          
+          if (left + tooltipRect.width > chartRect.width) {
+            left = param.point.x - tooltipRect.width - 15;
+          }
+          
+          if (top + tooltipRect.height > chartRect.height) {
+            top = param.point.y - tooltipRect.height - 15;
+          }
+          
+          this.tooltipElement.style.left = `${left}px`;
+          this.tooltipElement.style.top = `${top}px`;
+        }
+      } else {
+        this.tooltipElement.style.display = 'none';
+      }
+    });
   }
 
   private handleCandlestickUpdate(candlestick: Candlestick): void {
-    if (!this.chart || !this.candleSeries) return;
+    if (!this.chart || !this.candleSeries || !candlestick) {
+      console.warn('Cannot update chart: missing chart, series, or candlestick');
+      return;
+    }
 
-    this.updating = true;
-    const timestamp = Math.floor(candlestick.timestamp / 1000) as Time;
-    const candlePoint: CandlestickData = {
-      time: timestamp,
+    setTimeout(() => {
+      this.updating = true;
+      this.cdr.detectChanges();
+
+      const timestamp = Math.floor(candlestick.timestamp / 1000);
+      const candlePoint: CandlestickData = {
+        time: timestamp as Time,
+        open: Number(candlestick.open),
+        high: Number(candlestick.high),
+        low: Number(candlestick.low),
+        close: Number(candlestick.close),
+      };
+
+      // Find if this candle already exists in our data
+      const existingCandleIndex = this.candleData.findIndex(
+        (c) => 'time' in c && c.time === timestamp
+      );
+
+      if (existingCandleIndex >= 0) {
+        // Update existing candle
+        this.candleData[existingCandleIndex] = candlePoint;
+        this.candleSeries.update(candlePoint);
+      } else {
+        // Add new candle
+        this.candleData.push(candlePoint);
+        this.candleSeries.update(candlePoint);
+        
+        // Keep the chart scrolled to most recent candles
+        this.chart.timeScale().scrollToRealTime();
+      }
+
+      // Limit data array size if needed
+      if (this.candleData.length > 300) {
+        this.candleData = this.candleData.slice(-300);
+        // Must set the entire data again to ensure proper ordering
+        this.candleSeries.setData(this.candleData);
+      }
+
+      // Update indicators
+      if (this.showSMA) this.updateSMAWithNewCandle(candlePoint);
+      if (this.showEMA) this.updateEMAWithNewCandle(candlePoint);
+      if (this.showVolume) this.updateVolumeWithNewCandle(candlestick);
+      if (this.showRSI) this.updateRSIWithNewCandle(candlestick);
+      if (this.showMACD) this.updateMACDWithNewCandle(candlestick);
+
+      this.updatePriceInfo(candlestick);
+      this.updateOHLCInfo(candlestick);
+      
+      // Synchronize all charts' time scales
+      if (this.rsiChart) this.rsiChart.timeScale().scrollToRealTime();
+      if (this.macdChart) this.macdChart.timeScale().scrollToRealTime();
+
+      this.updating = false;
+      this.cdr.detectChanges();
+    }, 0);
+} 
+  private updateOHLCInfo(candlestick: Candlestick): void {
+    this.latestOHLC = {
       open: Number(candlestick.open),
       high: Number(candlestick.high),
       low: Number(candlestick.low),
       close: Number(candlestick.close),
+      volume: candlestick.volume ? Number(candlestick.volume) : undefined
     };
-
-    const existingCandleIndex = this.candleData.findIndex((c) => 'time' in c && c.time === timestamp);
-
-    if (existingCandleIndex >= 0) {
-      this.candleData[existingCandleIndex] = candlePoint;
-    } else {
-      this.candleData.push(candlePoint);
-      if (this.candleData.length > 300) {
-        this.candleData = this.candleData.slice(-300);
-      }
-    }
-
-    this.candleSeries.update(candlePoint);
-    this.updatePriceInfo(candlestick);
-    this.chart.timeScale().scrollToRealTime();
-    this.updating = false;
+    this.cdr.detectChanges();
   }
 
   private updatePriceInfo(candlestick: Candlestick): void {
@@ -1123,11 +830,17 @@ export class CandlestickChartComponent implements OnInit, AfterViewInit, OnDestr
     }
 
     this.priceChange = this.latestPrice - this.previousClose;
-    this.priceChangePercent = (this.priceChange / this.previousClose) * 100;
+    this.priceChangePercent = this.previousClose !== 0 ? (this.priceChange / this.previousClose) * 100 : 0;
     this.priceDirection = this.priceChange > 0 ? 'up' : this.priceChange < 0 ? 'down' : null;
 
     const timeIntervalMap: Record<string, number> = {
-      '1m': 60000
+      '1m': 60000,
+      '5m': 300000,
+      '15m': 900000,
+      '30m': 1800000,
+      '1h': 3600000,
+      '4h': 14400000,
+      '1d': 86400000
     };
 
     const timeInterval = timeIntervalMap[this.selectedTimeframe] || 60000;
@@ -1138,5 +851,563 @@ export class CandlestickChartComponent implements OnInit, AfterViewInit, OnDestr
       this.previousClose = this.latestPrice;
       this.previousCandleTimestamp = currentCandleStartTime;
     }
+    this.cdr.detectChanges();
+  }
+
+  // SMA Methods
+  private calculateSMA(period: number = 20): void {
+    if (this.candleData.length < period) return;
+    
+    this.smaData = [];
+    
+    for (let i = period - 1; i < this.candleData.length; i++) {
+      let sum = 0;
+      for (let j = 0; j < period; j++) {
+        const candle = this.candleData[i - j];
+        if ('close' in candle) sum += candle.close;
+      }
+      
+      const smaValue = sum / period;
+      const currentCandle = this.candleData[i];
+      
+      if ('time' in currentCandle) {
+        this.smaData.push({ time: currentCandle.time, value: smaValue });
+      }
+    }
+    
+    this.updateSMAIndicator();
+  }
+  
+  private updateSMAIndicator(): void {
+    if (!this.chart) return;
+    
+    if (this.showSMA && this.smaData.length > 0) {
+      if (!this.smaSeries) {
+        this.smaSeries = this.chart.addLineSeries({
+          color: this.chartTheme.smaColor,
+          lineWidth: 2,
+          priceLineVisible: false,
+          lastValueVisible: false,
+        });
+      }
+      
+      this.smaSeries.setData(this.smaData);
+      this.currentSMA = this.smaData[this.smaData.length - 1].value;
+    } else if (this.smaSeries) {
+      this.chart.removeSeries(this.smaSeries);
+      this.smaSeries = undefined as any;
+      this.currentSMA = null;
+    }
+    this.cdr.detectChanges();
+  }
+  
+  private updateSMAWithNewCandle(newCandle: CandlestickData): void {
+    if (this.smaData.length === 0 || !this.showSMA) return;
+    
+    const period = 20;
+    const relevantCandles = this.candleData.slice(-period);
+    
+    if (relevantCandles.length >= period) {
+      let sum = 0;
+      for (const candle of relevantCandles) {
+        if ('close' in candle) sum += candle.close;
+      }
+      
+      const smaValue = sum / period;
+      
+      this.smaData.push({ time: newCandle.time, value: smaValue });
+      
+      if (this.smaData.length > 300) this.smaData = this.smaData.slice(-300);
+      
+      if (this.smaSeries) {
+        this.smaSeries.update({ time: newCandle.time, value: smaValue });
+        this.currentSMA = smaValue;
+      }
+    }
+    this.cdr.detectChanges();
+  }
+  
+  // EMA Methods
+  private calculateEMA(period: number = 50): void {
+    if (this.candleData.length < period) return;
+    
+    this.emaData = [];
+    const multiplier = 2 / (period + 1);
+    
+    let sum = 0;
+    for (let i = 0; i < period; i++) {
+      const candle = this.candleData[i];
+      if ('close' in candle) sum += candle.close;
+    }
+    
+    let prevEMA = sum / period;
+    const firstCandle = this.candleData[period - 1];
+    
+    if ('time' in firstCandle) {
+      this.emaData.push({ time: firstCandle.time, value: prevEMA });
+    }
+    
+    for (let i = period; i < this.candleData.length; i++) {
+      const candle = this.candleData[i];
+      if ('close' in candle) {
+        const currentEMA = (candle.close - prevEMA) * multiplier + prevEMA;
+        prevEMA = currentEMA;
+        
+        if ('time' in candle) {
+          this.emaData.push({ time: candle.time, value: currentEMA });
+        }
+      }
+    }
+    
+    this.updateEMAIndicator();
+  }
+  
+  private updateEMAIndicator(): void {
+    if (!this.chart) return;
+    
+    if (this.showEMA && this.emaData.length > 0) {
+      if (!this.emaSeries) {
+        this.emaSeries = this.chart.addLineSeries({
+          color: this.chartTheme.emaColor,
+          lineWidth: 2,
+          priceLineVisible: false,
+          lastValueVisible: false,
+        });
+      }
+      
+      this.emaSeries.setData(this.emaData);
+      this.currentEMA = this.emaData[this.emaData.length - 1].value;
+    } else if (this.emaSeries) {
+      this.chart.removeSeries(this.emaSeries);
+      this.emaSeries = undefined as any;
+      this.currentEMA = null;
+    }
+    this.cdr.detectChanges();
+  }
+  
+  private updateEMAWithNewCandle(newCandle: CandlestickData): void {
+    if (this.emaData.length === 0 || !this.showEMA) return;
+    
+    const period = 50;
+    const multiplier = 2 / (period + 1);
+    
+    const prevEMA = this.emaData[this.emaData.length - 1].value;
+    const newEMA = (newCandle.close - prevEMA) * multiplier + prevEMA;
+    
+    this.emaData.push({ time: newCandle.time, value: newEMA });
+    
+    if (this.emaData.length > 300) this.emaData = this.emaData.slice(-300);
+    
+    if (this.emaSeries) {
+      this.emaSeries.update({ time: newCandle.time, value: newEMA });
+      this.currentEMA = newEMA;
+    }
+    this.cdr.detectChanges();
+  }
+  
+  // Volume Methods
+  private calculateVolume(data: Candlestick[]): void {
+    this.volumeData = [];
+    
+    for (const candle of data) {
+      if (candle.volume !== undefined) {
+        const timestamp = Math.floor(candle.timestamp / 1000);
+        const color = Number(candle.close) >= Number(candle.open) 
+          ? this.chartTheme.upWickColor
+          : this.chartTheme.downWickColor;
+          
+        this.volumeData.push({
+          time: timestamp as Time,
+          value: Number(candle.volume),
+          color
+        });
+      }
+    }
+    
+    this.updateVolumeIndicator();
+  }
+  
+  private updateVolumeIndicator(): void {
+    if (!this.chart) return;
+    
+    if (this.showVolume && this.volumeData.length > 0) {
+      if (!this.volumeSeries) {
+        this.volumeSeries = this.chart.addHistogramSeries({
+          priceFormat: { type: 'volume' },
+          priceScaleId: 'volume',
+          // Removed invalid scaleMargins property
+        });
+        this.chart.applyOptions({
+          rightPriceScale: { scaleMargins: { top: 0.1, bottom: 0.3 } }
+        });
+      }
+      
+      this.volumeSeries.setData(this.volumeData);
+    } else if (this.volumeSeries) {
+      this.chart.removeSeries(this.volumeSeries);
+      this.volumeSeries = undefined as any;
+      this.chart.applyOptions({
+        rightPriceScale: { scaleMargins: { top: 0.1, bottom: 0.2 } }
+      });
+    }
+    this.cdr.detectChanges();
+  }
+  
+  private updateVolumeWithNewCandle(candlestick: Candlestick): void {
+    if (!this.showVolume || candlestick.volume === undefined) return;
+    
+    const timestamp = Math.floor(candlestick.timestamp / 1000);
+    const color = Number(candlestick.close) >= Number(candlestick.open) 
+      ? this.chartTheme.upWickColor
+      : this.chartTheme.downWickColor;
+    
+    const volumePoint: HistogramData = {
+      time: timestamp as Time,
+      value: Number(candlestick.volume),
+      color
+    };
+    
+    this.volumeData.push(volumePoint);
+    
+    if (this.volumeData.length > 300) this.volumeData = this.volumeData.slice(-300);
+    
+    if (this.volumeSeries) this.volumeSeries.update(volumePoint);
+    this.cdr.detectChanges();
+  }
+
+  // RSI Methods
+  private calculateRSI(period: number = 14): void {
+    if (this.candleData.length < period + 1) return;
+
+    this.rsiData = [];
+    const gains: number[] = [];
+    const losses: number[] = [];
+
+    // Calculate price changes
+    for (let i = 1; i < this.candleData.length; i++) {
+      const current = this.candleData[i];
+      const previous = this.candleData[i - 1];
+      if ('close' in current && 'close' in previous) {
+        const change = current.close - previous.close;
+        gains.push(change > 0 ? change : 0);
+        losses.push(change < 0 ? -change : 0);
+      }
+    }
+
+    // Initial average gain/loss
+    let avgGain = gains.slice(0, period).reduce((sum, val) => sum + val, 0) / period;
+    let avgLoss = losses.slice(0, period).reduce((sum, val) => sum + val, 0) / period;
+
+    // First RSI point
+    const firstCandle = this.candleData[period];
+    if ('time' in firstCandle) {
+      const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+      const rsi = avgLoss === 0 ? 100 : 100 - (100 / (1 + rs));
+      this.rsiData.push({ time: firstCandle.time, value: rsi });
+    }
+
+    // Calculate subsequent RSI using smoothing
+    for (let i = period; i < gains.length; i++) {
+      const newGain = gains[i];
+      const newLoss = losses[i];
+      avgGain = ((avgGain * (period - 1)) + newGain) / period;
+      avgLoss = ((avgLoss * (period - 1)) + newLoss) / period;
+
+      const candle = this.candleData[i + 1];
+      if ('time' in candle) {
+        const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+        const rsi = avgLoss === 0 ? 100 : 100 - (100 / (1 + rs));
+        this.rsiData.push({ time: candle.time, value: rsi });
+      }
+    }
+
+    this.updateRSIIndicator();
+  }
+
+  private updateRSIIndicator(): void {
+    if (!this.showRSI) {
+      if (this.rsiSeries) {
+        this.rsiChart.removeSeries(this.rsiSeries);
+        this.rsiSeries = undefined as any;
+      }
+      if (this.rsiChart) {
+        this.rsiChart.remove();
+        this.rsiChart = undefined as any;
+      }
+      this.currentRSI = null;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (this.rsiData.length > 0) {
+      this.initRSIChart();
+      if (this.rsiSeries) {
+        this.rsiSeries.setData(this.rsiData);
+        this.currentRSI = this.rsiData[this.rsiData.length - 1].value;
+      }
+    }
+    this.cdr.detectChanges();
+  }
+  private updateRSIWithNewCandle(candlestick: Candlestick): void {
+    if (!this.showRSI || this.rsiData.length === 0) return;
+
+    const period = 14;
+    const timestamp = Math.floor(candlestick.timestamp / 1000);
+    
+    // Find if we need to update an existing RSI point or add a new one
+    const existingIndex = this.rsiData.findIndex(d => d.time === timestamp);
+    
+    // Get the necessary price data for calculation
+    const prices = this.candleData
+      .filter(candle => 'close' in candle)
+      .map(candle => ('close' in candle) ? candle.close : 0)
+      .slice(-period-1);
+    
+    if (prices.length < period + 1) return;
+    
+    // Calculate price changes
+    const changes = [];
+    for (let i = 1; i < prices.length; i++) {
+      changes.push(prices[i] - prices[i-1]);
+    }
+    
+    // Calculate gains and losses
+    const gains = changes.map(c => c > 0 ? c : 0);
+    const losses = changes.map(c => c < 0 ? Math.abs(c) : 0);
+    
+    // Calculate average gain and loss
+    const avgGain = gains.slice(-period).reduce((sum, val) => sum + val, 0) / period;
+    const avgLoss = losses.slice(-period).reduce((sum, val) => sum + val, 0) / period;
+    
+    // Calculate RSI
+    const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+    const rsi = 100 - (100 / (1 + rs));
+    
+    // Update or add the RSI data point
+    if (existingIndex >= 0) {
+      this.rsiData[existingIndex] = { time: timestamp as Time, value: rsi };
+    } else {
+      this.rsiData.push({ time: timestamp as Time, value: rsi });
+    }
+    
+    // Limit array size
+    if (this.rsiData.length > 300) {
+      this.rsiData = this.rsiData.slice(-300);
+    }
+    
+    // Update the RSI series
+    if (this.rsiSeries) {
+      this.rsiSeries.update({ time: timestamp as Time, value: rsi });
+      this.currentRSI = rsi;
+    }
+    
+    this.cdr.detectChanges();
+}
+
+  // MACD Methods
+  private calculateMACD(fastPeriod: number = 12, slowPeriod: number = 26, signalPeriod: number = 9): void {
+    if (this.candleData.length < slowPeriod + signalPeriod) return;
+
+    this.macdData = [];
+    this.signalData = [];
+    this.macdHistogramData = [];
+
+    // Calculate EMAs
+    const fastEMAs: number[] = [];
+    const slowEMAs: number[] = [];
+    const fastMultiplier = 2 / (fastPeriod + 1);
+    const slowMultiplier = 2 / (slowPeriod + 1);
+
+    // Initial SMA for fast EMA
+    let fastSum = 0;
+    for (let i = 0; i < fastPeriod; i++) {
+      const candle = this.candleData[i];
+      if ('close' in candle) fastSum += candle.close;
+    }
+    let prevFastEMA = fastSum / fastPeriod;
+
+    // Initial SMA for slow EMA
+    let slowSum = 0;
+    for (let i = 0; i < slowPeriod; i++) {
+      const candle = this.candleData[i];
+      if ('close' in candle) slowSum += candle.close;
+    }
+    let prevSlowEMA = slowSum / slowPeriod;
+
+    // Calculate fast and slow EMAs
+    for (let i = 0; i < this.candleData.length; i++) {
+      const candle = this.candleData[i];
+      if ('close' in candle) {
+        if (i >= fastPeriod) {
+          prevFastEMA = (candle.close - prevFastEMA) * fastMultiplier + prevFastEMA;
+          fastEMAs.push(prevFastEMA);
+        }
+        if (i >= slowPeriod) {
+          prevSlowEMA = (candle.close - prevSlowEMA) * slowMultiplier + prevSlowEMA;
+          slowEMAs.push(prevSlowEMA);
+        }
+      }
+    }
+
+    // Calculate MACD line
+    for (let i = 0; i < fastEMAs.length && i < slowEMAs.length; i++) {
+      const macdValue = fastEMAs[i] - slowEMAs[i];
+      const candle = this.candleData[i + slowPeriod];
+      if ('time' in candle) {
+        this.macdData.push({ time: candle.time, value: macdValue });
+      }
+    }
+
+    // Calculate Signal line
+    if (this.macdData.length >= signalPeriod) {
+      let signalSum = 0;
+      for (let i = 0; i < signalPeriod; i++) {
+        signalSum += this.macdData[i].value;
+      }
+      let prevSignal = signalSum / signalPeriod;
+
+      this.signalData.push({ time: this.macdData[signalPeriod - 1].time, value: prevSignal });
+
+      const signalMultiplier = 2 / (signalPeriod + 1);
+      for (let i = signalPeriod; i < this.macdData.length; i++) {
+        const currentSignal = (this.macdData[i].value - prevSignal) * signalMultiplier + prevSignal;
+        prevSignal = currentSignal;
+        this.signalData.push({ time: this.macdData[i].time, value: currentSignal });
+      }
+    }
+
+    // Calculate MACD Histogram
+    for (let i = 0; i < this.signalData.length; i++) {
+      const macdValue = this.macdData[i + signalPeriod - 1].value;
+      const signalValue = this.signalData[i].value;
+      const histogramValue = macdValue - signalValue;
+      const color = histogramValue >= 0 ? this.chartTheme.macdHistogramUpColor : this.chartTheme.macdHistogramDownColor;
+      this.macdHistogramData.push({
+        time: this.signalData[i].time,
+        value: histogramValue,
+        color
+      });
+    }
+
+    this.updateMACDIndicator();
+  }
+
+  private updateMACDIndicator(): void {
+    if (!this.showMACD) {
+      if (this.macdSeries) {
+        this.macdChart.removeSeries(this.macdSeries);
+        this.macdSeries = undefined as any;
+      }
+      if (this.signalSeries) {
+        this.macdChart.removeSeries(this.signalSeries);
+        this.signalSeries = undefined as any;
+      }
+      if (this.macdHistogramSeries) {
+        this.macdChart.removeSeries(this.macdHistogramSeries);
+        this.macdHistogramSeries = undefined as any;
+      }
+      if (this.macdChart) {
+        this.macdChart.remove();
+        this.macdChart = undefined as any;
+      }
+      this.currentMACD = null;
+      this.currentSignal = null;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (this.macdData.length > 0) {
+      this.initMACDChart();
+      if (this.macdSeries) this.macdSeries.setData(this.macdData);
+      if (this.signalSeries) this.signalSeries.setData(this.signalData);
+      if (this.macdHistogramSeries) this.macdHistogramSeries.setData(this.macdHistogramData);
+      this.currentMACD = this.macdData[this.macdData.length - 1].value;
+      this.currentSignal = this.signalData[this.signalData.length - 1].value;
+    }
+    this.cdr.detectChanges();
+  }
+
+  private updateMACDWithNewCandle(candlestick: Candlestick): void {
+    if (!this.showMACD || this.macdData.length === 0) return;
+
+    const timestamp = Math.floor(candlestick.timestamp / 1000);
+    const fastPeriod = 12;
+    const slowPeriod = 26;
+    const signalPeriod = 9;
+    const fastMultiplier = 2 / (fastPeriod + 1);
+    const slowMultiplier = 2 / (slowPeriod + 1);
+    const signalMultiplier = 2 / (signalPeriod + 1);
+
+    // Update fast EMA
+    const fastEMAs = this.macdData.map((_, i) => {
+      const candle = this.candleData[i + slowPeriod];
+      if ('close' in candle) {
+        if (i === 0) {
+          let sum = 0;
+          for (let j = 0; j < fastPeriod; j++) {
+            const prevCandle = this.candleData[i + slowPeriod - fastPeriod + j];
+            if ('close' in prevCandle) sum += prevCandle.close;
+          }
+          return sum / fastPeriod;
+        }
+        const prevEMA = this.macdData[i - 1].value + this.signalData[i - 1].value;
+        return (candle.close - prevEMA) * fastMultiplier + prevEMA;
+      }
+      return 0;
+    });
+
+    // Update slow EMA
+    const slowEMAs = this.macdData.map((_, i) => {
+      const candle = this.candleData[i + slowPeriod];
+      if ('close' in candle) {
+        if (i === 0) {
+          let sum = 0;
+          for (let j = 0; j < slowPeriod; j++) {
+            const prevCandle = this.candleData[i + slowPeriod - slowPeriod + j];
+            if ('close' in prevCandle) sum += prevCandle.close;
+          }
+          return sum / slowPeriod;
+        }
+        const prevEMA = this.macdData[i - 1].value + this.signalData[i - 1].value;
+        return (candle.close - prevEMA) * slowMultiplier + prevEMA;
+      }
+      return 0;
+    });
+
+    // Update MACD
+    const macdValue = fastEMAs[fastEMAs.length - 1] - slowEMAs[slowEMAs.length - 1];
+    this.macdData.push({ time: timestamp as Time, value: macdValue });
+    if (this.macdData.length > 300) this.macdData = this.macdData.slice(-300);
+
+    // Update Signal
+    if (this.macdData.length >= signalPeriod) {
+      const signalValues = this.macdData.slice(-signalPeriod);
+      let signalSum = signalValues.reduce((sum, data) => sum + data.value, 0);
+      let prevSignal = this.signalData[this.signalData.length - 1].value;
+      const currentSignal = ((macdValue - prevSignal) * signalMultiplier) + prevSignal;
+
+      this.signalData.push({ time: timestamp as Time, value: currentSignal });
+      if (this.signalData.length > 300) this.signalData = this.signalData.slice(-300);
+    }
+
+    // Update Histogram
+    if (this.signalData.length > 0) {
+      const histogramValue = macdValue - this.signalData[this.signalData.length - 1].value;
+      const color = histogramValue >= 0 ? this.chartTheme.macdHistogramUpColor : this.chartTheme.macdHistogramDownColor;
+      this.macdHistogramData.push({ time: timestamp as Time, value: histogramValue, color });
+      if (this.macdHistogramData.length > 300) this.macdHistogramData = this.macdHistogramData.slice(-300);
+    }
+
+    if (this.macdSeries) this.macdSeries.update({ time: timestamp as Time, value: macdValue });
+    if (this.signalSeries && this.signalData.length > 0) {
+      this.signalSeries.update({ time: timestamp as Time, value: this.signalData[this.signalData.length - 1].value });
+    }
+    if (this.macdHistogramSeries && this.macdHistogramData.length > 0) {
+      this.macdHistogramSeries.update(this.macdHistogramData[this.macdHistogramData.length - 1]);
+    }
+
+    this.currentMACD = macdValue;
+    if (this.signalData.length > 0) this.currentSignal = this.signalData[this.signalData.length - 1].value;
+    this.cdr.detectChanges();
   }
 }
