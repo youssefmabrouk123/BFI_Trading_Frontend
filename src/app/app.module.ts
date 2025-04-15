@@ -37,6 +37,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { PendingOrderTableComponent } from './components/pending-order-table/pending-order-table.component';
+import { CandlestickChartComponent } from './components/candlestick-chart/candlestick-chart.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,8 @@ import { PendingOrderTableComponent } from './components/pending-order-table/pen
     AccountComponent,
     StopLossTakeProfitPopupComponent,
     PendingOrderTableComponent,
+    CandlestickChartComponent,
+    
     
   
   ],

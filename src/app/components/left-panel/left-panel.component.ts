@@ -133,8 +133,8 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
           percent1J: quote.percentageVar.toFixed(2),
           updateTime: new Date(quote.quoteTime).toLocaleTimeString(),
           closing: quote.closeBid?.toString() ?? '-',
-          high: quote.maxAsk.toFixed(4),
-          low: quote.minBid.toFixed(4),
+          high: quote.max.toFixed(4),
+          low: quote.min.toFixed(4),
           direction,
           favorite: favoriteIds.has(quote.pk),
           pk: quote.pk

@@ -12,6 +12,7 @@ export interface UserDashboardStats {
     exchangeRateTrends: { [key: string]: number[] };
     transactionsByHour: { [key: number]: number };
     successRate: number;
+    position:number;
   }
   
   export interface UserAction {

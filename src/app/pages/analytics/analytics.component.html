@@ -1,68 +1,80 @@
-<div class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-6 text-gray-800">Tableau de bord du trader</h1>
-  
-    <!-- Statistiques -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="text-lg font-semibold text-gray-700">Transactions</h2>
-        <p class="text-2xl font-bold text-blue-600">{{ stats.transactionCount }}</p>
-      </div>
-      <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="text-lg font-semibold text-gray-700">Volume total</h2>
-        <p class="text-2xl font-bold text-green-600">{{ stats.totalVolume }} USD</p>
-      </div>
-      <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="text-lg font-semibold text-gray-700">Profit/Perte</h2>
-        <p class="text-2xl font-bold" [ngClass]="{'text-green-600': stats.totalProfitLoss >= 0, 'text-red-600': stats.totalProfitLoss < 0}">
-          {{ stats.totalProfitLoss }} USD
-        </p>
-      </div>
-      <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="text-lg font-semibold text-gray-700">Valeur du portefeuille</h2>
-        <p class="text-2xl font-bold text-blue-600">{{ stats.currentPortfolioValue }} USD</p>
-      </div>
+<div class="dashboard-container">
+  <!-- Loading state -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="error" class="error-state">
+    <div class="error-message">
+      <strong>Erreur !</strong>
+      <span>Impossible de charger les données du tableau de bord.</span>
+      <button (click)="loadDashboardData()">Réessayer</button>
     </div>
-  
-    <!-- Graphiques -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">Profit/Perte par jour</h2>
-        <canvas baseChart
-                [data]="lineChartData"
-                [options]="lineChartOptions"
-                [type]="'line'">
-        </canvas>
+  </div>
+
+  <!-- Dashboard content -->
+  <div *ngIf="!loading && !error && stats">
+    <h1 class="dashboard-title">Tableau de bord</h1>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Nombre de transactions</div>
+        <div class="stat-value">{{ stats.transactionCount }}</div>
       </div>
-      <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">Volume par devise</h2>
-        <canvas baseChart
-                [data]="donutChartData"
-                [options]="donutChartOptions"
-                [type]="'doughnut'">
-        </canvas>
+      <div class="stat-card">
+        <div class="stat-label">Montant TND</div>
+        <div class="stat-value">{{ formatCurrency(stats.position) }} TND</div>
       </div>
+      <div class="stat-card">
+        <div class="stat-label">Dernière action</div>
+        <div class="stat-value" *ngIf="formatDate(stats.lastAction )!== 'N/A'; else elseBlock">
+          {{ formatDate(stats.lastAction)}}
+        </div>
+        <ng-template #elseBlock>
+          Aucune action enregistrée
+        </ng-template>
+        
+      </div>
+      
     </div>
-  
-    <!-- Transactions récentes -->
-    <div class="bg-white p-4 rounded-lg shadow mt-6">
-      <h2 class="text-lg font-semibold text-gray-700 mb-4">Transactions récentes</h2>
-      <table class="w-full text-left">
+
+    <div class="chart-section">
+      <div class="chart-card">
+        <h3 class="chart-title">Volume par devise</h3>
+        <div class="chart-container"><canvas id="volumeChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3 class="chart-title">Activité horaire</h3>
+        <div class="chart-container"><canvas id="hourlyActivityChart"></canvas></div>
+      </div>
+      <!-- <div class="chart-card">
+        <h3 class="chart-title">Tendances des taux de change</h3>
+        <div class="chart-container"><canvas id="exchangeRateChart"></canvas></div>
+      </div> -->
+    </div>
+
+    <div class="transactions-card">
+      <h3 class="transactions-title">Transactions récentes</h3>
+      <table class="transactions-table" *ngIf="stats.recentTransactions.length > 0">
         <thead>
-          <tr class="bg-gray-100">
-            <th class="p-2">Type</th>
-            <th class="p-2">Détails</th>
-            <th class="p-2">Montant</th>
-            <th class="p-2">Date</th>
+          <tr>
+            <th>Type</th>
+            <th>Détails</th>
+            <th>Date</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let tx of stats.recentTransactions" class="border-b">
-            <td class="p-2">{{ tx.actionType }}</td>
-            <td class="p-2">{{ tx.details }}</td>
-            <td class="p-2">{{ tx.amount }}</td>
-            <td class="p-2">{{ tx.actionTime | date:'medium' }}</td>
+          <tr *ngFor="let tx of stats.recentTransactions">
+            <td class="transaction-type">{{ formatActionType(tx.actionType) }}</td>
+            <td class="transaction-details">{{ tx.details }}</td>
+            <td class="transaction-time">{{ formatDate(tx.actionTime) }}</td>
           </tr>
         </tbody>
       </table>
+      <p *ngIf="!stats.recentTransactions.length" class="empty-table">Aucune transaction récente</p>
     </div>
+
+
   </div>
+</div>

@@ -4,8 +4,8 @@ export interface Quote {
     bidPrice: number;
     closeBid: number | null;
     identifier: string;
-    maxAsk: number;
-    minBid: number;
+    max: number;
+    min: number;
     netVar: number;
     percentageVar: number;
     quoteTime: string;

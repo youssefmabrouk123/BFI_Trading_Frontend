@@ -13,6 +13,7 @@ export class CrossParityService {
 
   // Method to fetch cross-parity identifiers
   getCrossParities(): Observable<string[]> {
+    // Make a GET request to the API and return the observable
     return this.http.get<string[]>(this.apiUrl);
   }
 }

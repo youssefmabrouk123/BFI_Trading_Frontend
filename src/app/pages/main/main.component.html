@@ -1,128 +1,179 @@
 <div class="main-container" (click)="onOutsideClick($event)">
-    <!-- Navbar -->
-    <nav class="nav-container">
-      <div class="nav-content">
-        <div class="nav-wrapper">
-          <!-- Logo Section -->
-          <div class="logo-section">
-            <a (click)="showDashboard()" class="logo-link" href="#">
-              <img src="assets/img/bfi_logo-removebg-preview.png" alt="BFI Logo" class="logo-image" />
-              <span class="logo-divider"></span>
-              <span class="platform-name">Trading Platform</span>
-            </a>
-          </div>
-  
-          <!-- Navigation Links -->
-          <div class="nav-links" [class.mobile-open]="isMobileMenuOpen">
-            <a (click)="showDashboard()" class="nav-link" [class.active]="selectedView === 'dashboard'">
-              <span class="link-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-width="1.5"/>
-                </svg>
-              </span>
-              <span class="link-text">Dashboard</span>
-            </a>
-            <a (click)="showAnalytics()" class="nav-link" [class.active]="selectedView === 'analytics'">
-              <span class="link-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M12 20V10M18 20V4M6 20v-4" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
-              </span>
-              <span class="link-text">Analytics</span>
-            </a>
-            <a (click)="showAccount()" class="nav-link" [class.active]="selectedView === 'account'">
-              <span class="link-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" stroke-width="1.5" stroke-linecap="round"/>
-                  <path d="M3 7v10a2 2 0 0 0 2 2h16v-5" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
-              </span>
-              <span class="link-text">Account</span>
-            </a>
-          </div>
-  
-          <!-- Mobile Menu Overlay -->
-          <div class="mobile-menu-overlay" [class.mobile-open]="isMobileMenuOpen"></div>
-  
-          <!-- User Section -->
-          <div class="user-section">
-            <!-- Notifications -->
-            <button class="icon-button">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="1.5"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="1.5"/>
-              </svg>
-              <span class="notification-badge">3</span>
-            </button>
-  
-            <!-- Profile Dropdown -->
-            <div class="profile-dropdown" [class.open]="isDropdownOpen">
-              <button *ngIf="user" (click)="toggleDropdown()" class="profile-trigger">
-                <div class="profile-info">
-                  <span class="profile-name">{{ user.firstName+' '+user.lastName || 'Utilisateur' }}</span>
-                  <!-- <span class="profile-role">{{ user.role || 'Rôle inconnu' }}</span> -->
-                  <span class="profile-role">{{  'Cambiste' }}</span>
+  <!-- Navbar -->
+  <nav class="nav-container">
+    <div class="nav-content">
+      <div class="nav-wrapper">
+        <!-- Logo Section -->
+        <div class="logo-section">
+          <a (click)="showDashboard()" class="logo-link" href="#">
+            <img src="assets/img/bfi_logo-removebg-preview.png" alt="BFI Logo" class="logo-image" />
+            <span class="logo-divider"></span>
+            <span class="platform-name">Trading Platform</span>
+          </a>
+        </div>
 
-                </div>
-                <svg class="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M6 9l6 6 6-6" stroke-width="1.5"/>
-                </svg>
-              </button>
-  
-              <button *ngIf="!user" (click)="logout()" class="profile-trigger">
-                <span class="profile-name">Connexion</span>
-              </button>
-  
-              <div *ngIf="isDropdownOpen && user" class="dropdown-menu">
-                <div class="dropdown-header">
-                  <p class="user-name">{{  user.firstName+' '+user.lastName || 'Utilisateur' }}</p>
-                  <p class="user-email">{{ user.email }}</p>
-                </div>
-                <div class="dropdown-content">
-                  <a href="#" class="dropdown-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="1.5"/>
-                      <path d="M12 8v8m-4-4h8" stroke-width="1.5"/>
-                    </svg>
-                    <span>Account Settings</span>
-                  </a>
-                  <a href="#" class="dropdown-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <circle cx="12" cy="12" r="3" stroke-width="1.5"/>
-                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l-.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" stroke-width="1.5"/>
-                    </svg>
-                    <span>Settings</span>
-                  </a>
-                  <div class="dropdown-divider"></div>
-                  <a (click)="logout()" class="dropdown-item text-red" href="#">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke-width="1.5"/>
-                      <polyline points="16 17 21 12 16 7" stroke-width="1.5"/>
-                      <line x1="21" y1="12" x2="9" y2="12" stroke-width="1.5"/>
-                    </svg>
-                    <span>Sign Out</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-  
-            <!-- Mobile Menu Button -->
-            <button class="mobile-menu-button" (click)="toggleMobileMenu()">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <line x1="3" y1="12" x2="21" y2="12" stroke-width="2"/>
-                <line x1="3" y1="6" x2="21" y2="6" stroke-width="2"/>
-                <line x1="3" y1="18" x2="21" y2="18" stroke-width="2"/>
+        <!-- Navigation Links -->
+        <div class="nav-links" [class.mobile-open]="isMobileMenuOpen">
+          <a (click)="showDashboard()" class="nav-link" [class.active]="selectedView === 'dashboard'">
+            <span class="link-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-width="1.5"/>
               </svg>
-            </button>
-          </div>
+            </span>
+            <span class="link-text">Dashboard</span>
+          </a>
+          <a (click)="showAnalytics()" class="nav-link" [class.active]="selectedView === 'analytics'">
+            <span class="link-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M12 20V10M18 20V4M6 20v-4" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="link-text">Analytics</span>
+          </a>
+          <a (click)="showAccount()" class="nav-link" [class.active]="selectedView === 'account'">
+            <span class="link-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M3 7v10a2 2 0 0 0 2 2h16v-5" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="link-text">Account</span>
+          </a>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div class="mobile-menu-overlay" [class.mobile-open]="isMobileMenuOpen"></div>
+
+        <!-- User Section -->
+        <div class="user-section">
+          <!-- Notifications -->
+        <!-- Improved Notifications Dropdown -->
+<div class="notification-dropdown" [class.open]="isNotificationsOpen">
+  <button class="icon-button notification-icon-button" (click)="toggleNotifications()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="1.5"/>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="1.5"/>
+    </svg>
+    <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+  </button>
+
+  <div *ngIf="isNotificationsOpen" class="dropdown-menu notifications-menu">
+    <div class="dropdown-header notifications-header">
+      <div class="notifications-header-content">
+        <p class="notifications-title">Notifications</p>
+        <button *ngIf="unreadCount > 0" class="mark-all-read-btn" >
+          Mark all as read
+        </button>
+      </div>
+    </div>
+    
+    <div class="dropdown-content notifications-content">
+      <div *ngIf="notifications.length === 0" class="no-notifications">
+        <div class="empty-state">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="1.5"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="1.5"/>
+          </svg>
+          <p>No new notifications</p>
         </div>
       </div>
-    </nav>
-  
-    <!-- Contenu principal avec commutation via *ngIf -->
-    <div class="content-container">
-      <app-dashboard *ngIf="selectedView === 'dashboard'"></app-dashboard>
-      <app-analytics *ngIf="selectedView === 'analytics'"></app-analytics>
-      <app-account *ngIf="selectedView === 'account'"></app-account>
+      
+      <div class="notifications-list">
+        <div *ngFor="let notification of notifications" 
+            class="notification-item" 
+            [class.unread]="!notification.isRead"
+            [class.read]="notification.isRead">
+          
+          <div class="notification-status" *ngIf="!notification.isRead"></div>
+          
+          <div class="notification-content">
+            <span class="notification-message">{{ notification.message }}</span>
+            <span class="notification-time">{{ notification.createdAt | date:'MMM d, h:mm a' }}</span>
+          </div>
+          
+          <button *ngIf="!notification.isRead" 
+                  class="mark-read-btn" 
+                  (click)="markNotificationAsRead(notification.id)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M20 6L9 17l-5-5" stroke-width="2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="dropdown-footer" *ngIf="notifications.length > 0">
+      <a href="#" class="view-all-link">View all notifications</a>
     </div>
   </div>
+</div>
+
+          <!-- Profile Dropdown -->
+          <div class="profile-dropdown" [class.open]="isDropdownOpen">
+            <button *ngIf="user" (click)="toggleDropdown()" class="profile-trigger">
+              <div class="profile-info">
+                <span class="profile-name">{{ user.firstName + ' ' + user.lastName || 'Utilisateur' }}</span>
+                <span class="profile-role">Cambiste</span>
+              </div>
+              <svg class="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M6 9l6 6 6-6" stroke-width="1.5"/>
+              </svg>
+            </button>
+
+            <button *ngIf="!user" (click)="logout()" class="profile-trigger">
+              <span class="profile-name">Connexion</span>
+            </button>
+
+            <div *ngIf="isDropdownOpen && user" class="dropdown-menu">
+              <div class="dropdown-header">
+                <p class="user-name">{{ user.firstName + ' ' + user.lastName || 'Utilisateur' }}</p>
+                <p class="user-email">{{ user.email }}</p>
+              </div>
+              <div class="dropdown-content">
+                <a (click)="showAccount()" class="dropdown-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="1.5"/>
+                    <path d="M12 8v8m-4-4h8" stroke-width="1.5"/>
+                  </svg>
+                  <span >Account Settings</span>
+                </a>
+                <a href="#" class="dropdown-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="3" stroke-width="1.5"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l-.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" stroke-width="1.5"/>
+                  </svg>
+                  <span>Settings</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a (click)="logout()" class="dropdown-item text-red" href="#">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke-width="1.5"/>
+                    <polyline points="16 17 21 12 16 7" stroke-width="1.5"/>
+                    <line x1="21" y1="12" x2="9" y2="12" stroke-width="1.5"/>
+                  </svg>
+                  <span>Sign Out</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <button class="mobile-menu-button" (click)="toggleMobileMenu()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <line x1="3" y1="12" x2="21" y2="12" stroke-width="2"/>
+              <line x1="3" y1="6" x2="21" y2="6" stroke-width="2"/>
+              <line x1="3" y1="18" x2="21" y2="18" stroke-width="2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="content-container">
+    <app-dashboard *ngIf="selectedView === 'dashboard'"></app-dashboard>
+    <app-analytics *ngIf="selectedView === 'analytics'"></app-analytics>
+    <app-account *ngIf="selectedView === 'account'"></app-account>
+  </div>
+</div>

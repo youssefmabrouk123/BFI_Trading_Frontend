@@ -280,7 +280,7 @@ export class TradePopupComponent implements OnInit, OnDestroy {
     this.isProcessing = true;
   
     const isBuy = this.selectedOperation === 'ACHETER';
-    const price = isBuy ? this.bidPrice : this.askPrice;
+    const price = isBuy ? this.askPrice : this.bidPrice;
     const currencyToTrade = isBuy ? this.baseCurrency : this.quoteCurrency;
   
     // Log the parameters to make sure they are correct
