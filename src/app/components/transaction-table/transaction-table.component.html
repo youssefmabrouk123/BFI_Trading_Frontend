@@ -9,7 +9,7 @@
             <path d="M18 12h-2a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2z"></path>
             <path d="M6 12h2a2 2 0 0 0 2 2v6a2 2 0 0 0-2 2H6a2 2 0 0 0-2-2v-6a2 2 0 0 0 2-2z"></path>
           </svg>
-          <h3 class="filter-title">Transaction History</h3>
+          <h3 class="filter-title">{{ 'TRANSACTION.TITLE' | translate }}</h3>
           <div class="table-controls">
             <button class="refresh-btn" (click)="refreshTransactions()" [class.loading]="isRefreshing">
               <i class="fa fa-sync refresh-icon" [class.spinning]="isRefreshing"></i>
@@ -20,7 +20,7 @@
           <div class="search-group">
             <input type="text" 
                    class="search-input" 
-                   placeholder="Search transactions..." 
+                   [placeholder]="'TRANSACTION.SEARCH_PLACEHOLDER' | translate" 
                    [(ngModel)]="searchQuery" 
                    (ngModelChange)="filterTransactions()">
             <button class="search-btn">
@@ -38,12 +38,12 @@
   <table class="market-table">
     <thead>
       <tr>
-        <th class="instrument-col sticky left-0 z-20">Devise Achetée</th>
-        <th>Montant Acheté</th>
-        <th>Devise Vendue</th>
-        <th>Montant Vendu</th>
-        <th>Prix</th>
-        <th>Heure Transaction</th>
+        <th class="instrument-col sticky left-0 z-20">{{ 'TRANSACTION.CURRENCY_BOUGHT' | translate }}</th>
+        <th>{{ 'TRANSACTION.AMOUNT_BOUGHT' | translate }}</th>
+        <th>{{ 'TRANSACTION.CURRENCY_SOLD' | translate }}</th>
+        <th>{{ 'TRANSACTION.AMOUNT_SOLD' | translate }}</th>
+        <th>{{ 'TRANSACTION.PRICE' | translate }}</th>
+        <th>{{ 'TRANSACTION.TRANSACTION_TIME' | translate }}</th>
       </tr>
     </thead>
     <tbody *ngIf="!isLoading && filteredTransactions.length > 0">
@@ -51,13 +51,13 @@
           class="cursor-pointer hover:bg-gray-800 transition-colors">
         <td class="instrument-col sticky left-0 z-10">
           <div class="instrument-cell">
-            <span class="type-badge fx">{{ transaction.devAchn.identifier }}</span>
+            <span class="type-badge fx">FX</span>
           </div>
         </td>
         <td>{{ transaction.mntAcht | number:'1.2-2' }}</td>
         <td>
           <div class="instrument-cell">
-            <span class="type-badge fx">{{ transaction.devVen.identifier }}</span>
+            <span class="type-badge fx">FX</span>
           </div>
         </td>
         <td>{{ transaction.mntVen | number:'1.2-2' }}</td>
@@ -67,7 +67,7 @@
     </tbody>
     <tbody *ngIf="!isLoading && filteredTransactions.length === 0">
       <tr>
-        <td colspan="6" class="p-4 text-center text-gray-500">Aucune donnée dans "transaction"</td>
+        <td colspan="6" class="p-4 text-center text-gray-500">{{ 'TRANSACTION.NO_TRANSACTIONS' | translate }}</td>
       </tr>
     </tbody>
     <tbody *ngIf="isLoading">

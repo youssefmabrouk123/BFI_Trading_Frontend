@@ -8,7 +8,7 @@
           <a (click)="showDashboard()" class="logo-link" href="#">
             <img src="assets/img/bfi_logo-removebg-preview.png" alt="BFI Logo" class="logo-image" />
             <span class="logo-divider"></span>
-            <span class="platform-name">Trading Platform</span>
+            <span class="platform-name">{{ 'TRADING_PLATFORM' | translate }}</span>
           </a>
         </div>
 
@@ -20,7 +20,7 @@
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-width="1.5"/>
               </svg>
             </span>
-            <span class="link-text">Dashboard</span>
+            <span class="link-text">{{ 'Dashboard' | translate }}</span>
           </a>
           <a (click)="showAnalytics()" class="nav-link" [class.active]="selectedView === 'analytics'">
             <span class="link-icon">
@@ -28,7 +28,7 @@
                 <path d="M12 20V10M18 20V4M6 20v-4" stroke-width="1.5" stroke-linecap="round"/>
               </svg>
             </span>
-            <span class="link-text">Analytics</span>
+            <span class="link-text">{{ 'Analytics' | translate }}</span>
           </a>
           <a (click)="showAccount()" class="nav-link" [class.active]="selectedView === 'account'">
             <span class="link-icon">
@@ -37,7 +37,7 @@
                 <path d="M3 7v10a2 2 0 0 0 2 2h16v-5" stroke-width="1.5" stroke-linecap="round"/>
               </svg>
             </span>
-            <span class="link-text">Account</span>
+            <span class="link-text">{{ 'Account' | translate }}</span>
           </a>
         </div>
 
@@ -47,73 +47,71 @@
         <!-- User Section -->
         <div class="user-section">
           <!-- Notifications -->
-        <!-- Improved Notifications Dropdown -->
-<div class="notification-dropdown" [class.open]="isNotificationsOpen">
-  <button class="icon-button notification-icon-button" (click)="toggleNotifications()">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="1.5"/>
-      <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="1.5"/>
-    </svg>
-    <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
-  </button>
+          <div class="notification-dropdown" [class.open]="isNotificationsOpen">
+            <button class="icon-button notification-icon-button" (click)="toggleNotifications()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="1.5"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="1.5"/>
+              </svg>
+              <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+            </button>
 
-  <div *ngIf="isNotificationsOpen" class="dropdown-menu notifications-menu">
-    <div class="dropdown-header notifications-header">
-      <div class="notifications-header-content">
-        <p class="notifications-title">Notifications</p>
-        <button *ngIf="unreadCount > 0" class="mark-all-read-btn" >
-          Mark all as read
-        </button>
-      </div>
-    </div>
-    
-    <div class="dropdown-content notifications-content">
-      <div *ngIf="notifications.length === 0" class="no-notifications">
-        <div class="empty-state">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="1.5"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="1.5"/>
-          </svg>
-          <p>No new notifications</p>
-        </div>
-      </div>
-      
-      <div class="notifications-list">
-        <div *ngFor="let notification of notifications" 
-            class="notification-item" 
-            [class.unread]="!notification.isRead"
-            [class.read]="notification.isRead">
-          
-          <div class="notification-status" *ngIf="!notification.isRead"></div>
-          
-          <div class="notification-content">
-            <span class="notification-message">{{ notification.message }}</span>
-            <span class="notification-time">{{ notification.createdAt | date:'MMM d, h:mm a' }}</span>
+            <div *ngIf="isNotificationsOpen" class="dropdown-menu notifications-menu">
+              <div class="dropdown-header notifications-header">
+                <div class="notifications-header-content">
+                  <p class="notifications-title">{{ 'NOTIFICATIONS' | translate }}</p>
+                  <button *ngIf="unreadCount > 0" class="mark-all-read-btn" (click)="markAllAsRead()">
+                    {{ 'MARK_ALL_READ' | translate }}
+                  </button>
+                </div>
+              </div>
+              
+              <div class="dropdown-content notifications-content">
+                <div *ngIf="notifications.length === 0" class="no-notifications">
+                  <div class="empty-state">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="1.5"/>
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="1.5"/>
+                    </svg>
+                    <p>{{ 'NO_NOTIFICATIONS' | translate }}</p>
+                  </div>
+                </div>
+                
+                <div class="notifications-list">
+                  <div *ngFor="let notification of notifications" 
+                      class="notification-item" 
+                      [class.unread]="!notification.isRead"
+                      [class.read]="notification.isRead">
+                    <div class="notification-status" *ngIf="!notification.isRead"></div>
+                    <div class="notification-content">
+                      <span class="notification-message">{{ notification.message }}</span>
+                      <span class="notification-time">{{ notification.createdAt | date:'MMM d, h:mm a' }}</span>
+                    </div>
+                    <button *ngIf="!notification.isRead" 
+                            class="mark-read-btn" 
+                            (click)="markNotificationAsRead(notification.id)">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M20 6L9 17l-5-5" stroke-width="2"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="dropdown-footer" *ngIf="notifications.length > 0">
+                <a href="#" class="view-all-link" (click)="viewAllNotifications($event)">
+                  {{ 'VIEW_ALL_NOTIFICATIONS' | translate }}
+                </a>
+              </div>
+            </div>
           </div>
-          
-          <button *ngIf="!notification.isRead" 
-                  class="mark-read-btn" 
-                  (click)="markNotificationAsRead(notification.id)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M20 6L9 17l-5-5" stroke-width="2"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-    
-    <div class="dropdown-footer" *ngIf="notifications.length > 0">
-      <a href="#" class="view-all-link">View all notifications</a>
-    </div>
-  </div>
-</div>
 
           <!-- Profile Dropdown -->
           <div class="profile-dropdown" [class.open]="isDropdownOpen">
             <button *ngIf="user" (click)="toggleDropdown()" class="profile-trigger">
               <div class="profile-info">
-                <span class="profile-name">{{ user.firstName + ' ' + user.lastName || 'Utilisateur' }}</span>
-                <span class="profile-role">Cambiste</span>
+                <span class="profile-name">{{ user.firstName + ' ' + user.lastName || ('USER_DEFAULT_NAME' | translate) }}</span>
+                <span class="profile-role">{{ 'PROFILE_ROLE' | translate }}</span>
               </div>
               <svg class="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path d="M6 9l6 6 6-6" stroke-width="1.5"/>
@@ -121,12 +119,12 @@
             </button>
 
             <button *ngIf="!user" (click)="logout()" class="profile-trigger">
-              <span class="profile-name">Connexion</span>
+              <span class="profile-name">{{ 'LOGIN' | translate }}</span>
             </button>
 
             <div *ngIf="isDropdownOpen && user" class="dropdown-menu">
               <div class="dropdown-header">
-                <p class="user-name">{{ user.firstName + ' ' + user.lastName || 'Utilisateur' }}</p>
+                <p class="user-name">{{ user.firstName + ' ' + user.lastName || ('USER_DEFAULT_NAME' | translate) }}</p>
                 <p class="user-email">{{ user.email }}</p>
               </div>
               <div class="dropdown-content">
@@ -135,15 +133,46 @@
                     <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="1.5"/>
                     <path d="M12 8v8m-4-4h8" stroke-width="1.5"/>
                   </svg>
-                  <span >Account Settings</span>
+                  <span>{{ 'ACCOUNT_SETTINGS' | translate }}</span>
                 </a>
-                <a href="#" class="dropdown-item">
+                <a href="#" class="dropdown-item" (click)="toggleSettingsSubMenu(); $event.preventDefault()">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <circle cx="12" cy="12" r="3" stroke-width="1.5"/>
                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l-.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" stroke-width="1.5"/>
                   </svg>
-                  <span>Settings</span>
+                  <span>{{ 'SETTINGS' | translate }}</span>
                 </a>
+                <!-- Settings Submenu -->
+                <div *ngIf="isSettingsSubMenuOpen" class="settings-submenu">
+                  <div class="dropdown-item flex items-center">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      class="mr-2 text-[#BF7C2A]"
+                    >
+                      <path
+                        d="M12 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2z"
+                        stroke-width="1.5"
+                      />
+                      <path d="M2 12h20" stroke-width="1.5" />
+                      <path
+                        d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+                        stroke-width="1.5"
+                      />
+                    </svg>
+                    <span class="mr-2 text-[#D9AE79]">{{ 'CHANGE_LANGUAGE' | translate }}</span>
+                    <app-language-switcher></app-language-switcher>
+                  </div>
+                  <button class="dropdown-item flex items-center" (click)="onSwitchMode()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="mr-2 text-[#BF7C2A]">
+                      <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z" stroke-width="1.5"/>
+                    </svg>
+                    <span class="mr-2 text-[#D9AE79]">{{ 'SWITCH_MODE' | translate }}</span>
+                  </button>
+                </div>
                 <div class="dropdown-divider"></div>
                 <a (click)="logout()" class="dropdown-item text-red" href="#">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -151,7 +180,7 @@
                     <polyline points="16 17 21 12 16 7" stroke-width="1.5"/>
                     <line x1="21" y1="12" x2="9" y2="12" stroke-width="1.5"/>
                   </svg>
-                  <span>Sign Out</span>
+                  <span>{{ 'SIGN_OUT' | translate }}</span>
                 </a>
               </div>
             </div>

@@ -6,7 +6,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
           </svg>
-          <h3 class="filter-title">Pending Orders</h3>
+          <h3 class="filter-title">{{ 'PENDING_ORDER.TITLE' | translate }}</h3>
           <div class="table-controls">
             <button class="refresh-btn" (click)="refreshOrders()" [class.loading]="isRefreshing">
               <i class="fa fa-sync refresh-icon" [class.spinning]="isRefreshing"></i>
@@ -17,7 +17,7 @@
           <div class="search-group">
             <input type="text" 
                    class="search-input" 
-                   placeholder="Search orders..." 
+                   [placeholder]="'PENDING_ORDER.SEARCH_PLACEHOLDER' | translate" 
                    [(ngModel)]="searchQuery" 
                    (ngModelChange)="filterOrders()">
             <button class="search-btn">
@@ -35,17 +35,17 @@
   <table class="market-table">
     <thead>
       <tr>
-        <th class="instrument-col sticky left-0 z-20">ID</th>
-        <th>Paire de Devises</th>
-        <th>Montant</th>
-        <th>Prix Cible</th>
-        <th>Type d'Ordre</th>
-        <th>Type de Déclencheur</th>
-        <th>Action</th>
-        <th>Statut</th>
-        <th>Date de Création</th>
-        <th>Date d'Exécution</th>
-        <th>Actions</th>
+        <th class="instrument-col sticky left-0 z-20">{{ 'PENDING_ORDER.ID' | translate }}</th>
+        <th>{{ 'PENDING_ORDER.CURRENCY_PAIR' | translate }}</th>
+        <th>{{ 'PENDING_ORDER.AMOUNT' | translate }}</th>
+        <th>{{ 'PENDING_ORDER.TARGET_PRICE' | translate }}</th>
+        <th>{{ 'PENDING_ORDER.ORDER_TYPE' | translate }}</th>
+        <th>{{ 'PENDING_ORDER.TRIGGER_TYPE' | translate }}</th>
+        <th>{{ 'PENDING_ORDER.ACTION' | translate }}</th>
+        <th>{{ 'PENDING_ORDER.STATUS' | translate }}</th>
+        <th>{{ 'PENDING_ORDER.CREATED_AT' | translate }}</th>
+        <th>{{ 'PENDING_ORDER.EXECUTED_AT' | translate }}</th>
+        <th>{{ 'PENDING_ORDER.ACTIONS' | translate }}</th>
       </tr>
     </thead>
     <tbody *ngIf="!isLoading && filteredOrders.length > 0">
@@ -81,14 +81,14 @@
             class="signal-btn" 
             (click)="cancelOrder(order.id!)" 
             [disabled]="order.status !== 'PENDING'">
-            Annuler
+            {{ 'PENDING_ORDER.CANCEL' | translate }}
           </button>
         </td>
       </tr>
     </tbody>
     <tbody *ngIf="!isLoading && filteredOrders.length === 0">
       <tr>
-        <td colspan="11" class="p-4 text-center text-gray-500">No pending orders available.</td>
+        <td colspan="11" class="p-4 text-center text-gray-500">{{ 'PENDING_ORDER.NO_ORDERS' | translate }}</td>
       </tr>
     </tbody>
     <tbody *ngIf="isLoading">

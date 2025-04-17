@@ -1,153 +1,146 @@
-<div class="chart-container relative bg-slate-900 rounded-xl shadow-xl p-4 border border-slate-800">
-  <!-- Loading Overlay -->
-  <div *ngIf="loading" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-xl">
-    <div class="flex flex-col items-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      <span class="text-slate-200 mt-3 font-medium">Loading chart data...</span>
+<div class="trading-dashboard">
+  <!-- Header with trading info -->
+  <div class="trading-header">
+    <div class="market-info">
+      <h2 *ngIf="selectedPair">{{ selectedPair.name }} <span class="price-badge" [ngClass]="priceChangeClass">{{ lastPrice | number:'1.2-6' }}</span></h2>
+      <div *ngIf="selectedPair" class="price-change">
+        <span [ngClass]="priceChangeClass">{{ priceChange | number:'1.2-2' }}% (24h)</span>
+      </div>
     </div>
-  </div>
-
-  <!-- Live Update Indicator -->
-  <div *ngIf="updating && !loading" 
-       class="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center animate-pulse z-10">
-    <span class="mr-1 h-2 w-2 bg-white rounded-full inline-block"></span>
-    Live updating
-  </div>
-
-  <!-- Chart Header -->
-  <div class="chart-header flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 space-y-4 lg:space-y-0 border-b border-slate-800 pb-4">
-    <!-- Pair Info -->
-    <div class="pair-info">
-      <div class="flex items-center">
-        <h3 class="pair-name text-xl font-bold text-slate-100">{{ pairName }}</h3>
-        <span class="ml-2 px-2 py-0.5 text-xs font-semibold rounded-full" 
-              [ngClass]="{'bg-emerald-500/20 text-emerald-400': priceDirection === 'up', 
-                         'bg-red-500/20 text-red-400': priceDirection === 'down', 
-                         'bg-slate-500/20 text-slate-400': priceDirection === null}">
-          {{ selectedTimeframe }}
-        </span>
+    
+    <div class="trading-controls">
+      <div class="form-group pair-selector">
+        <label for="crossParity">Trading Pair</label>
+        <select id="crossParity" [formControl]="selectedCrossParity" class="form-control">
+          <option *ngFor="let parity of crossParities" [value]="parity.pk">
+            {{ parity.name }}
+          </option>
+        </select>
       </div>
       
-      <div class="price-info flex items-center mt-1 space-x-3">
-        <span class="latest-price text-2xl font-bold" 
-              [ngClass]="{'text-emerald-400': priceDirection === 'up', 
-                         'text-red-400': priceDirection === 'down', 
-                         'text-slate-300': priceDirection === null}">
-          {{ latestPrice | number:'1.2-6' }}
-        </span>
-        <span class="price-change flex items-center text-sm" 
-              [ngClass]="{'text-emerald-400': priceDirection === 'up', 
-                         'text-red-400': priceDirection === 'down', 
-                         'text-slate-400': priceDirection === null}">
-          <svg *ngIf="priceDirection === 'up'" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-          </svg>
-          <svg *ngIf="priceDirection === 'down'" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-          <span>{{ priceChange | number:'1.2-6' }}</span>
-          <span class="mx-1">•</span>
-          <span>{{ priceChangePercent | number:'1.2-2' }}%</span>
-        </span>
-      </div>
-    </div>
-
-    <!-- Controls -->
-    <div class="controls flex flex-wrap gap-2">
-      <!-- Timeframe Selection -->
-      <div class="relative">
-        <select [(ngModel)]="selectedTimeframe" 
-                (change)="changeTimeframe(selectedTimeframe)" 
-                class="bg-slate-800 text-slate-200 border border-slate-700 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none pr-8">
-          <option *ngFor="let timeframe of availableTimeframes" [value]="timeframe">{{ timeframe }}</option>
-        </select>
-        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
+      <div class="timeframe-selector">
+        <div class="btn-group" role="group" aria-label="Timeframe Selection">
+          <button type="button" *ngFor="let tf of timeframes" 
+                  [class.active]="selectedTimeframe.value === tf"
+                  (click)="selectedTimeframe.setValue(tf)"
+                  class="btn btn-timeframe">
+            {{ tf }}
+          </button>
         </div>
       </div>
 
-      <!-- Indicators -->
-      <div class="indicators inline-flex rounded-lg shadow-sm">
-        <button (click)="toggleIndicator('sma')" 
-                class="px-3 py-2 text-sm font-medium border border-r-0 first:rounded-l-lg"
-                [ngClass]="{'bg-blue-600 text-white border-blue-600': showSMA, 
-                           'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700': !showSMA}">
-          SMA
-        </button>
-        <button (click)="toggleIndicator('ema')" 
-                class="px-3 py-2 text-sm font-medium border border-r-0"
-                [ngClass]="{'bg-pink-600 text-white border-pink-600': showEMA, 
-                           'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700': !showEMA}">
+      <div class="theme-selector">
+        <label for="theme">Theme</label>
+        <select id="theme" [formControl]="selectedTheme" class="form-control">
+          <option *ngFor="let theme of chartThemes" [value]="theme.value">
+            {{ theme.name Ergebnisse anzeigen
+          </option>
+        </select>
+      </div>
+
+      <div class="indicators-selector">
+        <button class="btn btn-indicator" 
+                [class.active]="showEMA"
+                (click)="toggleIndicator('EMA')">
           EMA
         </button>
-        <button (click)="toggleIndicator('volume')" 
-                class="px-3 py-2 text-sm font-medium border last:rounded-r-lg"
-                [ngClass]="{'bg-emerald-600 text-white border-emerald-600': showVolume, 
-                           'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700': !showVolume}">
-          VOL
+        <button class="btn btn-indicator" 
+                [class.active]="showBollingerBands"
+                (click)="toggleIndicator('Bollinger')">
+          Bollinger
         </button>
-      </div>
-
-      <!-- Zoom Controls -->
-      <div class="zoom-controls inline-flex rounded-lg shadow-sm">
-        <button (click)="zoomChart('in')" 
-                class="bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2 rounded-l-lg text-sm font-medium hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-          </svg>
+        <button class="btn btn-indicator" 
+                [class.active]="showRSI"
+                (click)="toggleIndicator('RSI')">
+          RSI
         </button>
-        <button (click)="zoomChart('out')" 
-                class="bg-slate-800 border-t border-b border-slate-700 text-slate-200 px-3 py-2 text-sm font-medium hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6"></path>
-          </svg>
-        </button>
-        <button (click)="zoomChart('reset')" 
-                class="bg-slate-800 border border-slate-700 text-slate-200 px-3 py-2 rounded-r-lg text-sm font-medium hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-          </svg>
+        <button class="btn btn-indicator" 
+                [class.active]="showMACD"
+                (click)="toggleIndicator('MACD')">
+          MACD
         </button>
       </div>
     </div>
   </div>
 
-  <!-- OHLC & Indicators Values -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-6 gap-4 mb-4">
-    <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
-      <div class="text-xs text-slate-400 mb-1">Open</div>
-      <div class="text-slate-200 font-medium">{{ latestOHLC?.open | number:'1.2-6' || '—' }}</div>
+  <!-- Connection status -->
+  <div class="connection-status" [ngClass]="connectionStatus">
+    <span>Status: {{ connectionStatus | titlecase }}</span>
+  </div>
+
+  <!-- Main chart area -->
+  <div class="chart-section">
+    <div class="chart-container" *ngIf="selectedCrossParity.value">
+      <highcharts-chart
+        [Highcharts]="Highcharts"
+        [options]="chartOptions"
+        (chartInstance)="onChartInstance($event)"
+        style="width: 100%; height: 600px; display: block;"
+      ></highcharts-chart>
+
+      <div class="chart-loading" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <span>Loading market data...</span>
+      </div>
     </div>
-    <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
-      <div class="text-xs text-slate-400 mb-1">High</div>
-      <div class="text-slate-200 font-medium">{{ latestOHLC?.high | number:'1.2-6' || '—' }}</div>
-    </div>
-    <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
-      <div class="text-xs text-slate-400 mb-1">Low</div>
-      <div class="text-slate-200 font-medium">{{ latestOHLC?.low | number:'1.2-6' || '—' }}</div>
-    </div>
-    <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
-      <div class="text-xs text-slate-400 mb-1">Close</div>
-      <div class="text-slate-200 font-medium">{{ latestOHLC?.close | number:'1.2-6' || '—' }}</div>
-    </div>
-    <div *ngIf="showVolume" class="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
-      <div class="text-xs text-slate-400 mb-1">Volume</div>
-      <div class="text-slate-200 font-medium">{{ formatVolume(latestOHLC?.volume || 0) }}</div>
-    </div>
-    <div *ngIf="showSMA" class="bg-blue-900/20 rounded-lg p-3 border border-blue-700/30">
-      <div class="text-xs text-blue-400 mb-1">SMA (20)</div>
-      <div class="text-blue-200 font-medium">{{ currentSMA | number:'1.2-6' || '—' }}</div>
-    </div>
-    <div *ngIf="showEMA" class="bg-pink-900/20 rounded-lg p-3 border border-pink-700/30">
-      <div class="text-xs text-pink-400 mb-1">EMA (50)</div>
-      <div class="text-pink-200 font-medium">{{ currentEMA | number:'1.2-6' || '—' }}</div>
+    
+    <div class="no-data" *ngIf="!selectedCrossParity.value">
+      <div class="empty-state">
+        <i class="fas fa-chart-line empty-state-icon"></i>
+        <h3>Select a trading pair to view chart</h3>
+        <p>Real-time market data will display here</p>
+      </div>
     </div>
   </div>
 
-  <!-- Chart -->
-  <div class="chart-wrapper relative rounded-lg overflow-hidden border border-slate-800">
-    <div #chartElement class="chart-element w-full h-[500px]"></div>
+  <!-- Market statistics panel -->
+  <div class="market-stats" *ngIf="selectedCrossParity.value">
+    <div class="stats-panel">
+      <div class="stat-card">
+        <div class="stat-label">24h High</div>
+        <div class="stat-value">{{ dayHigh | number:'1.2-6' }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">24h Low</div>
+        <div class="stat-value">{{ dayLow | number:'1.2-6' }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">24h Volume</div>
+        <div class="stat-value">{{ dayVolume | number:'1.2-2' }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Last Updated</div>
+        <div class="stat-value">{{ lastUpdated | date:'medium' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent trades table -->
+  <div class="recent-trades" *ngIf="selectedCrossParity.value && recentTrades.length > 0">
+    <h3>Recent Trades</h3>
+    <div class="trades-table-container">
+      <table class="trades-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Price</th>
+            <th>Amount</th>
+            <th>Side</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let trade of recentTrades" [ngClass]="{'buy': trade.side === 'buy', 'sell': trade.side === 'sell'}">
+            <td>{{ trade.timestamp | date:'HH:mm:ss' }}</td>
+            <td>{{ trade.price | number:'1.2-6' }}</td>
+            <td>{{ trade.amount | number:'1.2-4' }}</td>
+            <td>
+              <span class="trade-badge" [ngClass]="{'buy-badge': trade.side === 'buy', 'sell-badge': trade.side === 'sell'}">
+                {{ trade.side | titlecase }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

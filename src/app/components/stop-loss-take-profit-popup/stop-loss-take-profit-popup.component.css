@@ -1,76 +1,298 @@
-::-webkit-scrollbar {
-    width: 5px;
-  }
-  ::-webkit-scrollbar-track {
-    background: rgba(10, 9, 8, 0.9);
-    border-radius: 2.5px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #E5BF7D, #D4A65A);
-    border-radius: 2.5px;
-    box-shadow: 0 0 4px rgba(229, 191, 125, 0.3);
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(to bottom, #F0C78A, #E5BF7D);
-  }
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .animate-slide-in {
-    animation: slideIn 0.5s ease-out;
+/* Base styles */
+.trade-popup-container {
+  font-family: 'Roboto', sans-serif;
+  width: 100%;
+  max-width: 400px;
+  background: linear-gradient(140deg, #0A0908 0%, #171717 100%);
+  color: #E5BF7D;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(229, 191, 125, 0.1);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.popup-backdrop {
+  backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(10, 9, 8, 0.95);
+  border-bottom: 1px solid rgba(229, 191, 125, 0.1);
+}
+
+.type-badge {
+  padding: 4px 10px;
+  background: rgba(229, 191, 125, 0.2);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #E5BF7D;
+  text-transform: uppercase;
+  letter-spacing: 0.75px;
+  transition: background 0.2s ease;
+}
+
+.type-badge:hover {
+  background: rgba(229, 191, 125, 0.3);
+}
+
+.instrument-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.25px;
+  color: #E5BF7D;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(229, 191, 125, 0.1);
+  background: rgba(20, 20, 20, 0.5);
+  color: rgba(229, 191, 125, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  color: #E5BF7D;
+  background: rgba(229, 191, 125, 0.15);
+  border-color: rgba(229, 191, 125, 0.2);
+}
+
+.close-btn:focus {
+  box-shadow: 0 0 0 2px rgba(229, 191, 125, 0.3);
+}
+
+.operation-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.75px;
+  background: rgba(20, 20, 20, 0.7);
+  color: rgba(229, 191, 125, 0.9);
+  border: 1px solid rgba(229, 191, 125, 0.1);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.operation-btn:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(255, 255, 255, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.operation-btn:hover:before {
+  opacity: 1;
+}
+
+.operation-btn:hover {
+  background: rgba(229, 191, 125, 0.15);
+  color: #E5BF7D;
+  border-color: rgba(229, 191, 125, 0.2);
+}
+
+.operation-btn.selected {
+  background: rgba(229, 191, 125, 0.2);
+  color: #E5BF7D;
+  border-color: rgba(229, 191, 125, 0.25);
+  box-shadow: 0 2px 8px rgba(229, 191, 125, 0.1);
+}
+
+.operation-btn.buy.selected {
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+  background: rgba(76, 175, 80, 0.2);
+  border-color: rgba(76, 175, 80, 0.3);
+}
+
+.operation-btn.sell.selected {
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.2);
+  background: rgba(244, 67, 54, 0.2);
+  border-color: rgba(244, 67, 54, 0.3);
+}
+
+.operation-btn:active {
+  transform: scale(0.98);
+}
+
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  background: rgba(20, 20, 20, 0.7);
+  border: 1px solid rgba(229, 191, 125, 0.1);
+  border-radius: 8px;
+  padding: 6px;
+  height: 44px;
+  transition: all 0.2s ease;
+}
+
+.quantity-selector:focus-within {
+  box-shadow: 0 0 0 2px rgba(229, 191, 125, 0.2);
+}
+
+.quantity-input {
+  flex: 1;
+  height: 32px;
+  background: transparent;
+  border: none;
+  color: #E5BF7D;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+  appearance: none;
+  -moz-appearance: textfield;
+  margin: 0 10px;
+  transition: all 0.2s ease;
+}
+
+.quantity-input:focus {
+  color: #F0C78A;
+}
+
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.quantity-input:invalid {
+  border-bottom: 1px solid rgba(244, 67, 54, 0.5);
+}
+
+.confirm-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.75px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.confirm-btn:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.4s ease;
+}
+
+.confirm-btn:hover:before {
+  left: 100%;
+}
+
+.confirm-btn:active {
+  transform: translateY(1px);
+}
+
+.confirm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite, pulse-spinner 1.5s ease-in-out infinite;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(229, 191, 125, 0.02);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(229, 191, 125, 0.15);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(229, 191, 125, 0.25);
+}
+
+/* For Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(229, 191, 125, 0.15) rgba(229, 191, 125, 0.02);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse-spinner {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@media (max-width: 768px) {
+  .trade-popup-container {
+    max-width: 100%;
+    border-radius: 0;
+    min-height: 100vh;
+    padding: 8px;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  .popup-header {
+    padding: 10px 12px;
   }
-  
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+
+  .mat-dialog-content {
+    padding: 12px;
   }
-  
-  .animate-fade-in {
-    animation: fadeIn 0.4s ease-out;
+
+  .confirm-btn {
+    padding: 12px;
   }
-  
-  .animate-slide-up {
-    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(10, 9, 8, 0.4);
-    border-radius: 2px;
-    margin: 8px 0;
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #E5BF7D, #D4A65A);
-    border-radius: 2px;
-    box-shadow: 0 0 4px rgba(229, 191, 125, 0.3);
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(to bottom, #F0C78A, #E5BF7D);
-  }
-  
-  /* For Firefox */
-  .custom-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: #E5BF7D rgba(10, 9, 8, 0.4);
-  }
-  
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  
-  input[type="number"] {
-    -moz-appearance: textfield;
-  }
+}

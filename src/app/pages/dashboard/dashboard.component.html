@@ -7,11 +7,11 @@
                 <div class="tabs">
                     <button class="tab" [class.tab-active]="activeLeftTab === 'watchlist'"
                         (click)="activeLeftTab = 'watchlist'">
-                        <span class="tab-content">Watchlist</span>
+                        <span class="tab-content">{{ 'DASHBOARD.WATCHLIST' | translate }}</span>
                     </button>
                     <button class="tab" [class.tab-active]="activeLeftTab === 'markets'"
                         (click)="activeLeftTab = 'markets'">
-                        <span class="tab-content">Markets</span>
+                        <span class="tab-content">{{ 'DASHBOARD.MARKETS' | translate }}</span>
                     </button>
                 </div>
 
@@ -46,11 +46,11 @@
                 <div class="tabs">
                     <button class="tab" [class.tab-active]="activeRightTab === 'chart'"
                         (click)="activeRightTab = 'chart'">
-                        <span class="tab-content">Chart</span>
+                        <span class="tab-content">{{ 'DASHBOARD.CHART' | translate }}</span>
                     </button>
                     <button class="tab" [class.tab-active]="activeRightTab === 'details'"
                         (click)="activeRightTab = 'details'">
-                        <span class="tab-content">Details</span>
+                        <span class="tab-content">{{ 'DASHBOARD.DETAILS' | translate }}</span>
                     </button>
                 </div>
 
@@ -68,8 +68,6 @@
             <div class="panel-content">
                 <ng-container [ngSwitch]="activeRightTab">
                     <div *ngSwitchCase="'chart'" class="h-full">
-                        <!-- <app-chart></app-chart> -->
-                        <!-- <app-trading-chart></app-trading-chart> -->
                         <app-candlestick-chart></app-candlestick-chart>
                     </div>
                     <div *ngSwitchCase="'details'" class="h-full">
@@ -88,19 +86,19 @@
             <div class="tabs">
                 <button class="tab" [class.tab-active]="activeBottomTab === 'positions'"
                     (click)="activeBottomTab = 'positions'">
-                    <span class="tab-content">Positions</span>
+                    <span class="tab-content">{{ 'DASHBOARD.POSITIONS' | translate }}</span>
                 </button>
-                    <!-- <button class="tab" [class.tab-active]="activeBottomTab === 'orders'"
-                        (click)="activeBottomTab = 'orders'">
-                        <span class="tab-content">Orders</span>
-                    </button> -->
+                <!-- <button class="tab" [class.tab-active]="activeBottomTab === 'orders'"
+                    (click)="activeBottomTab = 'orders'">
+                    <span class="tab-content">{{ 'DASHBOARD.ORDERS' | translate }}</span>
+                </button> -->
                 <button class="tab" [class.tab-active]="activeBottomTab === 'history'"
                     (click)="activeBottomTab = 'history'">
-                    <span class="tab-content">Transaction History</span>
+                    <span class="tab-content">{{ 'DASHBOARD.TRANSACTION_HISTORY' | translate }}</span>
                 </button>
                 <button class="tab" [class.tab-active]="activeBottomTab === 'Closed'"
                     (click)="activeBottomTab = 'Closed'">
-                    <span class="tab-content">Pending Orders</span>
+                    <span class="tab-content">{{ 'DASHBOARD.PENDING_ORDERS' | translate }}</span>
                 </button>
             </div>
 
@@ -112,28 +110,24 @@
                     <path *ngIf="isFullscreen(bottomPanel)" d="M6 18L18 6M6 6l12 12" stroke-linecap="round"
                         stroke-linejoin="round" stroke-width="1.5" />
                 </svg>
-            </button>
-        </div>
+                </button>
+            </div>
 
-        <div class="panel-content">
-            <ng-container [ngSwitch]="activeBottomTab">
-                <div *ngSwitchCase="'positions'" class="h-full">
-                    <!-- <app-positions></app-positions> -->
-                    <app-position-table></app-position-table>
-                </div>
-                <div *ngSwitchCase="'orders'" class="h-full">
-                    <!-- <app-orders></app-orders> -->
-                </div>
-                <div *ngSwitchCase="'history'" class="h-full">
-                    <!-- <app-history></app-history> -->
-                    <!-- <app-closed-   -table></app-closed-positions-table> -->
-                     <app-transaction-table></app-transaction-table>
-                </div>
-                <div *ngSwitchCase="'Closed'" class="h-full">
-                    <!-- <app-closed-positions-table></app-closed-positions-table> -->
-                     <app-pending-order-table></app-pending-order-table>
-                </div>
-            </ng-container>
+            <div class="panel-content">
+                <ng-container [ngSwitch]="activeBottomTab">
+                    <div *ngSwitchCase="'positions'" class="h-full">
+                        <app-position-table></app-position-table>
+                    </div>
+                    <div *ngSwitchCase="'orders'" class="h-full">
+                        <!-- <app-orders></app-orders> -->
+                    </div>
+                    <div *ngSwitchCase="'history'" class="h-full">
+                        <app-transaction-table></app-transaction-table>
+                    </div>
+                    <div *ngSwitchCase="'Closed'" class="h-full">
+                        <app-pending-order-table></app-pending-order-table>
+                    </div>
+                </ng-container>
+            </div>
         </div>
     </div>
-</div>

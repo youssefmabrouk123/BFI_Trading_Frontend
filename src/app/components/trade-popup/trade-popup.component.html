@@ -1,179 +1,179 @@
-   
 <div class="popup-backdrop fixed inset-0 flex items-center justify-center p-3 z-50">
   <div class="trade-popup-container w-full max-w-md mx-auto rounded-xl overflow-hidden shadow-2xl transform transition-all duration-300 ease-out animate-fadeIn">
-
-   <!-- Header with instrument info -->
-      <div class="popup-header flex items-center justify-between px-5 py-4 bg-[#0A0908]/90 border-b border-[#E5BF7D]/10">
-        <div class="flex items-center space-x-3">
-          <span class="type-badge px-2 py-0.5 bg-[#E5BF7D]/15 rounded text-[#E5BF7D] text-xs font-bold uppercase tracking-wider">FX</span>
-          <h2 class="instrument-name text-xl font-semibold text-[#E5BF7D] tracking-tight">{{ instrument }}</h2>
-        </div>
-        <button (click)="close()" [disabled]="isProcessing" class="close-btn p-1.5 rounded-full text-[#E5BF7D]/70 hover:text-[#E5BF7D] hover:bg-[#E5BF7D]/10 transition-colors duration-200 disabled:opacity-50 focus:outline-none focus:ring-1 focus:ring-[#E5BF7D]/30">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+    <!-- Header with instrument info -->
+    <div class="popup-header flex items-center justify-between px-5 py-4 bg-[#0A0908]/90 border-b border-[#E5BF7D]/10">
+      <div class="flex items-center space-x-3">
+        <!-- <span class="type-badge px-2 py-0.5 bg-[#E5BF7D]/15 rounded text-[#E5BF7D] text-xs font-bold uppercase tracking-wider">{{ getTranslatedType(type) }}</span> -->
+        <h2 class="instrument-name text-xl font-semibold text-[#E5BF7D] tracking-tight">{{ instrument }}</h2>
       </div>
+      <button (click)="close()" [disabled]="isProcessing" class="close-btn p-1.5 rounded-full text-[#E5BF7D]/70 hover:text-[#E5BF7D] hover:bg-[#E5BF7D]/10 transition-colors duration-200 disabled:opacity-50 focus:outline-none focus:ring-1 focus:ring-[#E5BF7D]/30">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
 
-      <!-- Main content area -->
-      <div class="p-5 space-y-5">
-        <!-- Live price display with bid/ask -->
-        <div class="grid grid-cols-2 gap-3">
-          <div class="price-box group flex flex-col items-center p-4 bg-[#111]/80 border border-[#E5BF7D]/10 rounded-xl text-center transition-all duration-300" 
-               [ngClass]="{'selected': selectedOperation === 'VENDRE'}" 
-               (click)="setOperation('VENDRE')">
-            <span class="price-label text-xs font-medium text-[#E5BF7D]/70 uppercase tracking-wide mb-1">Ask</span>
-            <div class="flex items-center space-x-1">
-              <strong class="price-value text-xl font-bold text-[#E5BF7D]">{{ askPrice | number:'1.4-4' }}</strong>
-              <span class="price-movement" [ngClass]="getPriceDirection() === 'down' ? 'down' : 'up'">
-                <svg *ngIf="getPriceDirection() === 'down'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-                <svg *ngIf="getPriceDirection() === 'up'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                </svg>
-              </span>
-            </div>
-            <span class="text-xs text-[#E5BF7D]/50 mt-1">SELL</span>
+    <!-- Main content area -->
+    <div class="p-5 space-y-5">
+      <!-- Live price display with bid/ask -->
+      <div class="grid grid-cols-2 gap-3">
+        <div class="price-box group flex flex-col items-center p-4 bg-[#111]/80 border border-[#E5BF7D]/10 rounded-xl text-center transition-all duration-300" 
+             [ngClass]="{'selected': selectedOperation === 'VENDRE'}" 
+             (click)="setOperation('VENDRE')">
+          <span class="price-label text-xs font-medium text-[#E5BF7D]/70 uppercase tracking-wide mb-1">{{ 'TRADE_POPUP.ASK' | translate }}</span>
+          <div class="flex items-center space-x-1">
+            <strong class="price-value text-xl font-bold text-[#E5BF7D]">{{ askPrice | number:'1.4-4' }}</strong>
+            <span class="price-movement" [ngClass]="getPriceDirection() === 'down' ? 'down' : 'up'">
+              <svg *ngIf="getPriceDirection() === 'down'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" [attr.aria-label]="'WATCHLIST.DOWN' | translate">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+              <svg *ngIf="getPriceDirection() === 'up'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" [attr.aria-label]="'WATCHLIST.UP' | translate">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+              </svg>
+            </span>
           </div>
-          
-          <div class="price-box group flex flex-col items-center p-4 bg-[#111]/80 border border-[#E5BF7D]/10 rounded-xl text-center transition-all duration-300" 
-               [ngClass]="{'selected': selectedOperation === 'ACHETER'}" 
-               (click)="setOperation('ACHETER')">
-            <span class="price-label text-xs font-medium text-[#E5BF7D]/70 uppercase tracking-wide mb-1">Bid</span>
-            <div class="flex items-center space-x-1">
-              <strong class="price-value text-xl font-bold text-[#E5BF7D]">{{ bidPrice | number:'1.4-4' }}</strong>
-              <span class="price-movement" [ngClass]="getPriceDirection() === 'down' ? 'down' : 'up'">
-                <svg *ngIf="getPriceDirection() === 'down'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-                <svg *ngIf="getPriceDirection() === 'up'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                </svg>
-              </span>
-            </div>
-            <span class="text-xs text-[#E5BF7D]/50 mt-1">BUY</span>
-          </div>
+          <span class="text-xs text-[#E5BF7D]/50 mt-1">{{ 'TRADE_POPUP.SELL' | translate }}</span>
         </div>
         
-        <!-- Spread information -->
-        <div class="flex justify-center items-center space-x-2">
-          <div class="px-3 py-1 bg-[#0A0908]/60 rounded-full">
-            <span class="text-xs text-[#E5BF7D]/60 font-medium">Spread: <span class="text-[#E5BF7D]/80">{{ spread | number:'1.1-1' }} pips</span></span>
-          </div>
-        </div>
-
-        <!-- Operation selector (Buy/Sell) -->
-        <div class="grid grid-cols-2 gap-3">
-          <button class="operation-btn sell px-4 py-3 bg-[#111]/70 rounded-lg text-sm font-semibold text-[#E5BF7D]/90 uppercase tracking-wide transition-all duration-200 border border-[#E5BF7D]/10 hover:bg-[#E5BF7D]/10" 
-                  [ngClass]="{'selected': selectedOperation === 'VENDRE'}" 
-                  (click)="setOperation('VENDRE')" 
-                  [disabled]="isProcessing">
-            <div class="flex items-center justify-center space-x-2">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="price-box group flex flex-col items-center p-4 bg-[#111]/80 border border-[#E5BF7D]/10 rounded-xl text-center transition-all duration-300" 
+             [ngClass]="{'selected': selectedOperation === 'ACHETER'}" 
+             (click)="setOperation('ACHETER')">
+          <span class="price-label text-xs font-medium text-[#E5BF7D]/70 uppercase tracking-wide mb-1">{{ 'TRADE_POPUP.BID' | translate }}</span>
+          <div class="flex items-center space-x-1">
+            <strong class="price-value text-xl font-bold text-[#E5BF7D]">{{ bidPrice | number:'1.4-4' }}</strong>
+            <span class="price-movement" [ngClass]="getPriceDirection() === 'down' ? 'down' : 'up'">
+              <svg *ngIf="getPriceDirection() === 'down'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" [attr.aria-label]="'WATCHLIST.DOWN' | translate">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
-              <span>Sell</span>
-            </div>
-          </button>
-          
-          <button class="operation-btn buy px-4 py-3 bg-[#111]/70 rounded-lg text-sm font-semibold text-[#E5BF7D]/90 uppercase tracking-wide transition-all duration-200 border border-[#E5BF7D]/10 hover:bg-[#E5BF7D]/10" 
-                  [ngClass]="{'selected': selectedOperation === 'ACHETER'}" 
-                  (click)="setOperation('ACHETER')" 
-                  [disabled]="isProcessing">
-            <div class="flex items-center justify-center space-x-2">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg *ngIf="getPriceDirection() === 'up'" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" [attr.aria-label]="'WATCHLIST.UP' | translate">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
               </svg>
-              <span>Buy</span>
-            </div>
-          </button>
+            </span>
+          </div>
+          <span class="text-xs text-[#E5BF7D]/50 mt-1">{{ 'TRADE_POPUP.BUY' | translate }}</span>
         </div>
-
-        <!-- Quantity selector -->
-        <div class="space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="text-sm font-medium text-[#E5BF7D]/80">Amount</span>
-            <span class="text-xs text-[#E5BF7D]/60">{{ baseCurrency }}</span>
-          </div>
-          
-          <div class="quantity-selector flex items-center bg-[#111]/70 border border-[#E5BF7D]/10 rounded-lg p-1.5">
-            <button class="quantity-btn w-9 h-9 bg-[#0A0908]/80 border border-[#E5BF7D]/10 rounded-md text-[#E5BF7D] flex items-center justify-center transition-all duration-150 hover:bg-[#E5BF7D]/10" 
-                    (click)="decrementQuantity()" 
-                    [disabled]="isProcessing || quantity <= 1">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-              </svg>
-            </button>
-            
-            <input type="number" 
-                   class="quantity-input flex-1 h-9 bg-transparent border-none text-[#E5BF7D] text-lg font-semibold text-center focus:outline-none" 
-                   [(ngModel)]="quantity" 
-                   min="1"
-                   (change)="onQuantityChange($event)" 
-                   [disabled]="isProcessing" />
-                   
-            <button class="quantity-btn w-9 h-9 bg-[#0A0908]/80 border border-[#E5BF7D]/10 rounded-md text-[#E5BF7D] flex items-center justify-center transition-all duration-150 hover:bg-[#E5BF7D]/10" 
-                    (click)="incrementQuantity()" 
-                    [disabled]="isProcessing">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- Additional market data and trade summary -->
-        <div class="trade-summary p-4 bg-[#111]/70 border border-[#E5BF7D]/10 rounded-xl">
-          <div class="space-y-3">
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-[#E5BF7D]/70">Price</span>
-              <span class="text-sm text-[#E5BF7D]/90 font-medium">
-                {{ (selectedOperation === 'ACHETER' ? askPrice : bidPrice) | number:'1.4-4' }}
-              </span>
-            </div>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-[#E5BF7D]/70">{{ selectedOperation === 'ACHETER' ? 'Cost' : 'Value' }}</span>
-              <span class="highlight-value text-base font-bold text-[#E5BF7D]">
-                {{ getTotalAmount() | number:'1.4-4' }} {{ quoteCurrency }}
-              </span>
-            </div>
-            <div *ngIf="selectedOperation === 'ACHETER'" class="text-xs text-[#E5BF7D]/50 text-right">
-              You will receive {{ quantity }} {{ baseCurrency }}
-            </div>
-            <div *ngIf="selectedOperation === 'VENDRE'" class="text-xs text-[#E5BF7D]/50 text-right">
-              You will sell {{ quantity }} {{ baseCurrency }}
-            </div>
-          </div>
+      </div>
+      
+      <!-- Spread information -->
+      <div class="flex justify-center items-center space-x-2">
+        <div class="px-3 py-1 bg-[#0A0908]/60 rounded-full">
+          <span class="text-xs text-[#E5BF7D]/60 font-medium">{{ 'TRADE_POPUP.SPREAD' | translate }}: <span class="text-[#E5BF7D]/80">{{ spread | number:'1.1-1' }} {{ 'TRADE_POPUP.PIPS' | translate }}</span></span>
         </div>
       </div>
 
-      <!-- Footer with confirm button -->
-      <div class="px-5 pb-5 pt-1">
-        <button [ngClass]="{
-                  'confirm-btn buy bg-green-600/90 hover:bg-green-600 border border-green-600/80': selectedOperation === 'ACHETER',
-                  'confirm-btn sell bg-red-600/90 hover:bg-red-600 border border-red-600/80': selectedOperation === 'VENDRE'
-                }" 
-                class="w-full py-3.5 rounded-lg text-white text-base font-semibold uppercase tracking-wide transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#E5BF7D]/30 disabled:opacity-60" 
-                (click)="confirmTrade()" 
+      <!-- Operation selector (Buy/Sell) -->
+      <div class="grid grid-cols-2 gap-3">
+        <button class="operation-btn sell px-4 py-3 bg-[#111]/70 rounded-lg text-sm font-semibold text-[#E5BF7D]/90 uppercase tracking-wide transition-all duration-200 border border-[#E5BF7D]/10 hover:bg-[#E5BF7D]/10" 
+                [ngClass]="{'selected': selectedOperation === 'VENDRE'}" 
+                (click)="setOperation('VENDRE')" 
                 [disabled]="isProcessing">
-          <div class="flex items-center justify-center">
-            <div *ngIf="isProcessing" class="flex items-center space-x-2">
-              <span class="loading-spinner inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full"></span>
-              <span>Processing...</span>
-            </div>
-            <div *ngIf="!isProcessing" class="flex items-center space-x-2">
-              <svg *ngIf="selectedOperation === 'ACHETER'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-              </svg>
-              <svg *ngIf="selectedOperation === 'VENDRE'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-              <span>{{ selectedOperation }} {{ quantity }} {{ baseCurrency }}</span>
-            </div>
+          <div class="flex items-center justify-center space-x-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+            <span>{{ 'TRADE_POPUP.SELL' | translate }}</span>
+          </div>
+        </button>
+        
+        <button class="operation-btn buy px-4 py-3 bg-[#111]/70 rounded-lg text-sm font-semibold text-[#E5BF7D]/90 uppercase tracking-wide transition-all duration-200 border border-[#E5BF7D]/10 hover:bg-[#E5BF7D]/10" 
+                [ngClass]="{'selected': selectedOperation === 'ACHETER'}" 
+                (click)="setOperation('ACHETER')" 
+                [disabled]="isProcessing">
+          <div class="flex items-center justify-center space-x-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+            <span>{{ 'TRADE_POPUP.BUY' | translate }}</span>
           </div>
         </button>
       </div>
+
+      <!-- Quantity selector -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-medium text-[#E5BF7D]/80">{{ 'TRADE_POPUP.AMOUNT' | translate }}</span>
+          <span class="text-xs text-[#E5BF7D]/60">{{ baseCurrency }}</span>
+        </div>
+        
+        <div class="quantity-selector flex items-center bg-[#111]/70 border border-[#E5BF7D]/10 rounded-lg p-1.5">
+          <button class="quantity-btn w-9 h-9 bg-[#0A0908]/80 border border-[#E5BF7D]/10 rounded-md text-[#E5BF7D] flex items-center justify-center transition-all duration-150 hover:bg-[#E5BF7D]/10" 
+                  (click)="decrementQuantity()" 
+                  [disabled]="isProcessing || quantity <= 1">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+            </svg>
+          </button>
+          
+          <input type="number" 
+                 class="quantity-input flex-1 h-9 bg-transparent border-none text-[#E5BF7D] text-lg font-semibold text-center focus:outline-none" 
+                 [(ngModel)]="quantity" 
+                 min="1"
+                 (change)="onQuantityChange($event)" 
+                 [disabled]="isProcessing" />
+                 
+          <button class="quantity-btn w-9 h-9 bg-[#0A0908]/80 border border-[#E5BF7D]/10 rounded-md text-[#E5BF7D] flex items-center justify-center transition-all duration-150 hover:bg-[#E5BF7D]/10" 
+                  (click)="incrementQuantity()" 
+                  [disabled]="isProcessing">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Additional market data and trade summary -->
+      <div class="trade-summary p-4 bg-[#111]/70 border border-[#E5BF7D]/10 rounded-xl">
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-[#E5BF7D]/70">{{ 'TRADE_POPUP.PRICE' | translate }}</span>
+            <span class="text-sm text-[#E5BF7D]/90 font-medium">
+              {{ (selectedOperation === 'ACHETER' ? askPrice : bidPrice) | number:'1.4-4' }}
+            </span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-[#E5BF7D]/70">{{ selectedOperation === 'ACHETER' ? ('TRADE_POPUP.COST' | translate) : ('TRADE_POPUP.VALUE' | translate) }}</span>
+            <span class="highlight-value text-base font-bold text-[#E5BF7D]">
+              {{ getTotalAmount() | number:'1.4-4' }} {{ quoteCurrency }}
+            </span>
+          </div>
+          <div *ngIf="selectedOperation === 'ACHETER'" class="text-xs text-[#E5BF7D]/50 text-right">
+            {{ 'TRADE_POPUP.RECEIVE' | translate:{ quantity: quantity, baseCurrency: baseCurrency } }}
+          </div>
+          <div *ngIf="selectedOperation === 'VENDRE'" class="text-xs text-[#E5BF7D]/50 text-right">
+            {{ 'TRADE_POPUP.SELL_AMOUNT' | translate:{ quantity: quantity, baseCurrency: baseCurrency } }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer with confirm button -->
+    <div class="px-5 pb-5 pt-1">
+      <button [ngClass]="{
+                'confirm-btn buy bg-green-600/90 hover:bg-green-600 border border-green-600/80': selectedOperation === 'ACHETER',
+                'confirm-btn sell bg-red-600/90 hover:bg-red-600 border border-red-600/80': selectedOperation === 'VENDRE'
+              }" 
+              class="w-full py-3.5 rounded-lg text-white text-base font-semibold uppercase tracking-wide transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#E5BF7D]/30 disabled:opacity-60" 
+              (click)="confirmTrade()" 
+              [disabled]="isProcessing">
+        <div class="flex items-center justify-center">
+          <div *ngIf="isProcessing" class="flex items-center space-x-2">
+            <span class="loading-spinner inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full"></span>
+            <span>{{ 'TRADE_POPUP.PROCESSING' | translate }}</span>
+          </div>
+          <div *ngIf="!isProcessing" class="flex items-center space-x-2">
+            <svg *ngIf="selectedOperation === 'ACHETER'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+            <svg *ngIf="selectedOperation === 'VENDRE'" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+            <span [ngSwitch]="selectedOperation">
+              <span *ngSwitchCase="'ACHETER'">{{ 'TRADE_POPUP.CONFIRM_BUY' | translate:{ quantity: quantity, baseCurrency: baseCurrency } }}</span>
+              <span *ngSwitchCase="'VENDRE'">{{ 'TRADE_POPUP.CONFIRM_SELL' | translate:{ quantity: quantity, baseCurrency: baseCurrency } }}</span>
+            </span>
+          </div>
+        </div>
+      </button>
     </div>
   </div>
-
+</div>

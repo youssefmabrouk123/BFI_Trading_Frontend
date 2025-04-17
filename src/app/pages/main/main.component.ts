@@ -3,6 +3,7 @@ import { AuthService, User } from 'src/app/services/auth/auth.service';
 import { Subscription } from 'rxjs';
 import { NotificationService, Notification } from 'src/app/services/notification/notification.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-main',
@@ -19,6 +20,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
 })
 export class MainComponent implements OnInit, OnDestroy {
   isDropdownOpen = false;
+  isSettingsSubMenuOpen = false; // Added for settings submenu
   isMobileMenuOpen = false;
   isNotificationsOpen = false;
   selectedView: 'dashboard' | 'analytics' | 'account' = 'dashboard';
@@ -29,8 +31,13 @@ export class MainComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private notificationService: NotificationService
-  ) {}
+    private notificationService: NotificationService,
+    private translate: TranslateService
+  ) {
+    this.translate.setDefaultLang('en');
+    const savedLang = localStorage.getItem('lang');
+    this.translate.use(savedLang || 'en');
+  }
 
   ngOnInit(): void {
     this.subscriptions.add(
@@ -102,12 +109,24 @@ export class MainComponent implements OnInit, OnDestroy {
   closeMobileMenu(): void { this.isMobileMenuOpen = false; document.body.style.overflow = ''; }
   logout(): void { this.authService.logout(); this.closeDropdown(); this.closeMobileMenu(); this.closeNotifications(); }
 
+  // Added for settings submenu
+  toggleSettingsSubMenu(): void {
+    this.isSettingsSubMenuOpen = !this.isSettingsSubMenuOpen;
+  }
+
+  // Placeholder methods for buttons
+  onChangeLanguage(): void {
+    // Logic for changing language will go here
+  }
+
+  onSwitchMode(): void {
+    // Logic for switching mode (light/dark) will go here
+  }
+
   onOutsideClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
     if (!target.closest('.profile-dropdown') && !target.closest('.profile-trigger')) this.closeDropdown();
     if (!target.closest('.notification-dropdown') && !target.closest('.notification-icon-button')) this.closeNotifications();
     if (target.classList.contains('mobile-menu-overlay')) this.closeMobileMenu();
   }
-
-
 }

@@ -14,21 +14,19 @@
             <line x1="9" y1="8" x2="15" y2="8"></line>
             <line x1="17" y1="16" x2="23" y2="16"></line>
           </svg>
-          <h3 class="filter-title">Market Filter</h3>
+          <h3 class="filter-title">{{ 'MARKET.FILTER_TITLE' | translate }}</h3>
           <div class="table-controls">
             <button class="refresh-btn" (click)="refreshTable()" [class.loading]="isRefreshing">
               <i class="fa fa-sync refresh-icon" [class.spinning]="isRefreshing"></i>
             </button>
           </div>
-          
         </div>
-       
         
         <div class="filter-controls">
           <div class="search-group">
             <input type="text" 
                   class="search-input" 
-                  placeholder="Search instrument..." 
+                  [placeholder]="'MARKET.SEARCH_PLACEHOLDER' | translate" 
                   [(ngModel)]="filters.search" 
                   (ngModelChange)="applyFilters()">
             <button class="search-btn">
@@ -49,9 +47,9 @@
       <div class="filter-grid">
         <!-- Currency Base Filter -->
         <div class="filter-group">
-          <label>Currency Base</label>
+          <label>{{ 'MARKET.CURRENCY_BASE' | translate }}</label>
           <select class="filter-select" [(ngModel)]="filters.currencyBase" (ngModelChange)="applyFilters()">
-            <option value="all">All</option>
+            <option value="all">{{ 'MARKET.CURRENCY_ALL' | translate }}</option>
             <option value="USD">USD</option>
             <option value="EUR">EUR</option>
             <option value="GBP">GBP</option>
@@ -65,34 +63,34 @@
   
         <!-- Activity Filters -->
         <div class="filter-group">
-          <label>Activity</label>
+          <label>{{ 'MARKET.ACTIVITY' | translate }}</label>
           <div class="filter-options">
             <label class="filter-checkbox">
               <input type="checkbox" [(ngModel)]="filters.activity.gainers" (ngModelChange)="applyFilters()">
               <span class="checkbox-custom"></span>
-              <span>Gainers</span>
+              <span>{{ 'MARKET.GAINERS' | translate }}</span>
             </label>
             <label class="filter-checkbox">
               <input type="checkbox" [(ngModel)]="filters.activity.losers" (ngModelChange)="applyFilters()">
               <span class="checkbox-custom"></span>
-              <span>Losers</span>
+              <span>{{ 'MARKET.LOSERS' | translate }}</span>
             </label>
             <!-- <label class="filter-checkbox">
               <input type="checkbox" [(ngModel)]="filters.activity.mostVolatile" (ngModelChange)="applyFilters()">
               <span class="checkbox-custom"></span>
-              <span>Most Volatile</span>
+              <span>{{ 'MARKET.MOST_VOLATILE' | translate }}</span>
             </label> -->
             <label class="filter-checkbox">
               <input type="checkbox" [(ngModel)]="filters.activity.favorites" (ngModelChange)="applyFilters()">
               <span class="checkbox-custom"></span>
-              <span>Favorites</span>
+              <span>{{ 'MARKET.FAVORITES' | translate }}</span>
             </label>
           </div>
         </div>
   
         <!-- Performance Range -->
         <div class="filter-group full-width">
-          <label>Performance Range</label>
+          <label>{{ 'MARKET.PERFORMANCE_RANGE' | translate }}</label>
           <div class="range-slider">
             <span class="range-value">{{ filters.performance.min }}%</span>
             <div class="slider-group">
@@ -116,7 +114,7 @@
             <path d="M3 2v6h6"></path>
             <path d="M3 13a9 9 0 1 0 3-7.7L3 8"></path>
           </svg>
-          Reset
+          {{ 'MARKET.RESET' | translate }}
         </button>
         <button class="save-btn" (click)="exportTableToCSV()">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -124,7 +122,7 @@
             <polyline points="17 21 17 13 7 13 7 21"></polyline>
             <polyline points="7 3 7 8 15 8"></polyline>
           </svg>
-          Save View CSV
+          {{ 'MARKET.SAVE_CSV' | translate }}
         </button>
         <!-- <button class="export-btn" (click)="exportTableToCSV()">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -132,7 +130,7 @@
             <polyline points="7 10 12 15 17 10"></polyline>
             <line x1="12" y1="15" x2="12" y2="3"></line>
           </svg>
-          Export CSV
+          {{ 'MARKET.EXPORT_CSV' | translate }}
         </button> -->
       </div>
     </div>
@@ -140,44 +138,44 @@
   <table class="market-table">
     <thead>
       <tr>
-        <th class="instrument-col sticky left-0 bg-white z-50">Instrument</th>
-        <th class="z-20">Bid</th>
-        <th class="z-20">Ask</th>
-        <th class="z-20">Spread</th>
-        <th class="z-20">Var_Bid</th>
-        <th class="z-20">%Var_Bid</th>
-        <th class="z-20">Price update</th>
-        <th class="z-20">Previous close</th>
-        <th class="z-20">High</th>
-        <th class="z-20">Low</th>
+        <th class="instrument-col sticky left-0 bg-white z-50">{{ 'WATCHLIST.INSTRUMENT' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.BID' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.ASK' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.SPREAD' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.VAR_BID' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.PERCENT_VAR_BID' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.PRICE_UPDATE' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.PREVIOUS_CLOSE' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.HIGH' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.LOW' | translate }}</th>
       </tr>
     </thead>
     <tbody *ngIf="!isLoading && marketData.length > 0">
-      <tr *ngFor="let item of filteredMarketData; trackBy: trackByInstrument" [class.favorite-row]="item.favorite" (dblclick)="openTradePopup(item)"    class="cursor-pointer hover:bg-gray-100 transition-colors">
+      <tr *ngFor="let item of filteredMarketData; trackBy: trackByInstrument" [class.favorite-row]="item.favorite" (dblclick)="openTradePopup(item)" class="cursor-pointer hover:bg-gray-100 transition-colors">
         <td class="instrument-col sticky left-0 bg-white z-10">
           <div class="instrument-cell">
-            <span [class]="'type-badge ' + item.type.toLowerCase()">{{ item.type }}</span>
+            <!-- <span [class]="'type-badge ' + item.type.toLowerCase()">{{ getTranslatedType(item.type) }}</span> -->
             <span class="instrument-name">{{ item.instrument }}</span>
-            
-
             <span class="favorite-star" (click)="toggleFavorite(item, $event)" [class.active]="item.favorite">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                   fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
               </svg>
             </span>
-            
           </div>
         </td>
         <td>
-          <div [class]="'price-box  ' + item.direction" >
-            <span class="arrow font-bold " >{{ item.direction === 'up' ? '▲' : '▼' }}</span>
+          <div [class]="'price-box ' + item.direction">
+            <span class="arrow font-bold" [attr.aria-label]="item.direction === 'up' ? ('WATCHLIST.UP' | translate) : ('WATCHLIST.DOWN' | translate)">
+              {{ item.direction === 'up' ? '▲' : '▼' }}
+            </span>
             {{ item.buy }}
           </div>
         </td>
         <td>
-          <div [class]="'price-box ' + item.direction" >
-            <span class="arrow font-bold" >{{ item.direction === 'up' ? '▲' : '▼' }}</span>
+          <div [class]="'price-box ' + item.direction">
+            <span class="arrow font-bold" [attr.aria-label]="item.direction === 'up' ? ('WATCHLIST.UP' | translate) : ('WATCHLIST.DOWN' | translate)">
+              {{ item.direction === 'up' ? '▲' : '▼' }}
+            </span>
             {{ item.sell }}
           </div>
         </td>
@@ -197,7 +195,7 @@
     </tbody>
     <tbody *ngIf="!isLoading && marketData.length === 0">
       <tr>
-        <td colspan="10" class="p-4 text-center text-gray-500">No market data available.</td>
+        <td colspan="10" class="p-4 text-center text-gray-500">{{ 'MARKET.NO_DATA' | translate }}</td>
       </tr>
     </tbody>
     <tbody *ngIf="isLoading">
@@ -207,9 +205,5 @@
         </td>
       </tr>
     </tbody>
-
   </table>
-  
 </div>
-
-

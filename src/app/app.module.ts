@@ -10,12 +10,11 @@ import { BottomPanelComponent } from './components/bottom-panel/bottom-panel.com
 import { LucideAngularModule, Zap, Search, Filter, Plus } from 'lucide-angular';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import {  FormsModule, ReactiveFormsModule } from '@angular/forms';  
-import {  HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import {  HTTP_INTERCEPTORS, HttpClientModule ,HttpClient} from '@angular/common/http';
 import { WatchlistComponent } from './components/watchlist/watchlist.component';
 import { CommonModule } from '@angular/common';
 import { NgParticlesModule } from 'ng-particles';
 import { RightPanelComponent } from './components/right-panel/right-panel.component';
-// import { AuthInterceptor } from './services/auth/auth.interceptor';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -38,6 +37,18 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { PendingOrderTableComponent } from './components/pending-order-table/pending-order-table.component';
 import { CandlestickChartComponent } from './components/candlestick-chart/candlestick-chart.component';
+import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { LanguageSwitcherComponent } from './components/language-switcher/language-switcher.component';
+import { ThemeToggleComponent } from './components/theme-toggle/theme-toggle.component';
+
+
+const config: SocketIoConfig = { url: 'http://localhost:9092', options: {} };
+
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 
 @NgModule({
   declarations: [
@@ -60,6 +71,8 @@ import { CandlestickChartComponent } from './components/candlestick-chart/candle
     StopLossTakeProfitPopupComponent,
     PendingOrderTableComponent,
     CandlestickChartComponent,
+    LanguageSwitcherComponent,
+    ThemeToggleComponent,
     
     
   
@@ -88,7 +101,15 @@ import { CandlestickChartComponent } from './components/candlestick-chart/candle
     NgChartsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule 
+    MatSelectModule ,
+    SocketIoModule.forRoot(config),
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient],
+      },
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent]

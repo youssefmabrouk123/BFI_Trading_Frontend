@@ -2,23 +2,23 @@
   <table class="market-table">
     <thead>
       <tr>
-        <th class="instrument-col sticky left-0 bg-white z-50">Instrument</th>
-        <th class="z-20">Bid</th>
-        <th class="z-20">Ask</th>
-        <th class="z-20">Spread</th>
-        <th class="z-20">Var_Bid</th>
-        <th class="z-20">%Var_Bid</th>
-        <th class="z-20">Price update</th>
-        <th class="z-20">Previous close</th>
-        <th class="z-20">High</th>
-        <th class="z-20">Low</th>
+        <th class="instrument-col sticky left-0 bg-white z-50">{{ 'WATCHLIST.INSTRUMENT' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.BID' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.ASK' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.SPREAD' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.VAR_BID' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.PERCENT_VAR_BID' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.PRICE_UPDATE' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.PREVIOUS_CLOSE' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.HIGH' | translate }}</th>
+        <th class="z-20">{{ 'WATCHLIST.LOW' | translate }}</th>
       </tr>
     </thead>
-    <!-- Afficher les données si elles existent -->
+    <!-- Display data if available -->
     <tbody *ngIf="!isLoading && favoritesData.length > 0">
-      <tr *ngFor="let item of favoritesData; trackBy: trackByPk" [class.favorite-row]="item.favorite" (dblclick)="openTradePopup(item)"    class="cursor-pointer hover:bg-gray-100 transition-colors">
+      <tr *ngFor="let item of favoritesData; trackBy: trackByPk" [class.favorite-row]="item.favorite" (dblclick)="openTradePopup(item)" class="cursor-pointer hover:bg-gray-100 transition-colors">
         <td class="instrument-col sticky left-0 bg-white z-10">
-          <div class="instrument-cell ">
+          <div class="instrument-cell">
             <span [class]="'type-badge ' + item.type.toLowerCase()">{{ item.type }}</span>
             <span class="instrument-name">{{ item.instrument }}</span>
             <span class="favorite-star" (click)="toggleFavorite(item, $event)" [class.active]="item.favorite">
@@ -53,18 +53,19 @@
             <span style="color: aliceblue;">{{ item.updateTime }}</span>
             <span class="pulse-dot"></span>
           </div>
-        </td>        <td style="color: aliceblue;">{{ item.closing }}</td>
+        </td>
+        <td style="color: aliceblue;">{{ item.closing }}</td>
         <td style="color: aliceblue;">{{ item.high }}</td>
         <td style="color: aliceblue;">{{ item.low }}</td>
       </tr>
     </tbody>
-    <!-- Afficher un message si aucune donnée n'est disponible -->
+    <!-- Display message if no data is available -->
     <tbody *ngIf="!isLoading && favoritesData.length === 0">
-        <tr>
-          <td colspan="10" class="p-4 text-center text-gray-500">Aucun favori disponible.</td>
-        </tr>
-      </tbody>
-    <!-- Afficher le skeleton pendant le chargement -->
+      <tr>
+        <td colspan="10" class="p-4 text-center text-gray-500">{{ 'WATCHLIST.NO_FAVORITES' | translate }}</td>
+      </tr>
+    </tbody>
+    <!-- Display skeleton during loading -->
     <tbody *ngIf="isLoading">
       <tr *ngFor="let skeleton of skeletonArray">
         <td class="skeleton-cell" colspan="10">

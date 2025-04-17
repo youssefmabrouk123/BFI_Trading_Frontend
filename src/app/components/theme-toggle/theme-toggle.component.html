@@ -1,0 +1,24 @@
+<div class="theme-switcher flex items-center space-x-1 bg border rounded-md p-1">
+    <button
+      type="button"
+      (click)="setTheme('dark')"
+      class="px-2 py-1 text-sm font-medium rounded-sm transition-all duration-200"
+      [ngClass]="{
+        'bg-active text-active': currentTheme === 'dark',
+        'hover:bg-secondary hover:bg-opacity-20': currentTheme !== 'dark'
+      }"
+    >
+      Dark
+    </button>
+    <button
+      type="button"
+      (click)="setTheme('light')"
+      class="px-2 py-1 text-sm font-medium rounded-sm transition-all duration-200"
+      [ngClass]="{
+        'bg-active text-active': currentTheme === 'light',
+        'hover:bg-secondary hover:bg-opacity-20': currentTheme !== 'light'
+      }"
+    >
+      Light
+    </button>
+  </div>

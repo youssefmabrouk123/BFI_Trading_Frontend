@@ -7,9 +7,9 @@
             <path d="M3 7h18v6H3z"></path>
             <path d="M8 7V3m8 4V3m-5 10v4m0 4v-4m-5-4h10"></path>
           </svg>
-          <h3 class="filter-title">Positions</h3>
+          <h3 class="filter-title">{{ 'POSITION.TITLE' | translate }}</h3>
           <div class="table-controls">
-            <button class="refresh-btn" (click)="refreshPositions()" [class.loading]="isRefreshing" title="Refresh">
+            <button class="refresh-btn" (click)="refreshPositions()" [class.loading]="isRefreshing" [title]="'POSITION.REFRESH' | translate">
               <i class="fa fa-sync refresh-icon" [class.spinning]="isRefreshing"></i>
             </button>
           </div>
@@ -18,7 +18,7 @@
           <div class="search-group">
             <input type="text" 
                    class="search-input" 
-                   placeholder="Search positions..." 
+                   [placeholder]="'POSITION.SEARCH_PLACEHOLDER' | translate" 
                    [(ngModel)]="searchQuery" 
                    (ngModelChange)="filterAndSortPositions()">
             <button class="search-btn">
@@ -37,54 +37,54 @@
     <thead>
       <tr>
         <th class="instrument-col sticky left-0 z-20" (click)="sortBy('identifier')">
-          Devise <i class="fa" [ngClass]="getSortIcon('identifier')"></i>
+          {{ 'POSITION.CURRENCY' | translate }} <i class="fa" [ngClass]="getSortIcon('identifier')"></i>
         </th>
-        <th (click)="sortBy('mntDev')">Montant Devise <i class="fa" [ngClass]="getSortIcon('mntDev')"></i></th>
-        <th (click)="sortBy('besoinDev')">Besoin Devise <i class="fa" [ngClass]="getSortIcon('besoinDev')"></i></th>
-        <th (click)="sortBy('finalPosition')">Position Finale <i class="fa" [ngClass]="getSortIcon('finalPosition')"></i></th>
-        <th>Actions</th>
+        <th (click)="sortBy('mntDev')">{{ 'POSITION.AMOUNT_CURRENCY' | translate }} <i class="fa" [ngClass]="getSortIcon('mntDev')"></i></th>
+        <th (click)="sortBy('besoinDev')">{{ 'POSITION.REQUIRED_CURRENCY' | translate }} <i class="fa" [ngClass]="getSortIcon('besoinDev')"></i></th>
+        <th (click)="sortBy('finalPosition')">{{ 'POSITION.FINAL_POSITION' | translate }} <i class="fa" [ngClass]="getSortIcon('finalPosition')"></i></th>
+        <th>{{ 'POSITION.ACTIONS' | translate }}</th>
       </tr>
     </thead>
     <tbody *ngIf="!isLoading && filteredPositions.length > 0">
       <tr *ngFor="let position of filteredPositions; trackBy: trackById" 
-          class="cursor-pointer hover:bg-gray-800 transition-colors" >
-          <ng-container *ngIf="position.identifier !== 'TND'">
-        <td class="instrument-col sticky left-0 z-10">
-          <div class="instrument-cell">
-            <span class="type-badge fx">FX</span>
-            <span class="instrument-name">{{ position.identifier }}</span>
-          </div>
-        </td>
-        <td class="colo">{{ position.mntDev | number:'1.2-2' }}</td>
-        <td class="colo">{{ position.besoinDev | number:'1.2-2' }}</td>
-        <td  [ngClass]="getValueClass(position.mntDev + position.besoinDev)">
-          {{ getValueText((position.mntDev + position.besoinDev).toString()) | number:'1.2-2' }}
-        </td>
-        <td class="action-cell" *ngIf="position.identifier !== 'TND'">
-          <div class="action-container">
-            <button class="action-btn" (click)="toggleActions(position.pk)" title="More actions">
-              <i class="fa fa-ellipsis-h"></i>
-            </button>
-            <div class="action-dropdown" *ngIf="activeDropdown === position.pk">
-              <button class="dropdown-item trade" (click)="openTradePopup(position)">
-                <i class="fa fa-exchange"></i> Trade
-              </button>
-              <button class="dropdown-item sl-tp" (click)="openStopLossTakeProfitPopup(position)">
-                <i class="fa fa-shield"></i> Stop Loss/Take Profit
-              </button>
-              <!-- <button class="dropdown-item close-position" (click)="closePosition(position)">
-                <i class="fa fa-times"></i> Close Position
-              </button> -->
+          class="cursor-pointer hover:bg-gray-800 transition-colors">
+        <ng-container *ngIf="position.identifier !== 'TND'">
+          <td class="instrument-col sticky left-0 z-10">
+            <div class="instrument-cell">
+              <span class="type-badge fx">FX</span>
+              <span class="instrument-name">{{ position.identifier }}</span>
             </div>
-          </div>
-        </td>
-        <td *ngIf="position.identifier === 'TND'"></td> <!-- Empty cell for alignment -->
-      </ng-container>
+          </td>
+          <td class="colo">{{ position.mntDev | number:'1.2-2' }}</td>
+          <td class="colo">{{ position.besoinDev | number:'1.2-2' }}</td>
+          <td [ngClass]="getValueClass(position.mntDev + position.besoinDev)">
+            {{ getValueText((position.mntDev + position.besoinDev).toString()) | number:'1.2-2' }}
+          </td>
+          <td class="action-cell" *ngIf="position.identifier !== 'TND'">
+            <div class="action-container">
+              <button class="action-btn" (click)="toggleActions(position.pk)" [title]="'POSITION.MORE_ACTIONS' | translate">
+                <i class="fa fa-ellipsis-h"></i>
+              </button>
+              <div class="action-dropdown" *ngIf="activeDropdown === position.pk">
+                <button class="dropdown-item trade" (click)="openTradePopup(position)">
+                  <i class="fa fa-exchange"></i> {{ 'POSITION.TRADE' | translate }}
+                </button>
+                <button class="dropdown-item sl-tp" (click)="openStopLossTakeProfitPopup(position)">
+                  <i class="fa fa-shield"></i> {{ 'POSITION.STOP_LOSS_TAKE_PROFIT' | translate }}
+                </button>
+                <!-- <button class="dropdown-item close-position" (click)="closePosition(position)">
+                  <i class="fa fa-times"></i> {{ 'POSITION.CLOSE_POSITION' | translate }}
+                </button> -->
+              </div>
+            </div>
+          </td>
+          <td *ngIf="position.identifier === 'TND'"></td> <!-- Empty cell for alignment -->
+        </ng-container>
       </tr>
     </tbody>
     <tbody *ngIf="!isLoading && filteredPositions.length === 0">
       <tr>
-        <td colspan="5" class="p-4 text-center text-gray-500">No positions available</td>
+        <td colspan="5" class="p-4 text-center text-gray-500">{{ 'POSITION.NO_POSITIONS' | translate }}</td>
       </tr>
     </tbody>
     <tbody *ngIf="isLoading">

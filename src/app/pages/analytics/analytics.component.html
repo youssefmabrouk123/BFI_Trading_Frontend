@@ -7,61 +7,59 @@
   <!-- Error state -->
   <div *ngIf="error" class="error-state">
     <div class="error-message">
-      <strong>Erreur !</strong>
-      <span>Impossible de charger les données du tableau de bord.</span>
-      <button (click)="loadDashboardData()">Réessayer</button>
+      <strong>{{ 'ANALYTICS.ERROR' | translate }}</strong>
+      <span>{{ 'ANALYTICS.LOAD_ERROR' | translate }}</span>
+      <button (click)="loadDashboardData()">{{ 'ANALYTICS.RETRY' | translate }}</button>
     </div>
   </div>
 
   <!-- Dashboard content -->
   <div *ngIf="!loading && !error && stats">
-    <h1 class="dashboard-title">Tableau de bord</h1>
+    <h1 class="dashboard-title">{{ 'ANALYTICS.DASHBOARD' | translate }}</h1>
 
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-label">Nombre de transactions</div>
+        <div class="stat-label">{{ 'ANALYTICS.TRANSACTION_COUNT' | translate }}</div>
         <div class="stat-value">{{ stats.transactionCount }}</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Montant TND</div>
+        <div class="stat-label">{{ 'ANALYTICS.AMOUNT_TND' | translate }}</div>
         <div class="stat-value">{{ formatCurrency(stats.position) }} TND</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Dernière action</div>
+        <div class="stat-label">{{ 'ANALYTICS.LAST_ACTION' | translate }}</div>
         <div class="stat-value" *ngIf="formatDate(stats.lastAction )!== 'N/A'; else elseBlock">
           {{ formatDate(stats.lastAction)}}
         </div>
         <ng-template #elseBlock>
-          Aucune action enregistrée
+          {{ 'ANALYTICS.NO_ACTION' | translate }}
         </ng-template>
-        
       </div>
-      
     </div>
 
     <div class="chart-section">
       <div class="chart-card">
-        <h3 class="chart-title">Volume par devise</h3>
+        <h3 class="chart-title">{{ 'ANALYTICS.VOLUME_BY_CURRENCY' | translate }}</h3>
         <div class="chart-container"><canvas id="volumeChart"></canvas></div>
       </div>
       <div class="chart-card">
-        <h3 class="chart-title">Activité horaire</h3>
+        <h3 class="chart-title">{{ 'ANALYTICS.HOURLY_ACTIVITY' | translate }}</h3>
         <div class="chart-container"><canvas id="hourlyActivityChart"></canvas></div>
       </div>
       <!-- <div class="chart-card">
-        <h3 class="chart-title">Tendances des taux de change</h3>
+        <h3 class="chart-title">{{ 'ANALYTICS.EXCHANGE_RATE_TRENDS' | translate }}</h3>
         <div class="chart-container"><canvas id="exchangeRateChart"></canvas></div>
       </div> -->
     </div>
 
     <div class="transactions-card">
-      <h3 class="transactions-title">Transactions récentes</h3>
+      <h3 class="transactions-title">{{ 'ANALYTICS.RECENT_TRANSACTIONS' | translate }}</h3>
       <table class="transactions-table" *ngIf="stats.recentTransactions.length > 0">
         <thead>
           <tr>
-            <th>Type</th>
-            <th>Détails</th>
-            <th>Date</th>
+            <th>{{ 'ANALYTICS.TYPE' | translate }}</th>
+            <th>{{ 'ANALYTICS.DETAILS' | translate }}</th>
+            <th>{{ 'ANALYTICS.DATE' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -72,9 +70,7 @@
           </tr>
         </tbody>
       </table>
-      <p *ngIf="!stats.recentTransactions.length" class="empty-table">Aucune transaction récente</p>
+      <p *ngIf="!stats.recentTransactions.length" class="empty-table">{{ 'ANALYTICS.NO_TRANSACTIONS' | translate }}</p>
     </div>
-
-
   </div>
 </div>
