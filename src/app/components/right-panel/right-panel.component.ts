@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { catchError, of, Subject, takeUntil } from 'rxjs';
 import { AuthResponse, AuthService } from 'src/app/services/auth/auth.service';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 
 @Component({
   selector: 'app-right-panel',
@@ -18,6 +19,7 @@ export class RightPanelComponent implements OnInit, OnDestroy {
   formSubmitted = false;
   passwordStrength = 0;
   isLoading = false;
+  currentTheme ='dark';
   
   private destroy$ = new Subject<void>();
   
@@ -25,14 +27,20 @@ export class RightPanelComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit(): void {
     this.initForm();
     this.updateValidators();
     
-    // Écouter les changements du mot de passe pour calculer la force
+    // Listen to theme changes
+    this.themeService.theme$.pipe(takeUntil(this.destroy$)).subscribe(theme => {
+      this.currentTheme = theme;
+    });
+
+    // Listen to password changes for strength calculation
     this.passwordControl.valueChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe(value => {
@@ -48,11 +56,11 @@ export class RightPanelComponent implements OnInit, OnDestroy {
   calculatePasswordStrength(password: string): void {
     let strength = 0;
     
-    // Longueur
+    // Length
     if (password.length >= 8) strength += 1;
     if (password.length >= 12) strength += 1;
     
-    // Complexité
+    // Complexity
     if (/[A-Z]/.test(password)) strength += 1;
     if (/[0-9]/.test(password)) strength += 1;
     if (/[^A-Za-z0-9]/.test(password)) strength += 1;
@@ -78,6 +86,11 @@ export class RightPanelComponent implements OnInit, OnDestroy {
     } else {
       this.showConfirmPassword = !this.showConfirmPassword;
     }
+  }
+
+  toggleTheme(): void {
+    const newTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+    this.themeService.setTheme(newTheme);
   }
 
   onSubmit(): void {
@@ -109,12 +122,12 @@ export class RightPanelComponent implements OnInit, OnDestroy {
           this.isLoading = false;
           this.formSubmitted = false;
           this.showErrorToast(error.message || 'Échec de la connexion');
-          return of(null); // Retourne un observable vide pour continuer le flux
+          return of(null);
         })
       )
       .subscribe({
         next: (response) => {
-          if (response) { // Vérifie que la réponse existe
+          if (response) {
             this.showSuccessToast('Connexion réussie !');
             this.isLoading = false;
             this.formSubmitted = false;
@@ -126,6 +139,7 @@ export class RightPanelComponent implements OnInit, OnDestroy {
         }
       });
   }
+
   private handleSignup(formData: any): void {
     const signupData = {
       email: formData.email,

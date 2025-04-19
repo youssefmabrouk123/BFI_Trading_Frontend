@@ -6,6 +6,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 
 @Component({
   selector: 'app-account',
@@ -24,6 +25,8 @@ import { AuthService } from 'src/app/services/auth/auth.service';
   ],
 })
 export class AccountComponent implements OnInit, OnDestroy {
+  currentTheme: string = 'dark';
+
   user$ = new BehaviorSubject<User | null>(null);
   loading$ = new BehaviorSubject<boolean>(true);
   submitting$ = new BehaviorSubject<boolean>(false);
@@ -48,7 +51,9 @@ export class AccountComponent implements OnInit, OnDestroy {
     private userService: UserUpdateService,
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private themeService: ThemeService,
+
   ) {
     this.updateForm = this.fb.group({
       password: ['', [
@@ -68,6 +73,9 @@ export class AccountComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadUserData();
+    this.themeService.theme$.subscribe(theme => {
+      this.currentTheme = theme;
+    });
   }
 
   ngOnDestroy(): void {

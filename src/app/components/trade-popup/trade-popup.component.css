@@ -100,6 +100,11 @@
   border-color: rgba(229, 191, 125, 0.2);
 }
 
+.price-box.selected {
+  background: rgba(229, 191, 125, 0.15);
+  border-color: rgba(229, 191, 125, 0.2);
+}
+
 .price-label {
   font-size: 12px;
   font-weight: 500;
@@ -135,12 +140,12 @@
   font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
   background: rgba(20, 20, 20, 0.6);
   color: rgba(229, 191, 125, 0.8);
   border: 1px solid rgba(229, 191, 125, 0.05);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .operation-btn:hover {
@@ -159,6 +164,24 @@
   cursor: not-allowed;
 }
 
+.operation-btn.selected {
+  background: rgba(229, 191, 125, 0.15);
+  border-color: rgba(229, 191, 125, 0.25);
+  box-shadow: 0 2px 8px rgba(229, 191, 125, 0.1);
+}
+
+.operation-btn.buy.selected {
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
+  background: rgba(76, 175, 80, 0.15);
+  border-color: rgba(76, 175, 80, 0.25);
+}
+
+.operation-btn.sell.selected {
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.15);
+  background: rgba(244, 67, 54, 0.15);
+  border-color: rgba(244, 67, 54, 0.25);
+}
+
 .quantity-container {
   padding: 0 12px 12px;
 }
@@ -175,7 +198,7 @@
   align-items: center;
   background: rgba(20, 20, 20, 0.6);
   border: 1px solid rgba(229, 191, 125, 0.05);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 4px;
   height: 40px;
 }
@@ -191,7 +214,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .quantity-btn:hover {
@@ -202,6 +225,10 @@
 .quantity-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.quantity-btn:active {
+  transform: scale(0.95);
 }
 
 .quantity-input {
@@ -217,6 +244,8 @@
   appearance: none;
   -moz-appearance: textfield;
   margin: 0 8px;
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
 }
 
 .quantity-input:disabled {
@@ -230,8 +259,9 @@
 }
 
 .trade-summary {
-  background: rgba(20, 20, 20, 0.6);
-  border-radius: 6px;
+  background: rgba(15, 15, 15, 0.7);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
   padding: 12px;
   margin: 0 12px 12px;
   border: 1px solid rgba(229, 191, 125, 0.05);
@@ -264,6 +294,12 @@
   color: #E5BF7D;
 }
 
+.highlight-value {
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 10px rgba(229, 191, 125, 0.2);
+}
+
 .confirm-btn {
   width: calc(100% - 24px);
   margin: 0 12px 12px;
@@ -274,153 +310,8 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
-}
-
-.confirm-btn.buy {
-  background: rgba(76, 175, 80, 0.9); /* Green for Buy */
-  color: #ffffff;
-  border-color: rgba(76, 175, 80, 1);
-}
-
-.confirm-btn.buy:hover {
-  background: rgba(76, 175, 80, 1);
-  border-color: rgba(76, 175, 80, 0.8);
-}
-
-.confirm-btn.sell {
-  background: rgba(244, 67, 54, 0.9); /* Red for Sell */
-  color: #ffffff;
-  border-color: rgba(244, 67, 54, 1);
-}
-
-.confirm-btn.sell:hover {
-  background: rgba(244, 67, 54, 1);
-  border-color: rgba(244, 67, 54, 0.8);
-}
-
-.confirm-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.loading-spinner {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(229, 191, 125, 0.3);
-  border-radius: 50%;
-  border-top-color: #E5BF7D;
-  animation: spin 1s ease-in-out infinite;
-  margin-right: 8px;
-  vertical-align: middle;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-::-webkit-scrollbar {
-  width: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(229, 191, 125, 0.02);
-  border-radius: 2px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(229, 191, 125, 0.08);
-  border-radius: 2px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(229, 191, 125, 0.12);
-}
-
-@media (max-width: 768px) {
-  .trade-popup-container {
-    max-width: 100%;
-    border-radius: 0;
-    min-height: 100vh;
-    padding: 8px;
-  }
-
-  .popup-header {
-    padding: 6px 8px;
-    height: 40px;
-  }
-
-  .price-details,
-  .operation-selector,
-  .quantity-container,
-  .trade-summary,
-  .confirm-btn {
-    padding: 8px;
-    margin: 0 8px 8px;
-  }
-
-  .confirm-btn {
-    width: calc(100% - 16px);
-  }
-}
-
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  background: rgba(229, 191, 125, 0.02);
-  border-radius: 2px;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(229, 191, 125, 0.08);
-  border-radius: 2px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(229, 191, 125, 0.12);
-}
-
-
-
-
-/* Loading spinner animation */
-@keyframes pulse-spinner {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.loading-spinner {
-  animation: spin 1s linear infinite, pulse-spinner 1.5s ease-in-out infinite;
-}
-
-/* Price movement indicators */
-.price-movement {
-  transition: all 0.5s ease;
-}
-
-.price-movement.up {
-  color: rgba(76, 175, 80, 0.9);
-}
-
-.price-movement.down {
-  color: rgba(244, 67, 54, 0.9);
-}
-/* Confirm button */
-.confirm-btn {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
@@ -451,66 +342,58 @@
   border-color: rgba(76, 175, 80, 1);
 }
 
+.confirm-btn.buy:hover {
+  background: rgba(76, 175, 80, 1);
+  border-color: rgba(76, 175, 80, 0.8);
+}
+
 .confirm-btn.sell {
   background: rgba(244, 67, 54, 0.9);
   border-color: rgba(244, 67, 54, 1);
 }
 
-.trade-summary {
-  background: rgba(15, 15, 15, 0.7);
-  border-radius: 10px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+.confirm-btn.sell:hover {
+  background: rgba(244, 67, 54, 1);
+  border-color: rgba(244, 67, 54, 0.8);
 }
 
-.highlight-value {
-  font-feature-settings: "tnum";
-  font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 10px rgba(229, 191, 125, 0.2);
+.confirm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-
-/* Quantity selector */
-.quantity-selector {
-  border-radius: 8px;
+.loading-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(229, 191, 125, 0.3);
+  border-radius: 50%;
+  border-top-color: #E5BF7D;
+  animation: spin 1s linear infinite, pulse-spinner 1.5s ease-in-out infinite;
+  margin-right: 8px;
+  vertical-align: middle;
 }
 
-.quantity-btn {
-  transition: all 0.15s ease;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.quantity-btn:active {
-  transform: scale(0.95);
+@keyframes pulse-spinner {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
-.quantity-input {
-  font-feature-settings: "tnum";
-  font-variant-numeric: tabular-nums;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-
-/* Operation buttons */
-.operation-btn {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  letter-spacing: 0.05em;
-}
-
-.operation-btn.selected {
-  background: rgba(229, 191, 125, 0.15);
-  border-color: rgba(229, 191, 125, 0.25);
-  box-shadow: 0 2px 8px rgba(229, 191, 125, 0.1);
-}
-
-.operation-btn.buy.selected {
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
-  background: rgba(76, 175, 80, 0.15);
-  border-color: rgba(76, 175, 80, 0.25);
-}
-
-.operation-btn.sell.selected {
-  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.15);
-  background: rgba(244, 67, 54, 0.15);
-  border-color: rgba(244, 67, 54, 0.25);
-}
-
 
 .popup-backdrop {
   backdrop-filter: blur(12px);
@@ -521,4 +404,271 @@
   background: linear-gradient(145deg, #0A0908 0%, #171717 100%);
   border: 1px solid rgba(229, 191, 125, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(229, 191, 125, 0.02);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(229, 191, 125, 0.08);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(229, 191, 125, 0.12);
+}
+
+/* Price movement indicators */
+.price-movement {
+  transition: all 0.5s ease;
+}
+
+.price-movement.up {
+  color: rgba(76, 175, 80, 0.9);
+}
+
+.price-movement.down {
+  color: rgba(244, 67, 54, 0.9);
+}
+
+/* Light Mode Styles */
+.popup-backdrop.light-mode {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+.popup-backdrop.light-mode .trade-popup-container {
+  background: #F7F7FA !important;
+  background-image: none !important;
+  color: #333333 !important;
+  border: 1px solid #E0E0E0 !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+}
+
+.popup-backdrop.light-mode .popup-header {
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #E0E0E0 !important;
+}
+
+.popup-backdrop.light-mode .instrument-name {
+  color: #333333 !important;
+}
+
+.popup-backdrop.light-mode .close-btn {
+  border: 1px solid #E0E0E0 !important;
+  background: #FFFFFF !important;
+  color: #666666 !important;
+}
+
+.popup-backdrop.light-mode .close-btn:hover {
+  color: #D4A017 !important;
+  background: rgba(212, 160, 23, 0.1) !important;
+  border-color: #D4A017 !important;
+}
+
+.popup-backdrop.light-mode .price-box {
+  background: #FFFFFF !important;
+  border: 1px solid #E0E0E0 !important;
+}
+
+.popup-backdrop.light-mode .price-box:hover {
+  background: rgba(212, 160, 23, 0.1) !important;
+  border-color: #D4A017 !important;
+}
+
+.popup-backdrop.light-mode .price-box.selected {
+  background: rgba(212, 160, 23, 0.1) !important;
+  border-color: #D4A017 !important;
+}
+
+.popup-backdrop.light-mode .price-label {
+  color: #666666 !important;
+}
+
+.popup-backdrop.light-mode .price-value {
+  color: #333333 !important;
+}
+
+.popup-backdrop.light-mode .price-box span.text-xs {
+  color: #666666 !important;
+}
+
+.popup-backdrop.light-mode .flex.justify-center div {
+  background: #F7F7FA !important;
+}
+
+.popup-backdrop.light-mode .flex.justify-center span {
+  color: #666666 !important;
+}
+
+.popup-backdrop.light-mode .flex.justify-center span span {
+  color: #333333 !important;
+}
+
+.popup-backdrop.light-mode .operation-btn {
+  background: #FFFFFF !important;
+  color: #666666 !important;
+  border: 1px solid #E0E0E0 !important;
+}
+
+.popup-backdrop.light-mode .operation-btn:hover {
+  background: rgba(212, 160, 23, 0.1) !important;
+  color: #D4A017 !important;
+}
+
+.popup-backdrop.light-mode .operation-btn.selected {
+  background: rgba(212, 160, 23, 0.1) !important;
+  color: #D4A017 !important;
+  border-color: #D4A017 !important;
+  box-shadow: 0 2px 8px rgba(212, 160, 23, 0.2) !important;
+}
+
+.popup-backdrop.light-mode .operation-btn.buy.selected {
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15) !important;
+  background: rgba(34, 197, 94, 0.15) !important;
+  border-color: rgba(34, 197, 94, 0.25) !important;
+}
+
+.popup-backdrop.light-mode .operation-btn.sell.selected {
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15) !important;
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+.popup-backdrop.light-mode .space-y-2 > div span {
+  color: #666666 !important;
+}
+
+.popup-backdrop.light-mode .quantity-selector {
+  background: #FFFFFF !important;
+  border: 1px solid #E0E0E0 !important;
+}
+
+.popup-backdrop.light-mode .quantity-btn {
+  background: #F7F7FA !important;
+  border: 1px solid #E0E0E0 !important;
+  color: #666666 !important;
+}
+
+.popup-backdrop.light-mode .quantity-btn:hover {
+  background: rgba(212, 160, 23, 0.1) !important;
+  border-color: #D4A017 !important;
+  color: #D4A017 !important;
+}
+
+.popup-backdrop.light-mode .quantity-input {
+  color: #333333 !important;
+}
+
+.popup-backdrop.light-mode .trade-summary {
+  background: #FFFFFF !important;
+  border: 1px solid #E0E0E0 !important;
+  box-shadow: none !important;
+}
+
+.popup-backdrop.light-mode .trade-summary span.text-sm.text-[#E5BF7D]\/70 {
+  color: #666666 !important;
+}
+
+.popup-backdrop.light-mode .trade-summary span.text-sm.text-[#E5BF7D]\/90 {
+  color: #333333 !important;
+}
+
+.popup-backdrop.light-mode .highlight-value {
+  color: #333333 !important;
+  text-shadow: none !important;
+}
+
+.popup-backdrop.light-mode .trade-summary div.text-xs {
+  color: #666666 !important;
+}
+
+.popup-backdrop.light-mode .confirm-btn.buy {
+  background: #22C55E !important;
+  border-color: #22C55E !important;
+}
+
+.popup-backdrop.light-mode .confirm-btn.buy:hover {
+  background: #16A34A !important;
+  border-color: #16A34A !important;
+}
+
+.popup-backdrop.light-mode .confirm-btn.sell {
+  background: #EF4444 !important;
+  border-color: #EF4444 !important;
+}
+
+.popup-backdrop.light-mode .confirm-btn.sell:hover {
+  background: #DC2626 !important;
+  border-color: #DC2626 !important;
+}
+
+.popup-backdrop.light-mode .loading-spinner {
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  border-top-color: #FFFFFF !important;
+}
+
+.popup-backdrop.light-mode .price-movement.up {
+  color: #22C55E !important;
+}
+
+.popup-backdrop.light-mode .price-movement.down {
+  color: #EF4444 !important;
+}
+
+.popup-backdrop.light-mode ::-webkit-scrollbar-track {
+  background: #F7F7FA !important;
+}
+
+.popup-backdrop.light-mode ::-webkit-scrollbar-thumb {
+  background: rgba(212, 160, 23, 0.2) !important;
+}
+
+.popup-backdrop.light-mode ::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 160, 23, 0.4) !important;
+}
+
+/* Debug: Highlight container in light mode */
+.popup-backdrop.light-mode::before {
+  content: "Light Mode Trade Popup";
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #D4A017;
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+  .trade-popup-container {
+    max-width: 100%;
+    border-radius: 0;
+    min-height: 100vh;
+    padding: 8px;
+  }
+
+  .popup-header {
+    padding: 6px 8px;
+    height: 40px;
+  }
+
+  .price-details,
+  .operation-selector,
+  .quantity-container,
+  .trade-summary,
+  .confirm-btn {
+    padding: 8px;
+    margin: 0 8px 8px;
+  }
+
+  .confirm-btn {
+    width: calc(100% - 16px);
+  }
 }

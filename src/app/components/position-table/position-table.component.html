@@ -1,4 +1,4 @@
-<div class="table-wrapper">
+<div class="table-wrapper" [ngClass]="{'dark-mode': currentTheme === 'dark', 'light-mode': currentTheme === 'light'}">
   <div class="filter-panel sticky left-0 z-50">
     <div class="filter-header">
       <div class="filter-header-content">
@@ -47,7 +47,7 @@
     </thead>
     <tbody *ngIf="!isLoading && filteredPositions.length > 0">
       <tr *ngFor="let position of filteredPositions; trackBy: trackById" 
-          class="cursor-pointer hover:bg-gray-800 transition-colors">
+          class="cursor-pointer transition-colors">
         <ng-container *ngIf="position.identifier !== 'TND'">
           <td class="instrument-col sticky left-0 z-10">
             <div class="instrument-cell">

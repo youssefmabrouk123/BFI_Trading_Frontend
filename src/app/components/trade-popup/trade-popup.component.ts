@@ -167,6 +167,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { QuoteService } from 'src/app/services/quoteService/quote.service';
 import { Subscription } from 'rxjs';
 import { PositionService } from 'src/app/services/position/position.service';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 
 @Component({
   selector: 'app-trade-popup',
@@ -179,6 +180,7 @@ export class TradePopupComponent implements OnInit, OnDestroy {
   private quotesSubscription: Subscription | null = null;
   
   // Instrument details
+  currentTheme: string = 'dark';
   instrument: string = '';
   baseCurrency: string = '';
   quoteCurrency: string = '';
@@ -193,6 +195,7 @@ export class TradePopupComponent implements OnInit, OnDestroy {
   isProcessing: boolean = false;
 
   constructor(
+    private themeService: ThemeService,
     public dialogRef: MatDialogRef<TradePopupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: {
       pk: number,
@@ -216,6 +219,9 @@ export class TradePopupComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Optional: Subscribe to real-time price updates
     this.fetchRealTimePrices();
+    this.themeService.theme$.subscribe(theme => {
+      this.currentTheme = theme;
+    });
   }
 
   ngOnDestroy(): void {

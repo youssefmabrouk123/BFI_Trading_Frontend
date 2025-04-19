@@ -1,4 +1,7 @@
-<div class="main-container" (click)="onOutsideClick($event)">
+<div class="main-container" (click)="onOutsideClick($event)" [ngClass]="{
+  'bg-[#0d0d0d] text-[#e5bf7d]': currentTheme === 'dark',
+  'bg-white text-[#333333]': currentTheme === 'light'
+}">
   <!-- Navbar -->
   <nav class="nav-container">
     <div class="nav-content">
@@ -81,7 +84,8 @@
                   <div *ngFor="let notification of notifications" 
                       class="notification-item" 
                       [class.unread]="!notification.isRead"
-                      [class.read]="notification.isRead">
+                      [class.read]="notification.isRead"
+                      [@notificationAnimation]="notification.isRead ? 'read' : 'unread'">
                     <div class="notification-status" *ngIf="!notification.isRead"></div>
                     <div class="notification-content">
                       <span class="notification-message">{{ notification.message }}</span>
@@ -92,6 +96,11 @@
                             (click)="markNotificationAsRead(notification.id)">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M20 6L9 17l-5-5" stroke-width="2"/>
+                      </svg>
+                    </button>
+                    <button class="delete-btn" (click)="deleteNotification(notification.id)">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m-4 5v6m-4-6v6m-6-3h12" stroke-width="1.5"/>
                       </svg>
                     </button>
                   </div>
@@ -151,7 +160,8 @@
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      class="mr-2 text-[#BF7C2A]"
+                      class="mr-2"
+                      [ngClass]="{'text-[#e5bf7d]': currentTheme === 'dark', 'text-[#d4a017]': currentTheme === 'light'}"
                     >
                       <path
                         d="M12 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2z"
@@ -163,15 +173,37 @@
                         stroke-width="1.5"
                       />
                     </svg>
-                    <span class="mr-2 text-[#D9AE79]">{{ 'CHANGE_LANGUAGE' | translate }}</span>
+                    <!-- <span class="mr-2" [ngClass]="{'text-[#e5bf7d]': currentTheme === 'dark', 'text-[#d4a017]': currentTheme === 'light'}">{{ 'CHANGE_LANGUAGE' | translate }}</span> -->
                     <app-language-switcher></app-language-switcher>
                   </div>
-                  <button class="dropdown-item flex items-center" (click)="onSwitchMode()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="mr-2 text-[#BF7C2A]">
-                      <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z" stroke-width="1.5"/>
-                    </svg>
-                    <span class="mr-2 text-[#D9AE79]">{{ 'SWITCH_MODE' | translate }}</span>
-                  </button>
+                  <div class="dropdown-item flex items-center">
+                    <svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="20"
+  height="20"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  [attr.aria-label]="currentTheme === 'dark' ? 'Dark theme' : 'Light theme'"
+  class="transition-colors duration-300 mr-2"
+  [ngClass]="{
+    'text-[#e5bf7d]': currentTheme === 'dark',
+    'text-[#d4a017]': currentTheme === 'light'
+  }"
+>
+  <circle cx="12" cy="12" r="4" />
+  <path d="M12 3v1m0 16v1M21 12h-1M4 12H3" />
+  <path d="M18.364 18.364l-.707-.707M6.343 6.343l-.707-.707" />
+  <path d="M18.364 5.636l-.707.707M6.343 17.657l-.707.707" />
+</svg>
+
+
+                    <app-theme-toggle></app-theme-toggle>
+
+                  </div>
                 </div>
                 <div class="dropdown-divider"></div>
                 <a (click)="logout()" class="dropdown-item text-red" href="#">

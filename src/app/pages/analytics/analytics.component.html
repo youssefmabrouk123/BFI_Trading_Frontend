@@ -1,4 +1,4 @@
-<div class="dashboard-container">
+<div class="dashboard-container" [ngClass]="{'dark-mode': currentTheme === 'dark', 'light-mode': currentTheme === 'light'}">
   <!-- Loading state -->
   <div *ngIf="loading" class="loading-state">
     <div class="spinner"></div>
@@ -28,8 +28,8 @@
       </div>
       <div class="stat-card">
         <div class="stat-label">{{ 'ANALYTICS.LAST_ACTION' | translate }}</div>
-        <div class="stat-value" *ngIf="formatDate(stats.lastAction )!== 'N/A'; else elseBlock">
-          {{ formatDate(stats.lastAction)}}
+        <div class="stat-value" *ngIf="formatDate(stats.lastAction) !== 'N/A'; else elseBlock">
+          {{ formatDate(stats.lastAction) }}
         </div>
         <ng-template #elseBlock>
           {{ 'ANALYTICS.NO_ACTION' | translate }}

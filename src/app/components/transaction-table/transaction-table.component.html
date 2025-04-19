@@ -1,4 +1,4 @@
-<div class="table-wrapper">
+<div class="table-wrapper"[ngClass]="{'dark-mode': currentTheme === 'dark', 'light-mode': currentTheme === 'light'}">
   <div class="filter-panel sticky left-0 z-50">
     <div class="filter-header">
       <div class="filter-header-content">

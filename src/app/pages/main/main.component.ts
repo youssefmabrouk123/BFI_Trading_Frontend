@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { NotificationService, Notification } from 'src/app/services/notification/notification.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { TranslateService } from '@ngx-translate/core';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 
 @Component({
   selector: 'app-main',
@@ -20,7 +21,7 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class MainComponent implements OnInit, OnDestroy {
   isDropdownOpen = false;
-  isSettingsSubMenuOpen = false; // Added for settings submenu
+  isSettingsSubMenuOpen = false;
   isMobileMenuOpen = false;
   isNotificationsOpen = false;
   selectedView: 'dashboard' | 'analytics' | 'account' = 'dashboard';
@@ -28,15 +29,20 @@ export class MainComponent implements OnInit, OnDestroy {
   notifications: Notification[] = [];
   unreadCount = 0;
   private subscriptions = new Subscription();
+  currentTheme?: string;
 
   constructor(
     private authService: AuthService,
     private notificationService: NotificationService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private themeService: ThemeService
   ) {
     this.translate.setDefaultLang('en');
     const savedLang = localStorage.getItem('lang');
     this.translate.use(savedLang || 'en');
+    this.themeService.theme$.subscribe(theme => {
+      this.currentTheme = theme;
+    });
   }
 
   ngOnInit(): void {
@@ -100,27 +106,53 @@ export class MainComponent implements OnInit, OnDestroy {
     console.log('View all notifications clicked');
   }
 
-  showDashboard(): void { this.selectedView = 'dashboard'; this.closeMobileMenu(); }
-  showAnalytics(): void { this.selectedView = 'analytics'; this.closeMobileMenu(); }
-  showAccount(): void { this.selectedView = 'account'; this.closeMobileMenu(); }
-  toggleDropdown(): void { this.isDropdownOpen = !this.isDropdownOpen; this.isNotificationsOpen = false; }
-  closeDropdown(): void { this.isDropdownOpen = false; }
-  toggleMobileMenu(): void { this.isMobileMenuOpen = !this.isMobileMenuOpen; document.body.style.overflow = this.isMobileMenuOpen ? 'hidden' : ''; }
-  closeMobileMenu(): void { this.isMobileMenuOpen = false; document.body.style.overflow = ''; }
-  logout(): void { this.authService.logout(); this.closeDropdown(); this.closeMobileMenu(); this.closeNotifications(); }
+  showDashboard(): void {
+    this.selectedView = 'dashboard';
+    this.closeMobileMenu();
+  }
 
-  // Added for settings submenu
+  showAnalytics(): void {
+    this.selectedView = 'analytics';
+    this.closeMobileMenu();
+  }
+
+  showAccount(): void {
+    this.selectedView = 'account';
+    this.closeMobileMenu();
+  }
+
+  toggleDropdown(): void {
+    this.isDropdownOpen = !this.isDropdownOpen;
+    this.isNotificationsOpen = false;
+  }
+
+  closeDropdown(): void {
+    this.isDropdownOpen = false;
+  }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    document.body.style.overflow = this.isMobileMenuOpen ? 'hidden' : '';
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen = false;
+    document.body.style.overflow = '';
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.closeDropdown();
+    this.closeMobileMenu();
+    this.closeNotifications();
+  }
+
   toggleSettingsSubMenu(): void {
     this.isSettingsSubMenuOpen = !this.isSettingsSubMenuOpen;
   }
 
-  // Placeholder methods for buttons
-  onChangeLanguage(): void {
-    // Logic for changing language will go here
-  }
-
-  onSwitchMode(): void {
-    // Logic for switching mode (light/dark) will go here
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 
   onOutsideClick(event: MouseEvent): void {

@@ -6,6 +6,7 @@ import { combineLatest, Subscription } from 'rxjs';
 import { CrossParityService } from 'src/app/services/crossParity/cross-parity.service';
 import { TradePopupComponent } from '../trade-popup/trade-popup.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 
 interface MarketDataItem {
   type: 'FX';
@@ -30,6 +31,7 @@ interface MarketDataItem {
   styleUrls: ['./watchlist.component.css']
 })
 export class WatchlistComponent implements OnInit, OnDestroy {
+  currentTheme: string = 'dark';
   marketData: MarketDataItem[] = [];
   favoritesData: MarketDataItem[] = [];
   isLoading: boolean = true; // Propriété pour contrôler le chargement et le squelette
@@ -42,11 +44,19 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     private favoriteService: FavoriteService,
     private crossParityService: CrossParityService,
     private cd: ChangeDetectorRef,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private themeService: ThemeService,
+
   ) {}
 
   ngOnInit(): void {
     this.fetchData(true); // Chargement initial avec squelette
+    
+    this.themeService.theme$.subscribe(theme => {
+      console.log('Dashboard theme updated:', theme);
+      this.currentTheme = theme;
+    });
+  
   }
 
   ngOnDestroy(): void {

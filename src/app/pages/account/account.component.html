@@ -1,4 +1,4 @@
-<div class="account-container">
+<div class="account-container" [ngClass]="{'dark-mode': currentTheme === 'dark', 'light-mode': currentTheme === 'light'}">
   <header class="account-header" @fadeSlide>
     <h1>{{ 'ACCOUNT.TITLE' | translate }}</h1>
     <div *ngIf="user$ | async as user" class="user-summary">

@@ -1,206 +1,395 @@
 :host ::ng-deep {
-    .tab-active {
-      color: rgba(229, 191, 125, 1) !important;
-      background: rgba(229, 191, 125, 0.05) !important;
-      border: 1px solid rgba(229, 191, 125, 0.08) !important;
-    }
-  
-    input[type="checkbox"] {
-      appearance: none;
-      background-color: rgba(10, 10, 10, 0.7);
-      border: 1px solid rgba(229, 191, 125, 0.1);
-      border-radius: 2px;
-      width: 14px;
-      height: 14px;
-      position: relative;
-  
-      &:checked {
-        background-color: rgba(229, 191, 125, 0.8);
-      }}}
+  .tab-active {
+    color: rgba(229, 191, 125, 1) !important;
+    background: rgba(229, 191, 125, 0.05) !important;
+    border: 1px solid rgba(229, 191, 125, 0.08) !important;
+  }
 
-      .trading-luxury-background {
-        position: relative;
-        background: radial-gradient(
-          ellipse at center,
-          #111111 0%,
-          #0A0A0A 100%
-        );
-        overflow: hidden;
-      }
-      
-      /* Primary animated gradient layer */
-      .trading-luxury-background::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(
-          125deg,
-          transparent 0%,
-          rgba(229, 191, 125, 0.05) 20%,
-          rgba(212, 175, 55, 0.08) 30%,
-          rgba(173, 139, 87, 0.12) 40%,
-          rgba(229, 191, 125, 0.15) 50%,
-          rgba(173, 139, 87, 0.12) 60%,
-          rgba(212, 175, 55, 0.08) 70%,
-          rgba(229, 191, 125, 0.05) 80%,
-          transparent 100%
-        );
-        background-size: 300% 300%;
-        animation: luxuryFlow 25s ease infinite alternate;
-        z-index: 1;
-      }
-      
-      /* Secondary pattern overlay */
-      .trading-luxury-background::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-image: 
-          radial-gradient(circle at 20% 30%, rgba(229, 191, 125, 0.03) 0%, transparent 50%),
-          radial-gradient(circle at 80% 70%, rgba(229, 191, 125, 0.03) 0%, transparent 50%),
-          repeating-linear-gradient(45deg, rgba(229, 191, 125, 0.01) 0%, rgba(229, 191, 125, 0.01) 1px, transparent 1px, transparent 5px);
-        z-index: 2;
-        opacity: 0.8;
-        mix-blend-mode: overlay;
-      }
-      
-      /* Floating light particles */
-      .trading-luxury-background .particles {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 3;
-        background-image: 
-          radial-gradient(circle at 85% 15%, rgba(229, 191, 125, 0.2) 0%, transparent 0.5%),
-          radial-gradient(circle at 10% 25%, rgba(229, 191, 125, 0.15) 0%, transparent 0.3%),
-          radial-gradient(circle at 40% 80%, rgba(229, 191, 125, 0.2) 0%, transparent 0.4%),
-          radial-gradient(circle at 60% 40%, rgba(229, 191, 125, 0.15) 0%, transparent 0.3%),
-          radial-gradient(circle at 90% 85%, rgba(229, 191, 125, 0.2) 0%, transparent 0.4%);
-        filter: blur(1px);
-        animation: particleFloat 15s infinite ease-in-out alternate;
-      }
-      
-      @keyframes luxuryFlow {
-        0% {
-          background-position: 0% 50%;
-        }
-        100% {
-          background-position: 100% 50%;
-        }
-      }
-      
-      @keyframes particleFloat {
-        0% {
-          transform: translateY(-1%) translateX(-0.5%) scale(1);
-        }
-        100% {
-          transform: translateY(1%) translateX(0.5%) scale(0.98);
-        }
-      }
-      
-      /* Add this HTML inside your trading-luxury-background div */
-      /* <div class="particles"></div> */
-      
-      .trading-elements {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-      }
-      
-      /* Market Lines (suggesting stock price movement) */
-      .market-line {
-        position: absolute;
-        height: 1px;
-        background: rgba(229, 191, 125, 0.2); /* Gold with low opacity for luxury */
-        box-shadow: 0 0 5px rgba(229, 191, 125, 0.3);
-      }
-      
-      .line-1 {
-        width: 60%;
-        top: 20%;
-        left: -60%;
-        animation: moveLine 12s linear infinite;
-      }
-      
-      .line-2 {
-        width: 40%;
-        top: 70%;
-        left: -40%;
-        animation: moveLine 15s linear infinite reverse;
-      }
-      
-      @keyframes moveLine {
-        0% {
-          transform: translateX(0);
-        }
-        100% {
-          transform: translateX(calc(100vw + 60%));
-        }
-      }
-      
-      /* Market Bars (suggesting trading volume or candlesticks) */
-      .market-bar {
-        position: absolute;
-        width: 4px;
-        background: rgba(229, 191, 125, 0.15);
-        box-shadow: 0 0 8px rgba(229, 191, 125, 0.2);
-      }
-      
-      .bar-1 {
-        height: 50px;
-        bottom: 0;
-        left: 30%;
-        animation: barPulse 8s ease-in-out infinite;
-      }
-      
-      .bar-2 {
-        height: 70px;
-        bottom: 0;
-        left: 50%;
-        animation: barPulse 10s ease-in-out infinite 2s;
-      }
-      
-      .bar-3 {
-        height: 30px;
-        bottom: 0;
-        left: 70%;
-        animation: barPulse 6s ease-in-out infinite 1s;
-      }
-      
-      @keyframes barPulse {
-        0%, 100% {
-          transform: scaleY(1);
-        }
-        50% {
-          transform: scaleY(1.5);
-        }
-      }
+  input[type="checkbox"] {
+    appearance: none;
+    background-color: rgba(10, 10, 10, 0.7);
+    border: 1px solid rgba(229, 191, 125, 0.1);
+    border-radius: 2px;
+    width: 14px;
+    height: 14px;
+    position: relative;
+  }
 
+  input[type="checkbox"]:checked {
+    background-color: rgba(229, 191, 125, 0.8);
+  }
+}
 
+.trading-luxury-background {
+  position: relative;
+  background: radial-gradient(
+    ellipse at center,
+    #111111 0%,
+    #0A0A0A 100%
+  );
+  overflow: hidden;
+}
 
-      .success-toast {
-        background-color: #2ecc71 !important; /* Green for success */
-        color: white !important;
-      }
-      
-      .success-toast .mat-snack-bar-action {
-        color: white !important;
-      }
-      
-      .error-toast {
-        background-color: #e74c3c !important; /* Red for error */
-        color: white !important;
-      }
-      
-      .error-toast .mat-snack-bar-action {
-        color: white !important;
-      }
+/* Primary animated gradient layer */
+.trading-luxury-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    125deg,
+    transparent 0%,
+    rgba(229, 191, 125, 0.05) 20%,
+    rgba(212, 175, 55, 0.08) 30%,
+    rgba(173, 139, 87, 0.12) 40%,
+    rgba(229, 191, 125, 0.15) 50%,
+    rgba(173, 139, 87, 0.12) 60%,
+    rgba(212, 175, 55, 0.08) 70%,
+    rgba(229, 191, 125, 0.05) 80%,
+    transparent 100%
+  );
+  background-size: 300% 300%;
+  animation: luxuryFlow 25s ease infinite alternate;
+  z-index: 1;
+}
+
+/* Secondary pattern overlay */
+.trading-luxury-background::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(229, 191, 125, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(229, 191, 125, 0.03) 0%, transparent 50%),
+    repeating-linear-gradient(45deg, rgba(229, 191, 125, 0.01) 0%, rgba(229, 191, 125, 0.01) 1px, transparent 1px, transparent 5px);
+  z-index: 2;
+  opacity: 0.8;
+  mix-blend-mode: overlay;
+}
+
+/* Floating light particles */
+.trading-luxury-background .particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  background-image: 
+    radial-gradient(circle at 85% 15%, rgba(229, 191, 125, 0.2) 0%, transparent 0.5%),
+    radial-gradient(circle at 10% 25%, rgba(229, 191, 125, 0.15) 0%, transparent 0.3%),
+    radial-gradient(circle at 40% 80%, rgba(229, 191, 125, 0.2) 0%, transparent 0.4%),
+    radial-gradient(circle at 60% 40%, rgba(229, 191, 125, 0.15) 0%, transparent 0.3%),
+    radial-gradient(circle at 90% 85%, rgba(229, 191, 125, 0.2) 0%, transparent 0.4%);
+  filter: blur(1px);
+  animation: particleFloat 15s infinite ease-in-out alternate;
+}
+
+@keyframes luxuryFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(-1%) translateX(-0.5%) scale(1);
+  }
+  100% {
+    transform: translateY(1%) translateX(0.5%) scale(0.98);
+  }
+}
+
+.trading-elements {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Market Lines (suggesting stock price movement) */
+.market-line {
+  position: absolute;
+  height: 1px;
+  background: rgba(229, 191, 125, 0.2);
+  box-shadow: 0 0 5px rgba(229, 191, 125, 0.3);
+}
+
+.line-1 {
+  width: 60%;
+  top: 20%;
+  left: -60%;
+  animation: moveLine 12s linear infinite;
+}
+
+.line-2 {
+  width: 40%;
+  top: 70%;
+  left: -40%;
+  animation: moveLine 15s linear infinite reverse;
+}
+
+@keyframes moveLine {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(100vw + 60%));
+  }
+}
+
+/* Market Bars (suggesting trading volume or candlesticks) */
+.market-bar {
+  position: absolute;
+  width: 4px;
+  background: rgba(229, 191, 125, 0.15);
+  box-shadow: 0 0 8px rgba(229, 191, 125, 0.2);
+}
+
+.bar-1 {
+  height: 50px;
+  bottom: 0;
+  left: 30%;
+  animation: barPulse 8s ease-in-out infinite;
+}
+
+.bar-2 {
+  height: 70px;
+  bottom: 0;
+  left: 50%;
+  animation: barPulse 10s ease-in-out infinite 2s;
+}
+
+.bar-3 {
+  height: 30px;
+  bottom: 0;
+  left: 70%;
+  animation: barPulse 6s ease-in-out infinite 1s;
+}
+
+@keyframes barPulse {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.5);
+  }
+}
+
+.success-toast {
+  background-color: #2ecc71 !important;
+  color: white !important;
+}
+
+.success-toast .mat-snack-bar-action {
+  color: white !important;
+}
+
+.error-toast {
+  background-color: #e74c3c !important;
+  color: white !important;
+}
+
+.error-toast .mat-snack-bar-action {
+  color: white !important;
+}
+
+/* Light Mode Styles */
+.min-h-screen.light-mode {
+  background: #F7F7FA !important;
+}
+
+.min-h-screen.light-mode .trading-luxury-background {
+  background: #F7F7FA !important;
+}
+
+.min-h-screen.light-mode .trading-luxury-background::before {
+  background: linear-gradient(
+    125deg,
+    transparent 0%,
+    rgba(212, 160, 23, 0.05) 20%,
+    rgba(173, 139, 87, 0.08) 30%,
+    rgba(212, 160, 23, 0.12) 40%,
+    rgba(229, 191, 125, 0.15) 50%,
+    rgba(173, 139, 87, 0.12) 60%,
+    rgba(212, 160, 23, 0.08) 70%,
+    rgba(212, 160, 23, 0.05) 80%,
+    transparent 100%
+  ) !important;
+}
+
+.min-h-screen.light-mode .trading-luxury-background::after {
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(212, 160, 23, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(212, 160, 23, 0.03) 0%, transparent 50%),
+    repeating-linear-gradient(45deg, rgba(212, 160, 23, 0.01) 0%, rgba(212, 160, 23, 0.01) 1px, transparent 1px, transparent 5px) !important;
+}
+
+.min-h-screen.light-mode .trading-luxury-background .particles {
+  background-image: 
+    radial-gradient(circle at 85% 15%, rgba(212, 160, 23, 0.2) 0%, transparent 0.5%),
+    radial-gradient(circle at 10% 25%, rgba(212, 160, 23, 0.15) 0%, transparent 0.3%),
+    radial-gradient(circle at 40% 80%, rgba(212, 160, 23, 0.2) 0%, transparent 0.4%),
+    radial-gradient(circle at 60% 40%, rgba(212, 160, 23, 0.15) 0%, transparent 0.3%),
+    radial-gradient(circle at 90% 85%, rgba(212, 160, 23, 0.2) 0%, transparent 0.4%) !important;
+}
+
+.min-h-screen.light-mode .market-line {
+  background: rgba(212, 160, 23, 0.2) !important;
+  box-shadow: 0 0 5px rgba(212, 160, 23, 0.3) !important;
+}
+
+.min-h-screen.light-mode .market-bar {
+  background: rgba(212, 160, 23, 0.15) !important;
+  box-shadow: 0 0 8px rgba(212, 160, 23, 0.2) !important;
+}
+
+.min-h-screen.light-mode .text-[#E5BF7D] {
+  color: #333333 !important;
+}
+
+.min-h-screen.light-mode .logo-container img {
+  filter: drop-shadow(0 0 12px rgba(212, 160, 23, 0.3)) !important;
+}
+
+.min-h-screen.light-mode h1 span {
+  color: #666666 !important;
+}
+
+.min-h-screen.light-mode main > div {
+  background: #FFFFFF !important;
+  border: 1px solid #E0E0E0 !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+.min-h-screen.light-mode .px-3.py-4 {
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #E0E0E0 !important;
+}
+
+.min-h-screen.light-mode .inline-flex {
+  background: #F7F7FA !important;
+}
+
+.min-h-screen.light-mode .inline-flex button {
+  color: #666666 !important;
+}
+
+.min-h-screen.light-mode .inline-flex button:hover {
+  color: #D4A017 !important;
+  background: rgba(212, 160, 23, 0.1) !important;
+}
+
+.min-h-screen.light-mode :host ::ng-deep .tab-active {
+  color: #D4A017 !important;
+  background: rgba(212, 160, 23, 0.1) !important;
+  border: 1px solid rgba(212, 160, 23, 0.2) !important;
+}
+
+.min-h-screen.light-mode .flex.items-center.gap-2 button {
+  color: #666666 !important;
+}
+
+.min-h-screen.light-mode .flex.items-center.gap-2 button:hover {
+  background: rgba(212, 160, 23, 0.1) !important;
+}
+
+.min-h-screen.light-mode label {
+  color: #666666 !important;
+}
+
+.min-h-screen.light-mode input {
+  color: #333333 !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E0E0E0 !important;
+}
+
+.min-h-screen.light-mode input:focus {
+  border-color: #D4A017 !important;
+  ring: 1px solid rgba(212, 160, 23, 0.3) !important;
+}
+
+.min-h-screen.light-mode .relative div.text-[#E5BF7D]\/40 {
+  color: #666666 !important;
+}
+
+.min-h-screen.light-mode .relative button {
+  color: #666666 !important;
+}
+
+.min-h-screen.light-mode .relative button:hover {
+  color: #D4A017 !important;
+}
+
+.min-h-screen.light-mode .text-xs.text-red-400 {
+  color: #EF4444 !important;
+}
+
+.min-h-screen.light-mode :host ::ng-deep input[type="checkbox"] {
+  background-color: #FFFFFF !important;
+  border: 1px solid #E0E0E0 !important;
+}
+
+.min-h-screen.light-mode :host ::ng-deep input[type="checkbox"]:checked {
+  background-color: #D4A017 !important;
+}
+
+.min-h-screen.light-mode .flex.justify-between label {
+  color: #666666 !important;
+}
+
+.min-h-screen.light-mode .flex.justify-between a {
+  color: #666666 !important;
+}
+
+.min-h-screen.light-mode .flex.justify-between a:hover {
+  color: #D4A017 !important;
+}
+
+.min-h-screen.light-mode .mt-6.mb-2 .flex.items-center span.h-px {
+  background: #E0E0E0 !important;
+}
+
+.min-h-screen.light-mode .mt-6.mb-2 .flex.items-center span.text-xs {
+  color: #666666 !important;
+}
+
+.min-h-screen.light-mode .flex.gap-3 button {
+  background: #FFFFFF !important;
+  border: 1px solid #E0E0E0 !important;
+  color: #666666 !important;
+}
+
+.min-h-screen.light-mode .flex.gap-3 button:hover {
+  color: #D4A017 !important;
+  border-color: #D4A017 !important;
+  background: rgba(212, 160, 23, 0.1) !important;
+}
+
+.min-h-screen.light-mode button[type="submit"] {
+  background: linear-gradient(to right, #D4A017, #B8972A) !important;
+}
+
+.min-h-screen.light-mode button[type="submit"] span {
+  border: 2px solid #333333 !important;
+  border-top-color: transparent !important;
+}
+
+/* Debug: Highlight container in light mode */
+.min-h-screen.light-mode::before {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #D4A017;
+  font-size: 12px;
+  opacity: 0.5;
+}

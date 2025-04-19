@@ -4,6 +4,7 @@ import { registerables } from 'chart.js';
 import { Subscription } from 'rxjs';
 import { AnalyticsService } from 'src/app/services/analytics/analytics.service';
 import { UserDashboardStats } from 'src/app/models/UserDashboardStats';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 
 Chart.register(...registerables);
 
@@ -13,6 +14,7 @@ Chart.register(...registerables);
   styleUrls: ['./analytics.component.css']
 })
 export class AnalyticsComponent implements OnInit, OnDestroy {
+  currentTheme: string = 'dark';
   stats: UserDashboardStats | null = null;
   loading = true;
   error = false;
@@ -23,10 +25,14 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   private subscriptions = new Subscription();
 
-  constructor(private analyticsService: AnalyticsService) {}
+  constructor(private analyticsService: AnalyticsService,    private themeService: ThemeService,
+  ) {}
 
   ngOnInit(): void {
     this.loadDashboardData();
+    this.themeService.theme$.subscribe(theme => {
+      this.currentTheme = theme;
+    });
   }
 
   ngOnDestroy(): void {

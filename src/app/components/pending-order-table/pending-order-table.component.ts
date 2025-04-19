@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PendingOrderDTO } from 'src/app/models/PendingOrderDTO'; // Verify this path
 import { PendingOrdersService } from 'src/app/services/pendingOrders/pending-orders.service'; // Verify this path
+import { ThemeService } from 'src/app/services/theme/theme.service';
 
 @Component({
   selector: 'app-pending-order-table',
@@ -8,6 +9,7 @@ import { PendingOrdersService } from 'src/app/services/pendingOrders/pending-ord
   styleUrls: ['./pending-order-table.component.css'] // Updated to .scss
 })
 export class PendingOrderTableComponent implements OnInit {
+  currentTheme: string = 'dark'; // Default theme
   pendingOrders: PendingOrderDTO[] = [];
   filteredOrders: PendingOrderDTO[] = [];
   isLoading = false;
@@ -15,10 +17,14 @@ export class PendingOrderTableComponent implements OnInit {
   searchQuery = '';
   skeletonArray = Array(5); // For skeleton loading
 
-  constructor(private pendingOrderService: PendingOrdersService) {}
+  constructor(private pendingOrderService: PendingOrdersService,    private themeService: ThemeService,
+  ) {}
 
   ngOnInit(): void {
     this.loadPendingOrders();
+    this.themeService.theme$.subscribe(theme => {
+      this.currentTheme = theme;
+    });
   }
 
   loadPendingOrders(): void {

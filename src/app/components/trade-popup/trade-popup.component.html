@@ -1,4 +1,4 @@
-<div class="popup-backdrop fixed inset-0 flex items-center justify-center p-3 z-50">
+<div class="popup-backdrop fixed inset-0 flex items-center justify-center p-3 z-50" [ngClass]="{'dark-mode': currentTheme === 'dark', 'light-mode': currentTheme === 'light'}">
   <div class="trade-popup-container w-full max-w-md mx-auto rounded-xl overflow-hidden shadow-2xl transform transition-all duration-300 ease-out animate-fadeIn">
     <!-- Header with instrument info -->
     <div class="popup-header flex items-center justify-between px-5 py-4 bg-[#0A0908]/90 border-b border-[#E5BF7D]/10">

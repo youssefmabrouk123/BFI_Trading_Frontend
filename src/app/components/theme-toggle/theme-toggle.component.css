@@ -1,21 +1,21 @@
 .theme-switcher {
-    background-color: var(--background-color);
-    border-color: var(--secondary-color);
-  }
-  
-  button {
-    color: var(--button-text-inactive);
-  }
-  
-  .bg-active {
-    background-color: var(--primary-color);
-    color: var(--button-text-active);
-  }
-  
-  .text-active {
-    color: var(--button-text-active);
-  }
-  
-  .hover\:bg-secondary:hover {
-    background-color: var(--secondary-color);
-  }
+  background-color: var(--background-color);
+  border-color: var(--secondary-color);
+}
+
+button {
+  color: var(--button-text-inactive);
+}
+
+.bg-active {
+  background-color: var(--primary-color);
+  color: var(--button-text-active);
+}
+
+.text-active {
+  color: var(--button-text-active);
+}
+
+.hover\:bg-secondary:hover {
+  background-color: var(--secondary-color);
+}

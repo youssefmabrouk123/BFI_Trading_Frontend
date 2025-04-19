@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SocketService } from 'src/app/services/socket/socket.service';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 import { TradingService } from 'src/app/services/trading/trading.service';
 
 interface Transaction {
@@ -19,6 +20,7 @@ interface Transaction {
   styleUrls: ['./transaction-table.component.css']
 })
 export class TransactionTableComponent implements OnInit, OnDestroy {
+  currentTheme: string = 'dark'; // Default theme
   transactions: Transaction[] = [];
   filteredTransactions: Transaction[] = [];
   isLoading = false;
@@ -29,12 +31,15 @@ export class TransactionTableComponent implements OnInit, OnDestroy {
 
   constructor(
     private socketService: SocketService,
-    private tradingService: TradingService
+    private tradingService: TradingService,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit(): void {
     this.loadInitialTransactions();
-    // this.setupSocketListener();
+    this.themeService.theme$.subscribe(theme => {
+      this.currentTheme = theme;
+    });
   }
 
   ngOnDestroy(): void {

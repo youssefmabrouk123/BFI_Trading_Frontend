@@ -1,4 +1,4 @@
-<div class="table-wrapper">
+<div class="table-wrapper" [ngClass]="{'dark-mode': currentTheme === 'dark', 'light-mode': currentTheme === 'light'}">
   <table class="market-table">
     <thead>
       <tr>
@@ -50,7 +50,7 @@
         </td>
         <td>
           <div class="update-cell">
-            <span style="color: aliceblue;">{{ item.updateTime }}</span>
+            <span >{{ item.updateTime }}</span>
             <span class="pulse-dot"></span>
           </div>
         </td>

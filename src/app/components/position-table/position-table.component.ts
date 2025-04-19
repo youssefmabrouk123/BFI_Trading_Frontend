@@ -5,6 +5,7 @@ import { SocketService } from 'src/app/services/socket/socket.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TradePopupComponent } from '../trade-popup/trade-popup.component';
 import { StopLossTakeProfitPopupComponent } from '../stop-loss-take-profit-popup/stop-loss-take-profit-popup.component';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 
 @Component({
   selector: 'app-position-table',
@@ -12,6 +13,7 @@ import { StopLossTakeProfitPopupComponent } from '../stop-loss-take-profit-popup
   styleUrls: ['./position-table.component.css'] // Updated to .scss for consistency
 })
 export class PositionTableComponent implements OnInit, OnDestroy {
+  currentTheme: string = 'dark';
   positions: PositionDTO[] = [];
   filteredPositions: PositionDTO[] = [];
   isLoading = true;
@@ -25,12 +27,17 @@ export class PositionTableComponent implements OnInit, OnDestroy {
 
   constructor(
     private socketService: SocketService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit(): void {
     this.setupSocketSubscription();
     this.socketService.requestPositionsUpdate();
+    this.themeService.theme$.subscribe(theme => {
+      console.log('Dashboard theme updated:', theme);
+      this.currentTheme = theme;
+    });
   }
 
   ngOnDestroy(): void {

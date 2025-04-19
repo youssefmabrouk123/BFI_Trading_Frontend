@@ -6,6 +6,7 @@ import { FavoriteService } from 'src/app/services/favorite/favorite.service';
 import { CrossParityService } from 'src/app/services/crossParity/cross-parity.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TradePopupComponent } from '../trade-popup/trade-popup.component';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 
 interface MarketDataItem {
   type: 'FX';
@@ -47,6 +48,7 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
   filteredMarketData: MarketDataItem[] = [];
   isFilterPanelOpen = false;
   isRefreshing = false;
+  currentTheme: string = 'dark';
 
   filters: MarketFilters = {
     types: { fx: true, crypto: true },
@@ -65,11 +67,20 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
     private favoriteService: FavoriteService,
     private crossParityService: CrossParityService,
     private cd: ChangeDetectorRef,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private themeService: ThemeService,
+
+    
   ) {}
+
+ 
 
   ngOnInit(): void {
     this.fetchData(true); // Chargement initial avec squelette
+    this.themeService.theme$.subscribe(theme => {
+      console.log('Dashboard theme updated:', theme);
+      this.currentTheme = theme;
+    });
   }
 
   ngOnDestroy(): void {
