@@ -35,14 +35,17 @@ import { StopLossTakeProfitPopupComponent } from './components/stop-loss-take-pr
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { PendingOrderTableComponent } from './components/pending-order-table/pending-order-table.component';
+// import { PendingOrderTableComponent } from './components/pending-order-table/pending-order-table.component';
 import { CandlestickChartComponent } from './components/candlestick-chart/candlestick-chart.component';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { LanguageSwitcherComponent } from './components/language-switcher/language-switcher.component';
 import { ThemeToggleComponent } from './components/theme-toggle/theme-toggle.component';
-
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import { PendingOrderTableComponent } from './components/pending-order-table/pending-order-table.component';
 
 const config: SocketIoConfig = { url: 'http://localhost:9092', options: {} };
 
@@ -87,6 +90,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MatSnackBarModule,
+    MatTooltipModule,
     FormsModule,
     ToastrModule.forRoot({
       timeOut: 3000,
@@ -101,6 +105,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgChartsModule,
     MatFormFieldModule,
     MatInputModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
     MatSelectModule ,
     SocketIoModule.forRoot(config),
     TranslateModule.forRoot({

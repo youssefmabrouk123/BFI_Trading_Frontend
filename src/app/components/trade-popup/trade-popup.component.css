@@ -637,7 +637,6 @@
 
 /* Debug: Highlight container in light mode */
 .popup-backdrop.light-mode::before {
-  content: "Light Mode Trade Popup";
   position: absolute;
   top: 10px;
   left: 10px;

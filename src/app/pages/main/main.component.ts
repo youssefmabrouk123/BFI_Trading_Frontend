@@ -51,6 +51,9 @@ export class MainComponent implements OnInit, OnDestroy {
         this.user = user;
         if (user) {
           this.initializeNotifications();
+        } else {
+          this.notifications = [];
+          this.unreadCount = 0;
         }
       })
     );
@@ -63,6 +66,7 @@ export class MainComponent implements OnInit, OnDestroy {
   private initializeNotifications(): void {
     this.subscriptions.add(
       this.notificationService.notifications$.subscribe(notifications => {
+        console.log('Received notifications update:', notifications);
         this.notifications = notifications;
         this.unreadCount = this.notificationService.getUnreadCount();
       })
@@ -71,7 +75,6 @@ export class MainComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-    this.notificationService.disconnect();
   }
 
   toggleNotifications(): void {

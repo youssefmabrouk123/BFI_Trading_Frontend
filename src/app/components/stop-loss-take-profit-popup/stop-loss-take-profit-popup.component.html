@@ -1,103 +1,303 @@
-<div class="popup-backdrop fixed inset-0 flex items-center justify-center p-3 z-50 animate-fadeIn" [ngClass]="{'dark-mode': currentTheme === 'dark', 'light-mode': currentTheme === 'light'}">
-  <div class="trade-popup-container w-full max-w-md mx-auto rounded-xl overflow-hidden shadow-2xl transform transition-all duration-300">
+<!-- stop-loss-take-profit-popup.component.html -->
+<div
+  class="popup-backdrop fixed inset-0 flex items-center justify-center p-4 z-50 animate-fadeIn"
+  [ngClass]="{'dark-mode': currentTheme === 'dark', 'light-mode': currentTheme === 'light'}"
+>
+  <div
+    class="trade-popup-container w-full max-w-lg mx-auto rounded-2xl overflow-hidden shadow-xl transform transition-all duration-300"
+  >
     <!-- Header -->
-    <div class="popup-header flex items-center justify-between px-5 py-4 bg-[#0A0908]/90 border-b border-[#E5BF7D]/10">
-      <div class="flex items-center space-x-3">
-        <span class="type-badge px-2 py-0.5 bg-[#E5BF7D]/15 rounded text-[#E5BF7D] text-xs font-bold uppercase tracking-wider">Trade</span>
-        <h2 class="instrument-name text-xl font-semibold text-[#E5BF7D] tracking-tight">{{ 'TAKE_PROFIT_STOP_LOSS.TITLE' | translate }}</h2>
+    <div
+      class="popup-header flex items-center justify-between px-6 py-4 border-b"
+    >
+      <div class="flex items-center space-x-4">
+        <span
+          class="type-badge px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"
+          >Trade</span
+        >
+        <h2
+          class="instrument-name text-xl font-semibold tracking-tight"
+        >
+          {{ 'TAKE_PROFIT_STOP_LOSS.TITLE' | translate }}
+        </h2>
       </div>
-      <button (click)="onCancel()" class="close-btn p-1.5 rounded-full text-[#E5BF7D]/70 hover:text-[#E5BF7D] hover:bg-[#E5BF7D]/10 transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-[#E5BF7D]/30">
+      <button
+        (click)="onCancel()"
+        class="close-btn p-2 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2"
+        aria-label="Close dialog"
+      >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
         </svg>
       </button>
     </div>
 
     <!-- Content -->
-    <mat-dialog-content class="p-5 space-y-5 custom-scrollbar">
+    <mat-dialog-content class="p-6 space-y-6 custom-scrollbar">
       <!-- Info Bar -->
-      <div class="flex justify-between items-center px-4 py-3 bg-[#111]/70 rounded-lg border border-[#E5BF7D]/10">
-        <span class="text-sm text-[#E5BF7D]/80 truncate">{{ 'TAKE_PROFIT_STOP_LOSS.PAIR' | translate }}: <span class="text-[#E5BF7D] font-semibold">{{data.baseCurrency}}/{{data.quoteCurrency}}</span></span>
-        <div class="w-px h-5 bg-[#E5BF7D]/20 mx-3"></div>
-        <span class="text-sm text-[#E5BF7D]/80 truncate">{{ 'TAKE_PROFIT_STOP_LOSS.POSITION' | translate }}: <span class="text-[#E5BF7D] font-semibold">{{data.currentPosition}}</span></span>
+      <div
+        class="flex justify-between items-center px-4 py-3 rounded-lg border"
+      >
+        <span class="text-sm truncate"
+          >{{ 'TAKE_PROFIT_STOP_LOSS.PAIR' | translate }}:
+          <span class="font-semibold"
+            >{{ data.baseCurrency }}/{{ data.quoteCurrency }}</span
+          ></span
+        >
+        <div class="w-px h-6 mx-4"></div>
+        <span class="text-sm truncate"
+          >{{ 'TAKE_PROFIT_STOP_LOSS.POSITION' | translate }}:
+          <span class="font-semibold">{{
+            data.currentPosition
+          }}</span></span
+        >
       </div>
 
       <!-- Form -->
-      <div class="space-y-5">
+      <div class="space-y-6">
         <!-- Order Type Section -->
-        <div class="space-y-2">
-          <label class="text-sm font-medium text-[#E5BF7D]/80">{{ 'TAKE_PROFIT_STOP_LOSS.ORDER_TYPE' | translate }}</label>
-          <div class="grid grid-cols-2 gap-3">
-            <button [ngClass]="{'selected': orderType === 'BUY', 'buy': orderType === 'BUY'}" (click)="orderType = 'BUY'" class="operation-btn px-4 py-3 bg-[#111]/70 rounded-lg text-sm font-semibold text-[#E5BF7D]/90 uppercase tracking-wide transition-all duration-200 border border-[#E5BF7D]/10 hover:bg-[#E5BF7D]/10" [attr.aria-label]="'TAKE_PROFIT_STOP_LOSS.SET_ORDER_TYPE_BUY' | translate">
+        <div class="space-y-3">
+          <label class="text-sm font-medium">{{
+            'TAKE_PROFIT_STOP_LOSS.ORDER_TYPE' | translate
+          }}</label>
+          <div class="grid grid-cols-2 gap-4">
+            <button
+              [ngClass]="{'selected': orderType === 'BUY', 'buy': orderType === 'BUY'}"
+              (click)="orderType = 'BUY'"
+              class="operation-btn px-4 py-3 rounded-lg text-sm font-semibold uppercase tracking-wide transition-all duration-200 border"
+              [attr.aria-label]="
+                'TAKE_PROFIT_STOP_LOSS.SET_ORDER_TYPE_BUY' | translate
+              "
+            >
               {{ 'TAKE_PROFIT_STOP_LOSS.BUY' | translate }}
             </button>
-            <button [ngClass]="{'selected': orderType === 'SELL', 'sell': orderType === 'SELL'}" (click)="orderType = 'SELL'" class="operation-btn px-4 py-3 bg-[#111]/70 rounded-lg text-sm font-semibold text-[#E5BF7D]/90 uppercase tracking-wide transition-all duration-200 border border-[#E5BF7D]/10 hover:bg-[#E5BF7D]/10" [attr.aria-label]="'TAKE_PROFIT_STOP_LOSS.SET_ORDER_TYPE_SELL' | translate">
+            <button
+              [ngClass]="{'selected': orderType === 'SELL', 'sell': orderType === 'SELL'}"
+              (click)="orderType = 'SELL'"
+              class="operation-btn px-4 py-3 rounded-lg text-sm font-semibold uppercase tracking-wide transition-all duration-200 border"
+              [attr.aria-label]="
+                'TAKE_PROFIT_STOP_LOSS.SET_ORDER_TYPE_SELL' | translate
+              "
+            >
               {{ 'TAKE_PROFIT_STOP_LOSS.SELL' | translate }}
             </button>
           </div>
         </div>
 
         <!-- Trigger Type Section -->
-        <div class="space-y-2">
-          <label class="text-sm font-medium text-[#E5BF7D]/80">{{ 'TAKE_PROFIT_STOP_LOSS.TRIGGER_TYPE' | translate }}</label>
-          <div class="grid grid-cols-2 gap-3">
-            <button [ngClass]="{'selected': triggerType === 'STOP_LOSS', 'sell': triggerType === 'STOP_LOSS'}" (click)="triggerType = 'STOP_LOSS'" class="operation-btn px-4 py-3 bg-[#111]/70 rounded-lg text-sm font-semibold text-[#E5BF7D]/90 uppercase tracking-wide transition-all duration-200 border border-[#E5BF7D]/10 hover:bg-[#E5BF7D]/10" [attr.aria-label]="'TAKE_PROFIT_STOP_LOSS.SET_TRIGGER_TYPE_STOP_LOSS' | translate">
-              <div class="flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
+        <div class="space-y-3">
+          <label class="text-sm font-medium">{{
+            'TAKE_PROFIT_STOP_LOSS.TRIGGER_TYPE' | translate
+          }}</label>
+          <div class="grid grid-cols-2 gap-4">
+            <button
+              [ngClass]="{'selected': triggerType === 'STOP_LOSS', 'sell': triggerType === 'STOP_LOSS'}"
+              (click)="triggerType = 'STOP_LOSS'"
+              class="operation-btn px-4 py-3 rounded-lg text-sm font-semibold uppercase tracking-wide transition-all duration-200 border"
+              [attr.aria-label]="
+                'TAKE_PROFIT_STOP_LOSS.SET_TRIGGER_TYPE_STOP_LOSS' | translate
+              "
+            >
+              <div class="flex items-center justify-center space-x-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M7 13l5 5 5-5M7 6l5 5 5-5" />
                 </svg>
-                {{ 'TAKE_PROFIT_STOP_LOSS.STOP_LOSS' | translate }}
+                <span>{{ 'TAKE_PROFIT_STOP_LOSS.STOP_LOSS' | translate }}</span>
               </div>
             </button>
-            <button [ngClass]="{'selected': triggerType === 'TAKE_PROFIT', 'buy': triggerType === 'TAKE_PROFIT'}" (click)="triggerType = 'TAKE_PROFIT'" class="operation-btn px-4 py-3 bg-[#111]/70 rounded-lg text-sm font-semibold text-[#E5BF7D]/90 uppercase tracking-wide transition-all duration-200 border border-[#E5BF7D]/10 hover:bg-[#E5BF7D]/10" [attr.aria-label]="'TAKE_PROFIT_STOP_LOSS.SET_TRIGGER_TYPE_TAKE_PROFIT' | translate">
-              <div class="flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M7 11l5-5 5 5M7 18l5-5 5 5"/>
+            <button
+              [ngClass]="{'selected': triggerType === 'TAKE_PROFIT', 'buy': triggerType === 'TAKE_PROFIT'}"
+              (click)="triggerType = 'TAKE_PROFIT'"
+              class="operation-btn px-4 py-3 rounded-lg text-sm font-semibold uppercase tracking-wide transition-all duration-200 border"
+              [attr.aria-label]="
+                'TAKE_PROFIT_STOP_LOSS.SET_TRIGGER_TYPE_TAKE_PROFIT' | translate
+              "
+            >
+              <div class="flex items-center justify-center space-x-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M7 11l5-5 5 5M7 18l5-5 5 5" />
                 </svg>
-                {{ 'TAKE_PROFIT_STOP_LOSS.TAKE_PROFIT' | translate }}
+                <span>{{ 'TAKE_PROFIT_STOP_LOSS.TAKE_PROFIT' | translate }}</span>
               </div>
             </button>
           </div>
         </div>
 
         <!-- Amount Input -->
-        <div class="space-y-2">
-          <label class="text-sm font-medium text-[#E5BF7D]/80">{{ 'TAKE_PROFIT_STOP_LOSS.AMOUNT' | translate }}</label>
-          <div class="quantity-selector flex items-center bg-[#111]/70 border border-[#E5BF7D]/10 rounded-lg p-1.5">
-            <input type="number" [(ngModel)]="amount" min="0" step="0.0001" class="quantity-input flex-1 h-9 bg-transparent border-none text-[#E5BF7D] text-lg font-semibold text-center focus:outline-none" [placeholder]="'TAKE_PROFIT_STOP_LOSS.ENTER_AMOUNT' | translate" [attr.aria-label]="'TAKE_PROFIT_STOP_LOSS.ENTER_AMOUNT' | translate">
-            <span class="text-xs text-[#E5BF7D]/60 px-3">{{ 'TAKE_PROFIT_STOP_LOSS.UNITS' | translate }}</span>
+        <div class="space-y-3">
+          <label class="text-sm font-medium">{{
+            'TAKE_PROFIT_STOP_LOSS.AMOUNT' | translate
+          }}</label>
+          <div
+            class="quantity-selector flex items-center rounded-lg p-2 border"
+          >
+            <input
+              type="number"
+              [(ngModel)]="amount"
+              min="0"
+              step="0.0001"
+              class="quantity-input flex-1 h-10 bg-transparent border-none text-lg font-semibold text-center focus:outline-none"
+              [placeholder]="'TAKE_PROFIT_STOP_LOSS.ENTER_AMOUNT' | translate"
+              [attr.aria-label]="'TAKE_PROFIT_STOP_LOSS.ENTER_AMOUNT' | translate"
+            />
+            <span class="text-xs px-4">{{
+              'TAKE_PROFIT_STOP_LOSS.UNITS' | translate
+            }}</span>
           </div>
         </div>
 
         <!-- Target Price Input -->
-        <div class="space-y-2">
-          <label class="text-sm font-medium text-[#E5BF7D]/80">{{ 'TAKE_PROFIT_STOP_LOSS.TARGET_PRICE' | translate }}</label>
-          <div class="quantity-selector flex items-center bg-[#111]/70 border border-[#E5BF7D]/10 rounded-lg p-1.5">
-            <input type="number" [(ngModel)]="targetPrice" min="0" step="0.0001" class="quantity-input flex-1 h-9 bg-transparent border-none text-[#E5BF7D] text-lg font-semibold text-center focus:outline-none" [placeholder]="'TAKE_PROFIT_STOP_LOSS.ENTER_TARGET_PRICE' | translate" [attr.aria-label]="'TAKE_PROFIT_STOP_LOSS.TARGET_PRICE_TND' | translate">
-            <span class="text-xs text-[#E5BF7D]/60 px-3">{{ 'TAKE_PROFIT_STOP_LOSS.TND' | translate }}</span>
+        <div class="space-y-3">
+          <label class="text-sm font-medium">{{
+            'TAKE_PROFIT_STOP_LOSS.TARGET_PRICE' | translate
+          }}</label>
+          <div
+            class="quantity-selector flex items-center rounded-lg p-2 border"
+          >
+            <input
+              type="number"
+              [(ngModel)]="targetPrice"
+              min="0"
+              step="0.0001"
+              class="quantity-input flex-1 h-10 bg-transparent border-none text-lg font-semibold text-center focus:outline-none"
+              [placeholder]="
+                'TAKE_PROFIT_STOP_LOSS.ENTER_TARGET_PRICE' | translate
+              "
+              [attr.aria-label]="
+                'TAKE_PROFIT_STOP_LOSS.TARGET_PRICE_TND' | translate
+              "
+            />
+            <span class="text-xs px-4">{{
+              'TAKE_PROFIT_STOP_LOSS.TND' | translate
+            }}</span>
+          </div>
+        </div>
+
+        <!-- Duration Input -->
+        <div class="space-y-3">
+          <label class="text-sm font-medium flex items-center">
+            {{ 'TAKE_PROFIT_STOP_LOSS.DURATION' | translate }}
+            <span
+              matTooltipClass="custom-tooltip"
+              class="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full text-xs"
+              >?</span
+            >
+          </label>
+          <div
+            class="quantity-selector flex items-center rounded-lg p-2 border"
+          >
+            <input
+              type="number"
+              [(ngModel)]="durationValue"
+              [min]="minDuration"
+              [max]="maxDuration"
+              step="1"
+              class="quantity-input flex-1 h-10 bg-transparent border-none text-lg font-semibold text-center focus:outline-none"
+              [attr.aria-label]="'TAKE_PROFIT_STOP_LOSS.ENTER_DURATION' | translate"
+              (input)="validateDuration()"
+            />
+            <select
+              [(ngModel)]="durationUnit"
+              class="unit-selector h-10 border-l text-sm font-semibold px-3 focus:outline-none"
+              (change)="validateDuration()"
+            >
+              <option value="MINUTES">{{
+                'TAKE_PROFIT_STOP_LOSS.MINUTES' | translate
+              }}</option>
+              <option value="HOURS">{{
+                'TAKE_PROFIT_STOP_LOSS.HOURS' | translate
+              }}</option>
+            </select>
+          </div>
+          <div
+            *ngIf="durationError"
+            class="text-xs text-red-500 animate-fadeIn"
+          >
+            {{ durationError | translate }}
           </div>
         </div>
 
         <!-- Action Toggle -->
-        <div class="space-y-2">
-          <label class="text-sm font-medium text-[#E5BF7D]/80">{{ 'TAKE_PROFIT_STOP_LOSS.ACTION_ON_TRIGGER' | translate }}</label>
-          <div class="grid grid-cols-2 gap-3">
-            <button [ngClass]="{'selected': actionOnTrigger === 'EXECUTE'}" (click)="actionOnTrigger = 'EXECUTE'" class="operation-btn px-4 py-3 bg-[#111]/70 rounded-lg text-sm font-semibold text-[#E5BF7D]/90 uppercase tracking-wide transition-all duration-200 border border-[#E5BF7D]/10 hover:bg-[#E5BF7D]/10" [attr.aria-label]="'TAKE_PROFIT_STOP_LOSS.SET_ACTION_EXECUTE' | translate">
-              <div class="flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <div class="space-y-3">
+          <label class="text-sm font-medium">{{
+            'TAKE_PROFIT_STOP_LOSS.ACTION_ON_TRIGGER' | translate
+          }}</label>
+          <div class="grid grid-cols-2 gap-4">
+            <button
+              [ngClass]="{'selected': actionOnTrigger === 'EXECUTE'}"
+              (click)="actionOnTrigger = 'EXECUTE'"
+              class="operation-btn px-4 py-3 rounded-lg text-sm font-semibold uppercase tracking-wide transition-all duration-200 border"
+              [attr.aria-label]="
+                'TAKE_PROFIT_STOP_LOSS.SET_ACTION_EXECUTE' | translate
+              "
+            >
+              <div class="flex items-center justify-center space-x-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
                   <polyline points="9 11 12 14 22 4"></polyline>
-                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                  <path
+                    d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+                  ></path>
                 </svg>
-                {{ 'TAKE_PROFIT_STOP_LOSS.EXECUTE' | translate }}
+                <span>{{ 'TAKE_PROFIT_STOP_LOSS.EXECUTE' | translate }}</span>
               </div>
             </button>
-            <button [ngClass]="{'selected': actionOnTrigger === 'NOTIFY'}" (click)="actionOnTrigger = 'NOTIFY'" class="operation-btn px-4 py-3 bg-[#111]/70 rounded-lg text-sm font-semibold text-[#E5BF7D]/90 uppercase tracking-wide transition-all duration-200 border border-[#E5BF7D]/10 hover:bg-[#E5BF7D]/10" [attr.aria-label]="'TAKE_PROFIT_STOP_LOSS.SET_ACTION_NOTIFY' | translate">
-              <div class="flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <button
+              [ngClass]="{'selected': actionOnTrigger === 'NOTIFY'}"
+              (click)="actionOnTrigger = 'NOTIFY'"
+              class="operation-btn px-4 py-3 rounded-lg text-sm font-semibold uppercase tracking-wide transition-all duration-200 border"
+              [attr.aria-label]="
+                'TAKE_PROFIT_STOP_LOSS.SET_ACTION_NOTIFY' | translate
+              "
+            >
+              <div class="flex items-center justify-center space-x-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
+                  ></path>
                   <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                 </svg>
-                {{ 'TAKE_PROFIT_STOP_LOSS.NOTIFY' | translate }}
+                <span>{{ 'TAKE_PROFIT_STOP_LOSS.NOTIFY' | translate }}</span>
               </div>
             </button>
           </div>
@@ -106,11 +306,28 @@
     </mat-dialog-content>
 
     <!-- Actions -->
-    <div class="px-5 pb-5 pt-1">
-      <button (click)="onSubmit()" [disabled]="!isFormValid()" [ngClass]="{'confirm-btn bg-[#E5BF7D]/90 hover:bg-[#E5BF7D] border-[#E5BF7D]/80 text-white': true, 'opacity-60 cursor-not-allowed': !isFormValid()}" class="w-full py-3.5 rounded-lg text-base font-semibold uppercase tracking-wide transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#E5BF7D]/30">
+    <div class="px-6 pb-6 pt-2">
+      <button
+        (click)="onSubmit()"
+        [disabled]="!isFormValid()"
+        [ngClass]="{
+          'confirm-btn w-full py-3.5 rounded-lg text-base font-semibold uppercase tracking-wide transition-all duration-200 focus:outline-none focus:ring-2': true,
+          'opacity-60 cursor-not-allowed': !isFormValid()
+        }"
+      >
         <div class="flex items-center justify-center space-x-2">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M22 11.08V12a10 10 0 1 1-5.93-9.14"
+            ></path>
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
           <span>{{ 'TAKE_PROFIT_STOP_LOSS.CONFIRM_ORDER' | translate }}</span>

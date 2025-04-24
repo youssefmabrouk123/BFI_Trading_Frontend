@@ -52,12 +52,15 @@
         <td class="instrument-col sticky left-0 z-10">
           <div class="instrument-cell">
             <span class="type-badge fx">FX</span>
+            <span >{{transaction.devAchn.identifier}}</span>
           </div>
         </td>
         <td>{{ transaction.mntAcht | number:'1.2-2' }}</td>
         <td>
           <div class="instrument-cell">
             <span class="type-badge fx">FX</span>
+            <span >{{transaction.devVen.identifier}}</span>
+
           </div>
         </td>
         <td>{{ transaction.mntVen | number:'1.2-2' }}</td>

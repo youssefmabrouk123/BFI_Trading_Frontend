@@ -161,6 +161,10 @@
     "PENDING_ORDER.STATUS.EXECUTED": "Executed",
     "PENDING_ORDER.STATUS.PENDING": "Pending",
     "PENDING_ORDER.STATUS.CANCELLED": "Cancelled",
+    "PENDING_ORDER.PENDING": "Pending Order",
+    "PENDING_ORDER.EXPIRED": "Expired Order",
+    "PENDING_ORDER.CANCELLED": "Cancelled Order",
+
     "TRANSACTION.TITLE": "Transaction History",
     "TRANSACTION.SEARCH_PLACEHOLDER": "Search transactions...",
     "TRANSACTION.CURRENCY_BOUGHT": "Currency Bought",
@@ -201,5 +205,39 @@
     "TAKE_PROFIT_STOP_LOSS.TRIGGER_TYPE.STOP_LOSS": "Stop Loss",
     "TAKE_PROFIT_STOP_LOSS.TRIGGER_TYPE.TAKE_PROFIT": "Take Profit",
     "TAKE_PROFIT_STOP_LOSS.ACTION_ON_TRIGGER.EXECUTE": "Execute",
-    "TAKE_PROFIT_STOP_LOSS.ACTION_ON_TRIGGER.NOTIFY": "Notify"
-    }
+    "TAKE_PROFIT_STOP_LOSS.ACTION_ON_TRIGGER.NOTIFY": "Notify",
+    "TAKE_PROFIT_STOP_LOSS.HOURS": "Hours",
+    "TAKE_PROFIT_STOP_LOSS.MINUTES": "Minutes",
+    "TAKE_PROFIT_STOP_LOSS.DURATION_REQUIRED":"Duration Required",
+    "TAKE_PROFIT_STOP_LOSS.DURATION":"Duration",
+
+
+
+    "SEARCH_PLACEHOLDER": "Search orders...",
+    "CANCEL": "Cancel",
+    "CONFIRM_CANCEL": "Are you sure you want to cancel this order?",
+    "NO_ORDERS": "No orders found",
+    "ID": "ID",
+    "CURRENCY_PAIR": "Currency Pair",
+    "AMOUNT": "Amount",
+    "TARGET_PRICE": "Target Price",
+    "ORDER_TYPE": "Order Type",
+    "TRIGGER_TYPE": "Trigger Type",
+    "ACTION": "Action",
+    "STATUS": "Status",
+    "CREATED_AT": "Created At",
+    "EXECUTED_AT": "Executed At",
+    "ACTIONS": "Actions",
+    "SOCKET_CONNECTED": "Connected to server",
+    "SOCKET_DISCONNECTED": "Disconnected from server",
+    "RECONNECT_FAILED": "Failed to reconnect",
+    "NO_USER_ID": "User ID not found",
+    "UPDATED": "Orders updated",
+    "UNAUTHORIZED": "Unauthorized access",
+    "LOAD_ERROR": "Error loading orders",
+    "INVALID_ID": "Invalid order ID",
+    "CANCEL_SUCCESS": "Order cancelled successfully",
+    "NOT_FOUND": "Order not found",
+    "CANCEL_ERROR": "Error cancelling order"
+  }
+    

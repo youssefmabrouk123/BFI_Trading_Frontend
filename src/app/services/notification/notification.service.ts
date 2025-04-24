@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, takeUntil, tap } from 'rxjs';
-import { io, Socket } from 'socket.io-client';
+import { Socket } from 'ngx-socket-io';
 import { AuthService, User } from '../auth/auth.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
@@ -17,15 +17,17 @@ export interface Notification {
   providedIn: 'root'
 })
 export class NotificationService implements OnDestroy {
-  private socket!: any;
   private notificationsSubject = new BehaviorSubject<Notification[]>([]);
   public notifications$: Observable<Notification[]> = this.notificationsSubject.asObservable();
   private restBaseUrl = 'http://localhost:6060';
-  private socketBaseUrl = 'http://localhost:9092';
   private destroy$ = new Subject<void>();
   private isConnected = false;
 
-  constructor(private authService: AuthService, private http: HttpClient) {
+  constructor(
+    private socket: Socket,
+    private authService: AuthService,
+    private http: HttpClient
+  ) {
     this.initializeSocket();
   }
 
@@ -42,46 +44,50 @@ export class NotificationService implements OnDestroy {
   }
 
   private setupSocket(user: User): void {
-    this.socket = io(this.socketBaseUrl, {
-      auth: { token: this.authService.getToken() },
-      transports: ['websocket', 'polling'],
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000
-    });
+    console.log('Setting up socket for user:', user.id);
+
+    // Set authentication token
+    this.socket.ioSocket.auth = { token: this.authService.getToken() };
+    this.socket.connect();
 
     this.socket.on('connect', () => {
       this.isConnected = true;
-      console.log('Connected to Socket.IO server:', this.socket.id);
+      console.log('Connected to Socket.IO server, socket ID:', this.socket.ioSocket.id);
       const room = `user-${user.id}`;
       this.socket.emit('join', room);
       console.log('Joined room:', room);
       this.fetchInitialNotifications(user.id);
     });
 
-    this.socket.on('connect_error', (error:Error) => {
-      console.error('Socket.IO connection error:', error);
+    this.socket.on('connect_error', (error: Error) => {
+      console.error('Socket.IO connection error:', error.message);
       this.isConnected = false;
     });
 
-    this.socket.on('disconnect', (reason:any) => {
-      console.log('Socket.IO disconnected:', reason);
+    this.socket.on('disconnect', (reason: string) => {
+      console.log('Socket.IO disconnected, reason:', reason);
       this.isConnected = false;
     });
 
-    this.socket.on('orderTrigger', (notification: Notification) => {
-      console.log('Received orderTrigger:', notification);
-      this.handleNotification(notification);
+    // Listen for real-time notifications
+    this.socket.fromEvent<Notification>('orderTrigger').pipe(takeUntil(this.destroy$)).subscribe(notification => {
+      console.log('Received orderTrigger notification:', notification);
+      if (notification.userId === user.id) {
+        this.handleNotification(notification);
+      }
     });
 
-    this.socket.on('orderExecution', (notification: Notification) => {
-      console.log('Received orderExecution:', notification);
-      this.handleNotification(notification);
+    this.socket.fromEvent<Notification>('orderExecution').pipe(takeUntil(this.destroy$)).subscribe(notification => {
+      console.log('Received orderExecution notification:', notification);
+      if (notification.userId === user.id) {
+        this.handleNotification(notification);
+      }
     });
 
-    this.socket.on('notificationsUpdate', (notifications: Notification[]) => {
+    this.socket.fromEvent<Notification[]>('notificationsUpdate').pipe(takeUntil(this.destroy$)).subscribe(notifications => {
       console.log('Received notificationsUpdate:', notifications);
-      this.notificationsSubject.next(notifications);
+      const userNotifications = notifications.filter(n => n.userId === user.id);
+      this.notificationsSubject.next(userNotifications);
     });
   }
 
@@ -89,7 +95,10 @@ export class NotificationService implements OnDestroy {
     const currentNotifications = this.notificationsSubject.value;
     const exists = currentNotifications.some(n => n.id === notification.id);
     if (!exists) {
+      console.log('Adding new notification:', notification);
       this.notificationsSubject.next([notification, ...currentNotifications]);
+    } else {
+      console.log('Notification already exists, skipping:', notification.id);
     }
   }
 
@@ -98,15 +107,24 @@ export class NotificationService implements OnDestroy {
     this.http.get<Notification[]>(`${this.restBaseUrl}/notifications/user/${userId}`, { headers })
       .pipe(
         takeUntil(this.destroy$),
-        tap(notifications => this.notificationsSubject.next(notifications))
+        tap(notifications => {
+          console.log('Fetched initial notifications:', notifications);
+          this.notificationsSubject.next(notifications);
+        })
       )
       .subscribe({
-        error: (err) => console.error('Error fetching notifications:', err)
+        error: (err) => console.error('Error fetching initial notifications:', err)
       });
   }
 
+  addNotification(notification: Notification): void {
+    this.handleNotification(notification);
+  }
+
   getUnreadCount(): number {
-    return this.notificationsSubject.value.filter(n => !n.isRead).length;
+    const count = this.notificationsSubject.value.filter(n => !n.isRead).length;
+    console.log('Unread notifications count:', count);
+    return count;
   }
 
   markAsRead(notificationId: number, userId: number): void {
@@ -115,6 +133,7 @@ export class NotificationService implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
+          console.log('Marked notification as read:', notificationId);
           const updatedNotifications = this.notificationsSubject.value.map(n =>
             n.id === notificationId ? { ...n, isRead: true } : n
           );
@@ -130,6 +149,7 @@ export class NotificationService implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
+          console.log('Marked all notifications as read for user:', userId);
           const updatedNotifications = this.notificationsSubject.value.map(n => ({ ...n, isRead: true }));
           this.notificationsSubject.next(updatedNotifications);
         },
@@ -143,6 +163,7 @@ export class NotificationService implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
+          console.log('Deleted notification:', notificationId);
           const updatedNotifications = this.notificationsSubject.value.filter(n => n.id !== notificationId);
           this.notificationsSubject.next(updatedNotifications);
         },
@@ -151,7 +172,8 @@ export class NotificationService implements OnDestroy {
   }
 
   disconnect(): void {
-    if (this.socket && this.isConnected) {
+    if (this.isConnected) {
+      console.log('Disconnecting socket');
       this.socket.disconnect();
       this.isConnected = false;
     }

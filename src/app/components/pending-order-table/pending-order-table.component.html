@@ -3,25 +3,97 @@
     <div class="filter-header">
       <div class="filter-header-content">
         <div class="filter-title-group">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="22 12 18 12 15 2"></polyline>
+            <polyline points="9 2 6 12 2 12"></polyline>
+            <path d="M18 12h-2a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2z"></path>
+            <path d="M6 12h2a2 2 0 0 0 2 2v6a2 2 0 0 0-2 2H6a2 2 0 0 0-2-2v-6a2 2 0 0 0 2-2z"></path>
           </svg>
           <h3 class="filter-title">{{ 'PENDING_ORDER.TITLE' | translate }}</h3>
           <div class="table-controls">
-            <button class="refresh-btn" (click)="refreshOrders()" [class.loading]="isRefreshing">
-              <i class="fa fa-sync refresh-icon" [class.spinning]="isRefreshing"></i>
+            <button
+              class="refresh-btn"
+              (click)="refreshOrders()"
+              [disabled]="isRefreshing"
+              aria-label="Refresh orders"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="refresh-icon"
+                [ngClass]="{'spinning': isRefreshing}"
+              >
+                <path d="M23 4v6h-6"></path>
+                <path d="M1 20v-6h6"></path>
+                <path d="M3.51 9a9 9 0 0114.85-3.36L23 10"></path>
+                <path d="M20.49 15a9 9 0 01-14.85 3.36L1 14"></path>
+              </svg>
             </button>
           </div>
         </div>
         <div class="filter-controls">
+          <!-- Tab Controls for Order Status -->
+          <div class="status-tabs">
+            <button
+              class="status-tab"
+              [ngClass]="{'active': selectedStatus === 'pending'}"
+              (click)="selectStatus('pending')"
+            >
+              {{ 'PENDING_ORDER.PENDING' | translate }}
+            </button>
+            <button
+              class="status-tab"
+              [ngClass]="{'active': selectedStatus === 'cancelled'}"
+              (click)="selectStatus('cancelled')"
+            >
+              {{ 'PENDING_ORDER.CANCELLED' | translate }}
+            </button>
+            <button
+              class="status-tab"
+              [ngClass]="{'active': selectedStatus === 'expired'}"
+              (click)="selectStatus('expired')"
+            >
+              {{ 'PENDING_ORDER.EXPIRED' | translate }}
+            </button>
+          </div>
           <div class="search-group">
-            <input type="text" 
-                   class="search-input" 
-                   [placeholder]="'PENDING_ORDER.SEARCH_PLACEHOLDER' | translate" 
-                   [(ngModel)]="searchQuery" 
-                   (ngModelChange)="filterOrders()">
-            <button class="search-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <input
+              type="text"
+              class="search-input"
+              [placeholder]="'PENDING_ORDER.SEARCH_PLACEHOLDER' | translate"
+              [(ngModel)]="searchQuery"
+              (ngModelChange)="filterOrders()"
+              aria-label="Search orders"
+            />
+            <button class="search-btn" aria-label="Search">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
@@ -35,7 +107,9 @@
   <table class="market-table">
     <thead>
       <tr>
-        <th class="instrument-col sticky left-0 z-20">{{ 'PENDING_ORDER.ID' | translate }}</th>
+        <th class="instrument-col sticky left-0 z-20">
+          {{ 'PENDING_ORDER.ID' | translate }}
+        </th>
         <th>{{ 'PENDING_ORDER.CURRENCY_PAIR' | translate }}</th>
         <th>{{ 'PENDING_ORDER.AMOUNT' | translate }}</th>
         <th>{{ 'PENDING_ORDER.TARGET_PRICE' | translate }}</th>
@@ -45,42 +119,51 @@
         <th>{{ 'PENDING_ORDER.STATUS' | translate }}</th>
         <th>{{ 'PENDING_ORDER.CREATED_AT' | translate }}</th>
         <th>{{ 'PENDING_ORDER.EXECUTED_AT' | translate }}</th>
-        <th>{{ 'PENDING_ORDER.ACTIONS' | translate }}</th>
+        <th *ngIf="selectedStatus === 'pending'">{{ 'PENDING_ORDER.ACTIONS' | translate }}</th>
       </tr>
     </thead>
     <tbody *ngIf="!isLoading && filteredOrders.length > 0">
-      <tr *ngFor="let order of filteredOrders; trackBy: trackById">
-        <td class="instrument-col sticky left-0 z-10">{{ order.id }}</td>
+      <tr *ngFor="let order of filteredOrders; trackBy: trackById" class="cursor-pointer hover:bg-gray-800 transition-colors">
+        <td class="instrument-col sticky left-0 z-10">{{ order.id || '-' }}</td>
         <td>
           <div class="instrument-cell">
-            <span class="type-badge fx">{{ order.baseCurrencyIdentifier }}/{{ order.quoteCurrencyIdentifier }}</span>
+            <span class="type-badge fx">
+              {{ order.baseCurrencyIdentifier }}/{{ order.quoteCurrencyIdentifier }}
+            </span>
           </div>
         </td>
-        <td>{{ order.amount }}</td>
-        <td>{{ order.targetPrice }}</td>
+        <td>{{ order.amount | number:'1.2-2' }}</td>
+        <td>{{ order.targetPrice | number:'1.2-2' }}</td>
         <td>
-          <span [class]="order.orderType === 'BUY' ? 'text-green-500' : 'text-red-500'">
+          <span class="action-badge" [ngClass]="order.orderType.toLowerCase()">
             {{ order.orderType }}
           </span>
         </td>
-        <td>{{ order.triggerType }}</td>
-        <td>{{ order.actionOnTrigger }}</td>
         <td>
-          <span [ngClass]="{
-            'type-badge bg-green-900/50 text-green-500': order.status === 'EXECUTED',
-            'type-badge bg-yellow-900/50 text-yellow-500': order.status === 'PENDING',
-            'type-badge bg-red-900/50 text-red-500': order.status === 'CANCELLED'
-          }">
+          <span class="trigger-type-badge" [ngClass]="order.triggerType.toLowerCase()">
+            {{ order.triggerType }}
+          </span>
+        </td>
+        <td>
+          <span class="action-badge" [ngClass]="order.actionOnTrigger.toLowerCase()">
+            {{ order.actionOnTrigger }}
+          </span>
+        </td>
+        <td>
+          <span class="status-badge" [ngClass]="order.status.toLowerCase()">
             {{ order.status }}
           </span>
         </td>
         <td>{{ order.createdAt | date:'medium' }}</td>
         <td>{{ order.executedAt ? (order.executedAt | date:'medium') : '-' }}</td>
-        <td>
-          <button 
-            class="signal-btn" 
-            (click)="cancelOrder(order.id!)" 
-            [disabled]="order.status !== 'PENDING'">
+        <td *ngIf="selectedStatus === 'pending'">
+          <button
+            class="signal-btn"
+            (click)="cancelOrder(order.id)"
+            [disabled]="order.status !== 'PENDING'"
+            [attr.aria-label]="'PENDING_ORDER.CANCEL' | translate"
+            [attr.aria-disabled]="order.status !== 'PENDING'"
+          >
             {{ 'PENDING_ORDER.CANCEL' | translate }}
           </button>
         </td>
@@ -88,14 +171,26 @@
     </tbody>
     <tbody *ngIf="!isLoading && filteredOrders.length === 0">
       <tr>
-        <td colspan="11" class="p-4 text-center text-gray-500">{{ 'PENDING_ORDER.NO_ORDERS' | translate }}</td>
+        <td [attr.colspan]="selectedStatus === 'pending' ? 11 : 10" class="p-4 text-center text-gray-500">
+          {{ 'PENDING_ORDER.NO_ORDERS' | translate }}
+        </td>
       </tr>
     </tbody>
     <tbody *ngIf="isLoading">
-      <tr *ngFor="let skeleton of skeletonArray">
-        <td class="skeleton-cell" colspan="11">
-          <div class="skeleton skeleton-text"></div>
+      <tr *ngFor="let _ of skeletonArray">
+        <td class="skeleton-cell instrument-col sticky left-0 z-10">
+          <div class="skeleton-text"></div>
         </td>
+        <td class="skeleton-cell"><div class="skeleton-text"></div></td>
+        <td class="skeleton-cell"><div class="skeleton-text"></div></td>
+        <td class="skeleton-cell"><div class="skeleton-text"></div></td>
+        <td class="skeleton-cell"><div class="skeleton-text"></div></td>
+        <td class="skeleton-cell"><div class="skeleton-text"></div></td>
+        <td class="skeleton-cell"><div class="skeleton-text"></div></td>
+        <td class="skeleton-cell"><div class="skeleton-text"></div></td>
+        <td class="skeleton-cell"><div class="skeleton-text"></div></td>
+        <td class="skeleton-cell"><div class="skeleton-text"></div></td>
+        <td *ngIf="selectedStatus === 'pending'" class="skeleton-cell"><div class="skeleton-text"></div></td>
       </tr>
     </tbody>
   </table>

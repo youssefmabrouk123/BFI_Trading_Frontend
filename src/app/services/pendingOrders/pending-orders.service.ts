@@ -6,7 +6,7 @@ import { AuthService } from '../auth/auth.service';
 import { PendingOrderDTO } from 'src/app/models/PendingOrderDTO';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PendingOrdersService {
   private apiUrl = 'http://localhost:6060/api/pending-orders';
@@ -16,36 +16,66 @@ export class PendingOrdersService {
   private getHeaders(): HttpHeaders {
     const token = this.authService.getToken();
     return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     });
   }
 
   createPendingOrder(orderData: any): Observable<any> {
     console.log('Creating pending order:', orderData);
-    return this.http.post<any>(this.apiUrl, orderData, { headers: this.getHeaders() }).pipe(
-      catchError(error => {
-        console.error('Error creating pending order:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.http
+      .post<any>(this.apiUrl, orderData, { headers: this.getHeaders() })
+      .pipe(
+        catchError((error) => {
+          console.error('Error creating pending order:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   getPendingOrders(): Observable<PendingOrderDTO[]> {
-    return this.http.get<PendingOrderDTO[]>(this.apiUrl, { headers: this.getHeaders() }).pipe(
-      catchError(error => {
-        console.error('Error fetching pending orders:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.http
+      .get<PendingOrderDTO[]>(this.apiUrl, { headers: this.getHeaders() })
+      .pipe(
+        catchError((error) => {
+          console.error('Error fetching pending orders:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+  getCancelledOrders(): Observable<PendingOrderDTO[]> {
+    return this.http
+      .get<PendingOrderDTO[]>(`${this.apiUrl}/cancelled`, { headers: this.getHeaders() })
+      .pipe(
+        catchError((error) => {
+          console.error('Error fetching cancelled orders:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+  getExpiredOrders(): Observable<PendingOrderDTO[]> {
+    return this.http
+      .get<PendingOrderDTO[]>(`${this.apiUrl}/expired`, { headers: this.getHeaders() })
+      .pipe(
+        catchError((error) => {
+          console.error('Error fetching expired orders:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   cancelPendingOrder(orderId: number): Observable<PendingOrderDTO> {
-    return this.http.delete<PendingOrderDTO>(`${this.apiUrl}/${orderId}`, { headers: this.getHeaders() }).pipe(
-      catchError(error => {
-        console.error('Error canceling pending order:', error);
-        return throwError(() => error);
+    return this.http
+      .delete<PendingOrderDTO>(`${this.apiUrl}/${orderId}`, {
+        headers: this.getHeaders(),
       })
-    );
+      .pipe(
+        catchError((error) => {
+          console.error('Error canceling pending order:', error);
+          return throwError(() => error);
+        })
+      );
   }
 }

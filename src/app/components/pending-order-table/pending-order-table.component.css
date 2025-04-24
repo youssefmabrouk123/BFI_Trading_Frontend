@@ -46,8 +46,8 @@
 .instrument-col {
   position: sticky;
   left: 0;
-  min-width: 80px;
-  max-width: 80px;
+  min-width: 100px;
+  max-width: 100px;
   background-color: #161b20 !important;
   background: linear-gradient(to right, rgba(13, 13, 13, 0.95), rgba(13, 13, 13, 0.95)) !important;
   color: #ffffff;
@@ -79,19 +79,78 @@ tr:hover .instrument-col {
   color: #22c55e;
 }
 
-.type-badge.bg-green-900\/50 {
+.trigger-type-badge {
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.trigger-type-badge.limit {
+  background: rgba(59, 130, 246, 0.5);
+  color: #3b82f6;
+}
+
+.trigger-type-badge.market {
   background: rgba(22, 163, 74, 0.5);
   color: #22c55e;
 }
 
-.type-badge.bg-yellow-900\/50 {
+.trigger-type-badge.stop {
+  background: rgba(249, 115, 22, 0.5);
+  color: #f97316;
+}
+
+.action-badge {
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.action-badge.buy {
+  background: rgba(22, 163, 74, 0.5);
+  color: #22c55e;
+}
+
+.action-badge.sell {
+  background: rgba(220, 38, 38, 0.5);
+  color: #ef4444;
+}
+
+.status-badge {
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.status-badge.pending {
   background: rgba(202, 138, 4, 0.5);
   color: #eab308;
 }
 
-.type-badge.bg-red-900\/50 {
+.status-badge.executed {
+  background: rgba(22, 163, 74, 0.5);
+  color: #22c55e;
+}
+
+.status-badge.cancelled {
+  background: rgba(107, 114, 128, 0.5);
+  color: #6b7280;
+}
+
+.status-badge.failed {
   background: rgba(220, 38, 38, 0.5);
   color: #ef4444;
+}
+
+.status-badge.expired {
+  background: rgba(139, 92, 246, 0.5);
+  color: #8b5cf6;
 }
 
 .signal-btn {
@@ -104,11 +163,11 @@ tr:hover .instrument-col {
 }
 
 .signal-btn:hover {
-  background: #4b5563;
+  background: #9ca3af;
 }
 
 .signal-btn:disabled {
-  background: #4b5563;
+  background: #9ca3af;
   color: #9ca3af;
   cursor: not-allowed;
 }
@@ -150,6 +209,27 @@ tr:hover .instrument-col {
   font-size: 14px;
   font-weight: 500;
   color: rgba(229, 191, 125, 0.9);
+}
+
+.connection-status {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.connection-status.connected {
+  background: rgba(22, 163, 74, 0.5);
+  color: #22c55e;
+}
+
+.connection-status.disconnected {
+  background: rgba(220, 38, 38, 0.5);
+  color: #ef4444;
+}
+
+.connection-status.reconnecting {
+  background: rgba(202, 138, 4, 0.5);
+  color: #eab308;
 }
 
 .filter-controls {
@@ -294,55 +374,64 @@ tr:hover .instrument-col {
   color: #22c55e !important;
 }
 
-:host(.light-mode) .type-badge.bg-green-900\/50,
-.table-wrapper.light-mode .type-badge.bg-green-900\/50 {
+:host(.light-mode) .trigger-type-badge.limit,
+.table-wrapper.light-mode .trigger-type-badge.limit {
+  background: rgba(59, 130, 246, 0.1) !important;
+  color: #3b82f6 !important;
+}
+
+:host(.light-mode) .trigger-type-badge.market,
+.table-wrapper.light-mode .trigger-type-badge.market {
   background: rgba(22, 163, 74, 0.1) !important;
   color: #22c55e !important;
 }
 
-:host(.light-mode) .type-badge.bg-yellow-900\/50,
-.table-wrapper.light-mode .type-badge.bg-yellow-900\/50 {
-  background: rgba(234, 179, 8, 0.1) !important;
-  color: #eab308 !important;
+:host(.light-mode) .trigger-type-badge.stop,
+.table-wrapper.light-mode .trigger-type-badge.stop {
+  background: rgba(249, 115, 22, 0.1) !important;
+  color: #f97316 !important;
 }
 
-:host(.light-mode) .type-badge.bg-red-900\/50,
-.table-wrapper.light-mode .type-badge.bg-red-900\/50 {
-  background: rgba(239, 68, 68, 0.1) !important;
-  color: #ef4444 !important;
-}
-
-:host(.light-mode) .signal-btn,
-.table-wrapper.light-mode .signal-btn {
-  background: #E0E0E0 !important;
-  color: #333333 !important;
-}
-
-:host(.light-mode) .signal-btn:hover,
-.table-wrapper.light-mode .signal-btn:hover {
-  background: #D1D5DB !important;
-}
-
-:host(.light-mode) .signal-btn:disabled,
-.table-wrapper.light-mode .signal-btn:disabled {
-  background: #E5E7EB !important;
-  color: #9CA3AF !important;
-  cursor: not-allowed !important;
-}
-
-:host(.light-mode) .text-green-500,
-.table-wrapper.light-mode .text-green-500 {
+:host(.light-mode) .action-badge.buy,
+.table-wrapper.light-mode .action-badge.buy {
+  background: rgba(22, 163, 74, 0.1) !important;
   color: #22c55e !important;
 }
 
-:host(.light-mode) .text-red-500,
-.table-wrapper.light-mode .text-red-500 {
+:host(.light-mode) .action-badge.sell,
+.table-wrapper.light-mode .action-badge.sell {
+  background: rgba(220, 38, 38, 0.1) !important;
   color: #ef4444 !important;
 }
 
-:host(.light-mode) .text-gray-500,
-.table-wrapper.light-mode .text-gray-500 {
-  color: #6B7280 !important;
+:host(.light-mode) .status-badge.pending,
+.table-wrapper.light-mode .status-badge.pending {
+  background: rgba(202, 138, 4, 0.1) !important;
+  color: #eab308 !important;
+}
+
+:host(.light-mode) .status-badge.executed,
+.table-wrapper.light-mode .status-badge.executed {
+  background: rgba(22, 163, 74, 0.1) !important;
+  color: #22c55e !important;
+}
+
+:host(.light-mode) .status-badge.cancelled,
+.table-wrapper.light-mode .status-badge.cancelled {
+  background: rgba(107, 114, 128, 0.1) !important;
+  color: #6b7280 !important;
+}
+
+:host(.light-mode) .status-badge.failed,
+.table-wrapper.light-mode .status-badge.failed {
+  background: rgba(220, 38, 38, 0.1) !important;
+  color: #ef4444 !important;
+}
+
+:host(.light-mode) .status-badge.expired,
+.table-wrapper.light-mode .status-badge.expired {
+  background: rgba(139, 92, 246, 0.1) !important;
+  color: #8b5cf6 !important;
 }
 
 :host(.light-mode) .filter-panel,
@@ -420,4 +509,52 @@ tr:hover .instrument-col {
   color: #D4A017;
   font-size: 12px;
   opacity: 0.5;
+}
+
+
+/* Existing styles remain unchanged, add the following at the end of the file */
+
+.status-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.status-tab {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  background: rgba(229, 191, 125, 0.05);
+  color: rgba(229, 191, 125, 0.7);
+  transition: background 0.2s, color 0.2s;
+  cursor: pointer;
+}
+
+.status-tab:hover {
+  background: rgba(229, 191, 125, 0.1);
+  color: rgba(229, 191, 125, 0.9);
+}
+
+.status-tab.active {
+  background: rgba(229, 191, 125, 0.2);
+  color: rgba(229, 191, 125, 1);
+}
+
+/* Light Mode Styles for Tabs */
+:host(.light-mode) .status-tab,
+.table-wrapper.light-mode .status-tab {
+  background: rgba(212, 160, 23, 0.05);
+  color: #666666;
+}
+
+:host(.light-mode) .status-tab:hover,
+.table-wrapper.light-mode .status-tab:hover {
+  background: rgba(212, 160, 23, 0.1);
+  color: #333333;
+}
+
+:host(.light-mode) .status-tab.active,
+.table-wrapper.light-mode .status-tab.active {
+  background: rgba(212, 160, 23, 0.2);
+  color: #D4A017;
 }
