@@ -1,0 +1,538 @@
+:host {
+  --chart-bg: #0d0d0d;
+  --panel-bg: #0d0d0dde;
+  --text-color: #ffffff;
+  --text-muted: #9598a1;
+  --border-color: #2a2e39;
+  --positive-color: #26a69a;
+  --negative-color: #ef5350;
+  --primary-color: #2962ff;
+  --highlight-color: #eebc67;
+  --button-bg: #eebc67;
+  --button-hover: #363a45;
+  --tooltip-bg: rgba(30, 34, 45, 0.95);
+}
+
+.candle-chart-container {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  background-color: var(--chart-bg);
+  border-radius: 6px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  padding: 0;
+  color: var(--text-color);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.candle-chart-container.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  border-radius: 0;
+  margin: 0;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  height: 60px;
+}
+
+.chart-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.symbol-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.data-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.current-price {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.price-change {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.arrow-icon {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-right: 4px;
+}
+
+.arrow-icon.up {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 8px solid var(--positive-color);
+}
+
+.arrow-icon.down {
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 8px solid var(--negative-color);
+}
+
+.price-change.positive {
+  color: var(--positive-color);
+}
+
+.price-change.negative {
+  color: var(--negative-color);
+}
+
+.chart-actions {
+  display: flex;
+  gap: 16px;
+}
+
+.chart-indicators, .chart-tools {
+  display: flex;
+  gap: 2px;
+}
+
+.chart-indicators button, .chart-tools button {
+  background-color: var(--button-bg);
+  color: var(--text-color);
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.chart-indicators button:hover, .chart-tools button:hover {
+  background-color: var(--button-hover);
+}
+
+.chart-indicators button.active, .chart-tools button.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.chart-content {
+  flex: 1;
+  position: relative;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.spinner {
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top: 3px solid var(--primary-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  margin-top: 16px;
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--negative-color);
+}
+
+.error-icon {
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+.error-state p {
+  font-size: 16px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.retry-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.retry-btn:hover {
+  background-color: var(--highlight-color);
+}
+
+.chart-wrapper {
+  height: 100%;
+}
+
+.chart-wrapper.hidden {
+  display: none;
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
+}
+
+.chart-footer {
+  padding: 8px 16px;
+  background-color: var(--panel-bg);
+  border-top: 1px solid var(--border-color);
+  border-radius: 0 0 6px 6px;
+}
+
+.chart-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.time-ranges {
+  display: flex;
+  gap: 2px;
+}
+
+.time-ranges button {
+  background-color: var(--button-bg);
+  color: var(--text-color);
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.time-ranges button:hover {
+  background-color: var(--button-hover);
+}
+
+.time-ranges button.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.custom-range {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.custom-range input {
+  background-color: var(--chart-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-color);
+  padding: 6px 8px;
+  font-size: 12px;
+  width: 140px;
+}
+
+.custom-range button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.chart-info {
+  display: flex;
+  gap: 10px;
+}
+
+.info-block {
+  display: flex;
+  gap: 6px;
+}
+
+.info-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.info-value {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.chart-legend {
+  position: absolute;
+  bottom: 60px;
+  left: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 8px;
+  background-color: var(--tooltip-bg);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.color-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.legend-label, .legend-value {
+  font-size: 12px;
+  color: var(--text-color);
+}
+
+.legend-toggle {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px;
+}
+
+.legend-toggle.active {
+  color: var(--primary-color);
+}
+
+.indicators-panel, .drawing-tools-panel {
+  position: absolute;
+  top: 70px;
+  right: 16px;
+  width: 250px;
+  background-color: var(--panel-bg);
+  border-radius: 6px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  border: 1px solid var(--border-color);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.panel-header h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  borderTh: 18px;
+  padding: 0;
+  line-height: 1;
+}
+
+.panel-content {
+  padding: 12px 16px;
+}
+
+.indicator-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.indicator-item:last-child {
+  border-bottom: none;
+}
+
+.indicator-item input {
+  margin-right: 8px;
+  accent-color: var(--primary-color);
+}
+
+.indicator-item label {
+  font-size: 12px;
+  flex: 1;
+}
+
+.indicator-settings-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px 6px;
+}
+
+.drawing-tools-panel button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  padding: 8px;
+  font-size: 12px;
+}
+
+.drawing-tools-panel .clear-btn {
+  background-color: var(--negative-color);
+  color: white;
+}
+
+.drawing-tools-panel .clear-btn:hover {
+  background-color: #d32f2f;
+}
+
+.tool-button {
+  background-color: var(--button-bg);
+  color: var(--text-color);
+  border: none;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.tool-button:hover {
+  background-color: var(--button-hover);
+}
+
+.tool-button.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.tooltip {
+  transition: opacity 0.2s ease-in-out;
+  z-index: 1000;
+  background-color: var(--tooltip-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.candle-chart-container svg {
+  overflow: visible !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .chart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    height: auto;
+    padding-bottom: 16px;
+  }
+
+  .chart-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .chart-content {
+    height: calc(100% - 160px);
+  }
+}
+
+@media (max-width: 768px) {
+  .candle-chart-container {
+    height: 500px;
+  }
+
+  .chart-actions {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .chart-controls {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .time-ranges {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .custom-range {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .custom-range input {
+    width: 100%;
+  }
+
+  .chart-tools {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .chart-content {
+    height: calc(100% - 200px);
+  }
+
+  .indicators-panel, .drawing-tools-panel {
+    width: 200px;
+  }
+}
+
+@keyframes slide-in {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

@@ -1,0 +1,161 @@
+<!-- trade-operation-popup.component.html -->
+<div *ngIf="isOpen" 
+     class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300">
+  
+  <!-- Overlay qui ferme le popup au clic -->
+  <div class="absolute inset-0" (click)="closePopup()"></div>
+  
+  <!-- Popup -->
+  <div (click)="onPopupClick($event)" 
+       class="w-full max-w-xl relative bg-card-background border border-border-color rounded-lg shadow-lg transform transition-transform duration-300 mx-4"
+       [ngClass]="{'translate-y-0 opacity-100': isOpen, '-translate-y-4 opacity-0': !isOpen}">
+    
+    <!-- En-tête -->
+    <div class="px-6 py-4 border-b border-border-color flex justify-between items-center">
+      <h2 class="text-lg font-semibold text-text-color">Nouvelle opération de trading</h2>
+      <button (click)="closePopup()" 
+              class="text-text-color hover:text-primary-color focus:outline-none bg-transparent border-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Corps du popup -->
+    <div class="p-6">
+      <form [formGroup]="tradeForm" (ngSubmit)="onSubmit()">
+        <!-- Contrepartie -->
+        <div class="mb-4">
+          <label for="contrepartie" class="block mb-2 text-sm font-medium text-text-color">
+            Contrepartie
+          </label>
+          <input type="text" id="contrepartie" formControlName="contrepartie"
+                 class="w-full bg-input-background border border-input-border text-input-text rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-color">
+          <div *ngIf="tradeForm.get('contrepartie')?.invalid && tradeForm.get('contrepartie')?.touched" class="mt-1 text-red-500 text-xs">
+            Veuillez saisir la contrepartie
+          </div>
+        </div>
+        
+        <!-- Type d'opération -->
+        <div class="mb-4">
+          <label for="typeOperation" class="block mb-2 text-sm font-medium text-text-color">
+            Type d'opération
+          </label>
+          <select id="typeOperation" formControlName="typeOperation"
+                  class="w-full bg-input-background border border-input-border text-input-text rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-color">
+            <option *ngFor="let type of operationTypes" [value]="type">
+              {{ type | titlecase }}
+            </option>
+          </select>
+        </div>
+        
+        <!-- Première ligne -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <!-- Devise Achat -->
+          <div>
+            <label for="deviseAchat" class="block mb-2 text-sm font-medium text-text-color">
+              Devise Achat
+            </label>
+            <select id="deviseAchat" formControlName="deviseAchat"
+                    class="w-full bg-input-background border border-input-border text-input-text rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-color">
+              <option *ngFor="let currency of currencies" [value]="currency">
+                {{ currency }}
+              </option>
+            </select>
+          </div>
+          
+          <!-- Devise Vente -->
+          <div>
+            <label for="deviseVente" class="block mb-2 text-sm font-medium text-text-color">
+              Devise Vente
+            </label>
+            <select id="deviseVente" formControlName="deviseVente"
+                    class="w-full bg-input-background border border-input-border text-input-text rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-color">
+              <option *ngFor="let currency of currencies" [value]="currency">
+                {{ currency }}
+              </option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Deuxième ligne -->
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <!-- Montant Acheté -->
+          <div>
+            <label for="montantAchete" class="block mb-2 text-sm font-medium text-text-color">
+              Montant Acheté
+            </label>
+            <div class="relative">
+              <input type="number" id="montantAchete" formControlName="montantAchete" step="0.01"
+                     class="w-full bg-input-background border border-input-border text-input-text rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-color">
+              <span class="absolute right-3 top-2 text-sm text-gray-400">{{ tradeForm.get('deviseAchat')?.value }}</span>
+            </div>
+            <div *ngIf="tradeForm.get('montantAchete')?.invalid && tradeForm.get('montantAchete')?.touched" class="mt-1 text-red-500 text-xs">
+              Montant invalide
+            </div>
+          </div>
+          
+          <!-- Montant Vendu -->
+          <div>
+            <label for="montantVendu" class="block mb-2 text-sm font-medium text-text-color">
+              Montant Vendu
+            </label>
+            <div class="relative">
+              <input type="number" id="montantVendu" formControlName="montantVendu" step="0.01"
+                     class="w-full bg-input-background border border-input-border text-input-text rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-color">
+              <span class="absolute right-3 top-2 text-sm text-gray-400">{{ tradeForm.get('deviseVente')?.value }}</span>
+            </div>
+            <div *ngIf="tradeForm.get('montantVendu')?.invalid && tradeForm.get('montantVendu')?.touched" class="mt-1 text-red-500 text-xs">
+              Montant invalide
+            </div>
+          </div>
+        </div>
+        
+        <!-- Cours -->
+        <div class="mb-4">
+          <label for="cours" class="block mb-2 text-sm font-medium text-text-color">
+            Cours
+          </label>
+          <input type="number" id="cours" formControlName="cours" step="0.00001"
+                 class="w-full bg-input-background border border-input-border text-input-text rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-color">
+          <div *ngIf="tradeForm.get('cours')?.invalid && tradeForm.get('cours')?.touched" class="mt-1 text-red-500 text-xs">
+            Cours invalide
+          </div>
+        </div>
+        
+        <!-- Troisième ligne -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <!-- Date Opération -->
+          <div>
+            <label for="dateOperation" class="block mb-2 text-sm font-medium text-text-color">
+              Date Opération
+            </label>
+            <input type="date" id="dateOperation" formControlName="dateOperation"
+                   class="w-full bg-input-background border border-input-border text-input-text rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-color">
+          </div>
+          
+          <!-- Date Valeur -->
+          <div>
+            <label for="dateValeur" class="block mb-2 text-sm font-medium text-text-color">
+              Date Valeur
+            </label>
+            <input type="text" id="dateValeur" formControlName="dateValeur" readonly
+                   class="w-full bg-input-background border border-input-border text-input-text rounded-md px-3 py-2 cursor-not-allowed opacity-80">
+          </div>
+        </div>
+        
+        <!-- Boutons d'action -->
+        <div class="flex justify-end space-x-3">
+          <button type="button" (click)="closePopup()" 
+                  class="px-4 py-2 bg-transparent border border-border-color text-text-color hover:bg-border-color rounded-md transition-colors">
+            Annuler
+          </button>
+          <button type="submit" 
+                  class="px-4 py-2 bg-primary-color text-button-text-active hover:bg-secondary-color hover:text-button-text-inactive rounded-md transition-colors">
+            Confirmer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

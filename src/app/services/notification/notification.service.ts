@@ -46,8 +46,8 @@ export class NotificationService implements OnDestroy {
   private setupSocket(user: User): void {
     console.log('Setting up socket for user:', user.id);
 
-    // Set authentication token
-    this.socket.ioSocket.auth = { token: this.authService.getToken() };
+    // Send token as query parameter
+    this.socket.ioSocket.io.opts.query = { token: this.authService.getToken() };
     this.socket.connect();
 
     this.socket.on('connect', () => {
@@ -55,12 +55,12 @@ export class NotificationService implements OnDestroy {
       console.log('Connected to Socket.IO server, socket ID:', this.socket.ioSocket.id);
       const room = `user-${user.id}`;
       this.socket.emit('join', room);
-      console.log('Joined room:', room);
+      console.log('Emitted join event for room:', room);
       this.fetchInitialNotifications(user.id);
     });
 
-    this.socket.on('connect_error', (error: Error) => {
-      console.error('Socket.IO connection error:', error.message);
+    this.socket.on('connect_error', (error: any) => {
+      console.error('Socket.IO connection error:', error.message || error);
       this.isConnected = false;
     });
 
@@ -69,7 +69,6 @@ export class NotificationService implements OnDestroy {
       this.isConnected = false;
     });
 
-    // Listen for real-time notifications
     this.socket.fromEvent<Notification>('orderTrigger').pipe(takeUntil(this.destroy$)).subscribe(notification => {
       console.log('Received orderTrigger notification:', notification);
       if (notification.userId === user.id) {
@@ -109,7 +108,7 @@ export class NotificationService implements OnDestroy {
         takeUntil(this.destroy$),
         tap(notifications => {
           console.log('Fetched initial notifications:', notifications);
-          this.notificationsSubject.next(notifications);
+          this.notificationsSubject.next(notifications); // Unread notifications
         })
       )
       .subscribe({
@@ -117,8 +116,19 @@ export class NotificationService implements OnDestroy {
       });
   }
 
-  addNotification(notification: Notification): void {
-    this.handleNotification(notification);
+  fetchAllNotificationsForToday(userId: number): void {
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${this.authService.getToken()}` });
+    this.http.get<Notification[]>(`${this.restBaseUrl}/notifications/today/${userId}`, { headers })
+      .pipe(
+        takeUntil(this.destroy$),
+        tap(notifications => {
+          console.log('Fetched all notifications for today:', notifications);
+          this.notificationsSubject.next(notifications);
+        })
+      )
+      .subscribe({
+        error: (err) => console.error('Error fetching all notifications for today:', err)
+      });
   }
 
   getUnreadCount(): number {

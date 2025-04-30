@@ -1,0 +1,113 @@
+<div class="candle-chart-container" #chartContainer [ngClass]="{'fullscreen': isFullscreen}">
+  <!-- Chart Header -->
+  <div class="chart-header">
+    <div class="chart-title">
+      <h3 class="symbol-title" *ngIf="selectedParity">{{ selectedParity?.description }}</h3>
+      <div class="data-summary" *ngIf="selectedCandle">
+        <span class="current-price">{{ selectedCandle.close | number:'1.5-5' }}</span>
+        <span class="price-change" [ngClass]="{'positive': priceChange > 0, 'negative': priceChange < 0}">
+          <i class="arrow-icon" [ngClass]="{'up': priceChange > 0, 'down': priceChange < 0}"></i>
+          {{ priceChange | number:'1.5-5' }} ({{ priceChangePercent | number:'1.2-2' }}%)
+        </span>
+      </div>
+    </div>
+    <div class="chart-actions">
+      <div class="chart-indicators">
+        <button [class.active]="showIndicators" (click)="toggleIndicators()">Indicators</button>
+        <button [class.active]="showDrawingTools" (click)="toggleDrawingTools()">Draw</button>
+        <button (click)="exportChart()">Export</button>
+      </div>
+      <div class="chart-tools">
+        <button class="tool-button" (click)="toggleFullscreen()" title="{{ isFullscreen ? 'Exit Fullscreen' : 'Fullscreen' }}">
+          <i class="tool-icon" [ngClass]="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart Content -->
+  <div class="chart-content">
+    <!-- Loading State -->
+    <!-- <div class="loading-state" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Loading chart data...</p>
+    </div> -->
+
+    <!-- Error State -->
+    <!-- <div class="error-state" *ngIf="hasError && !isLoading">
+      <i class="fas fa-exclamation-triangle error-icon"></i>
+      <p>{{ errorMessage }}</p>
+      <button class="retry-btn" (click)="loadCandleData()">Retry</button>
+    </div> -->
+
+    <!-- Chart -->
+    <div class="chart-wrapper" [ngClass]="{'hidden': isLoading || hasError}">
+      <div #chartContainer class="chart"></div>
+    </div>
+  </div>
+
+  <!-- Chart Footer -->
+  <div class="chart-footer">
+    <div class="chart-controls">
+      <div class="time-ranges">
+        <button *ngFor="let frame of timeframeOptions" [class.active]="filterForm.value.timeframe === frame.value"
+                (click)="setTimeFrame(frame.value)">
+          {{ frame.label }}
+        </button>
+      </div>
+      <div class="custom-range">
+        <input type="datetime-local" formControlName="startDate" (change)="onCustomRangeChange()">
+        <input type="datetime-local" formControlName="endDate" (change)="onCustomRangeChange()">
+        <button (click)="onCustomRangeChange()">Apply</button>
+      </div>
+    </div>
+    <div class="chart-info">
+      <div class="info-block" *ngIf="selectedParity">
+        <span class="info-label">Cross Parity:</span>
+        <span class="info-value">{{ selectedParity.identifier }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Indicators Panel -->
+  <div class="indicators-panel" *ngIf="showIndicators">
+    <div class="panel-header">
+      <h4>Indicators</h4>
+      <button class="close-btn" (click)="toggleIndicators()">×</button>
+    </div>
+    <div class="panel-content">
+      <div class="indicator-item" *ngFor="let indicator of availableIndicators">
+        <input type="checkbox" [id]="indicator.id" [formControlName]="indicator.id" (change)="updateIndicators()">
+        <label [for]="indicator.id">{{ indicator.name }}</label>
+        <button class="indicator-settings-btn" (click)="configureIndicator(indicator)">⚙</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drawing Tools Panel -->
+  <div class="drawing-tools-panel" *ngIf="showDrawingTools">
+    <div class="panel-header">
+      <h4>Drawing Tools</h4>
+      <button class="close-btn" (click)="toggleDrawingTools()">×</button>
+    </div>
+    <div class="panel-content">
+      <button *ngFor="let tool of drawingTools" [class.active]="selectedDrawingTool === tool.id"
+              (click)="selectDrawingTool(tool.id)">
+        <i class="fas" [ngClass]="tool.iconClass"></i> {{ tool.name }}
+      </button>
+      <button class="clear-btn" (click)="clearDrawings()">Clear Drawings</button>
+    </div>
+  </div>
+
+  <!-- Chart Legend -->
+  <div class="chart-legend" *ngIf="!(isLoading || hasError)">
+    <div class="legend-item" *ngFor="let indicator of activeIndicators">
+      <span class="color-indicator" [style.backgroundColor]="indicator.color"></span>
+      <span class="legend-label">{{ indicator.name }}</span>
+      <span class="legend-value">{{ getIndicatorValue(indicator.id) | number:'1.5-5' }}</span>
+      <button class="legend-toggle" [class.active]="indicator.visible" (click)="toggleIndicator(indicator.id)">
+        <i class="fas" [ngClass]="indicator.visible ? 'fa-eye' : 'fa-eye-slash'"></i>
+      </button>
+    </div>
+  </div>
+</div>

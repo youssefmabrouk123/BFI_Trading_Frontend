@@ -94,7 +94,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           legend: { position: 'right', labels: { color: '#E5BF7D' } },
           tooltip: {
             callbacks: {
-              label: (context) => `${context.label}: ${this.formatCurrency(context.raw as number)} TND`
+              label: (context) => `${context.label}: ${this.formatCurrency(context.raw as number)} `
             }
           }
         }

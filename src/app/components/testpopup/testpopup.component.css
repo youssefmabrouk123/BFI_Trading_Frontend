@@ -1,0 +1,142 @@
+/* Styles pour le popup */
+.popup-backdrop {
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.popup-backdrop.light-mode {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.trade-popup-container {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    max-width: 30rem; /* Reduced from max-w-md to max-w-sm (smaller width) */
+}
+
+.dark-mode .trade-popup-container {
+    background-color: #121212;
+    border-color: rgba(229, 191, 125, 0.1);
+}
+
+.light-mode .trade-popup-container {
+    background-color: #FFFFFF;
+    border-color: rgba(212, 160, 23, 0.1);
+}
+
+/* Scrollbar styling for the content area */
+.trade-popup-container .overflow-y-auto {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(229, 191, 125, 0.5) rgba(0, 0, 0, 0.2);
+}
+
+.trade-popup-container .overflow-y-auto::-webkit-scrollbar {
+    width: 8px;
+}
+
+.trade-popup-container .overflow-y-auto::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.trade-popup-container .overflow-y-auto::-webkit-scrollbar-thumb {
+    background-color: rgba(229, 191, 125, 0.5);
+    border-radius: 4px;
+}
+
+/* Animation de fade-in */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.25s ease-out forwards;
+}
+
+/* Styles pour les champs input et select */
+.input-field {
+    width: 100%;
+    padding: 0.5rem; /* Slightly reduced padding for smaller size */
+    background-color: var(--input-background);
+    border: 1px solid var(--input-border);
+    color: var(--input-text);
+    border-radius: 0.375rem;
+    font-size: 0.8125rem; /* Slightly smaller font */
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.dark-mode .input-field {
+    background-color: rgba(42, 42, 42, 0.8);
+    border-color: rgba(68, 68, 68, 0.8);
+    color: #ffffff;
+}
+
+.light-mode .input-field {
+    background-color: #ffffff;
+    border-color: rgba(224, 224, 224, 0.8);
+    color: #333333;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(229, 191, 125, 0.2);
+}
+
+.input-field:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Styles pour les boutons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.75rem; /* Slightly smaller padding */
+    border-radius: 0.375rem;
+    font-weight: 500;
+    font-size: 0.8125rem; /* Slightly smaller font */
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    min-width: 5rem; /* Reduced min-width */
+    height: 2.25rem; /* Reduced height */
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Animation pour le spinner de chargement */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-spinner {
+    animation: spin 1s linear infinite;
+}
+
+/* Styles responsifs */
+@media (max-width: 640px) {
+    .trade-popup-container {
+        max-width: calc(100% - 1rem);
+        margin: 0 0.5rem;
+    }
+    
+    .popup-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+    }
+}

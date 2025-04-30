@@ -106,7 +106,10 @@ export class MainComponent implements OnInit, OnDestroy {
 
   viewAllNotifications(event: Event): void {
     event.preventDefault();
-    console.log('View all notifications clicked');
+    if (this.user) {
+      console.log('Fetching all notifications for today for user:', this.user.id);
+      this.notificationService.fetchAllNotificationsForToday(this.user.id);
+    }
   }
 
   showDashboard(): void {

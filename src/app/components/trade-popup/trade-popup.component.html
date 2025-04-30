@@ -65,7 +65,7 @@
       <div class="grid grid-cols-2 gap-3">
         <button class="operation-btn sell px-4 py-3 bg-[#111]/70 rounded-lg text-sm font-semibold text-[#E5BF7D]/90 uppercase tracking-wide transition-all duration-200 border border-[#E5BF7D]/10 hover:bg-[#E5BF7D]/10" 
                 [ngClass]="{'selected': selectedOperation === 'VENDRE'}" 
-                (click)="setOperation('VENDRE')" 
+                (click)=" openOperationPopup()" 
                 [disabled]="isProcessing">
           <div class="flex items-center justify-center space-x-2">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

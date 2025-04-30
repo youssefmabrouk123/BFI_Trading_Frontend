@@ -1,0 +1,98 @@
+<div class="popup-backdrop fixed inset-0 flex items-center justify-center p-3 z-50" [ngClass]="{'dark-mode': currentTheme === 'dark', 'light-mode': currentTheme === 'light'}">
+    <div class="trade-popup-container w-full max-w-sm mx-auto rounded-xl overflow-hidden shadow-2xl transform transition-all duration-300 ease-out animate-fadeIn">
+      <!-- Header -->
+      <div class="popup-header flex items-center justify-between px-5 py-4 bg-[#0A0908]/90 border-b border-[#E5BF7D]/10">
+        <h2 class="text-xl font-semibold text-[#E5BF7D] tracking-tight">Operation Details</h2>
+        <button (click)="close()" class="close-btn p-1.5 rounded-full text-[#E5BF7D]/70 hover:text-[#E5BF7D] hover:bg-[#E5BF7D]/10 transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-[#E5BF7D]/30">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+  
+      <!-- Main content with scrollbar -->
+      <div class="p-5 space-y-4 max-h-[60vh] overflow-y-auto">
+        <div class="space-y-3">
+          <!-- Counterparty (Contrepartie) -->
+          <div class="flex flex-col">
+            <label class="text-sm font-medium text-[#E5BF7D]/80 mb-1">Contrepartie</label>
+            <input [(ngModel)]="operation.counterparty" class="input-field" placeholder="Entrer contrepartie" />
+          </div>
+  
+          <!-- Operation Type (Type opération) -->
+          <div class="flex flex-col">
+            <label class="text-sm font-medium text-[#E5BF7D]/80 mb-1">Type opération</label>
+            <select [(ngModel)]="operation.operationType" class="input-field" (change)="updateAmounts()">
+              <option value="achat">Achat</option>
+              <option value="vente">Vente</option>
+              <option value="cross">Cross</option>
+            </select>
+          </div>
+  
+          <!-- Buy Currency (Devise Achat) -->
+          <div class="flex flex-col">
+            <label class="text-sm font-medium text-[#E5BF7D]/80 mb-1">Devise Achat</label>
+            <select [(ngModel)]="operation.buyCurrency" class="input-field">
+              <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
+            </select>
+          </div>
+  
+          <!-- Sell Currency (Devise Vente) -->
+          <div class="flex flex-col">
+            <label class="text-sm font-medium text-[#E5BF7D]/80 mb-1">Devise Vente</label>
+            <select [(ngModel)]="operation.sellCurrency" class="input-field">
+              <option *ngFor="let currency of currencies" [value]="currency">{{ currency }}</option>
+            </select>
+          </div>
+  
+          <!-- Buy Amount (Montant acheter) -->
+          <div class="flex flex-col">
+            <label class="text-sm font-medium text-[#E5BF7D]/80 mb-1">Montant acheter</label>
+            <input type="number" [(ngModel)]="operation.buyAmount" class="input-field" placeholder="0.00" 
+                   (input)="calculateSellAmount()" step="0.01" min="0" />
+          </div>
+  
+          <!-- Sell Amount (Montant vendu) -->
+          <div class="flex flex-col">
+            <label class="text-sm font-medium text-[#E5BF7D]/80 mb-1">Montant vendu</label>
+            <input type="number" [(ngModel)]="operation.sellAmount" class="input-field" placeholder="0.00" 
+                   (input)="calculateBuyAmount()" step="0.01" min="0" />
+          </div>
+  
+          <!-- Rate (Cours) -->
+          <div class="flex flex-col">
+            <label class="text-sm font-medium text-[#E5BF7D]/80 mb-1">Cours</label>
+            <input type="number" [(ngModel)]="operation.rate" class="input-field" placeholder="0.0000" 
+                   (input)="calculateSellAmount()" step="0.0001" min="0" />
+          </div>
+  
+          <!-- Operation Date (Date opération) -->
+          <div class="flex flex-col">
+            <label class="text-sm font-medium text-[#E5BF7D]/80 mb-1">Date opération</label>
+            <input type="date" [(ngModel)]="operation.operationDate" class="input-field" 
+                   (change)="updateValueDate()" />
+          </div>
+  
+          <!-- Value Date (Date Valeur) -->
+          <div class="flex flex-col">
+            <label class="text-sm font-medium text-[#E5BF7D]/80 mb-1">Date Valeur (J+2)</label>
+            <input type="date" [(ngModel)]="operation.valueDate" class="input-field" disabled />
+          </div>
+        </div>
+      </div>
+  
+      <!-- Footer -->
+      <div class="px-5 pb-5 pt-1 flex justify-end space-x-3">
+        <button class="btn bg-[#111]/70 text-[#E5BF7D]/90 hover:bg-[#E5BF7D]/10 border-[#E5BF7D]/10" (click)="close()">
+          Annuler
+        </button>
+        <button class="btn bg-[#E5BF7D] text-[#0d0d0d] hover:bg-[#d9ae79]" (click)="saveOperation()" [disabled]="isProcessing || !isFormValid()">
+          <span *ngIf="!isProcessing">Enregistrer</span>
+          <span *ngIf="isProcessing" class="flex items-center space-x-2">
+            <span class="loading-spinner inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            <span>Traitement...</span>
+          </span>
+        </button>
+      </div>
+    </div>
+</div>

@@ -1,0 +1,89 @@
+<div class="chart-container">
+    <div class="chart-header">
+      <div class="chart-title">
+        <h3 class="instrument-name">{{instrumentName}}</h3>
+        <div class="data-summary">
+          <span class="current-value">{{currentValue | number:'1.2-4'}}</span>
+          <span class="change" [ngClass]="{'positive': priceChange > 0, 'negative': priceChange < 0}">
+            <i class="arrow-icon" [ngClass]="{'up': priceChange > 0, 'down': priceChange < 0}"></i>
+            {{priceChange | number:'1.2-4'}} ({{priceChangePercent | number:'1.2-2'}}%)
+          </span>
+        </div>
+      </div>
+      <div class="chart-actions">
+        <div class="chart-type-selector">
+          <button [class.active]="chartType === 'area'" (click)="changeChartType('area')">Area</button>
+          <button [class.active]="chartType === 'line'" (click)="changeChartType('line')">Line</button>
+          <button [class.active]="chartType === 'candlestick'" (click)="changeChartType('candlestick')">Candles</button>
+        </div>
+        <div class="chart-indicators">
+          <button [class.active]="showMA" (click)="toggleIndicator('ma')">MA</button>
+          <button [class.active]="showBollingerBands" (click)="toggleIndicator('bb')">BB</button>
+          <button [class.active]="showRSI" (click)="toggleIndicator('rsi')">RSI</button>
+          <button class="more-indicators" (click)="openIndicatorsDialog()">+</button>
+        </div>
+      </div>
+    </div>
+  
+    <div #chartContainer class="highcharts-container"></div>
+    
+    <div class="chart-footer">
+      <div class="volume-bar" *ngIf="showVolume"></div>
+      
+      <div class="chart-controls">
+        <div class="time-ranges">
+          <button [class.active]="timeRange === '15m'" (click)="changeTimeRange('15m')">15M</button>
+          <button [class.active]="timeRange === '1h'" (click)="changeTimeRange('1h')">1H</button>
+          <button [class.active]="timeRange === '4h'" (click)="changeTimeRange('4h')">4H</button>
+          <button [class.active]="timeRange === '1d'" (click)="changeTimeRange('1d')">1D</button>
+          <button [class.active]="timeRange === '1w'" (click)="changeTimeRange('1w')">1W</button>
+          <button [class.active]="timeRange === '1m'" (click)="changeTimeRange('1m')">1M</button>
+          <button [class.active]="timeRange === 'all'" (click)="changeTimeRange('all')">ALL</button>
+        </div>
+        <div class="chart-tools">
+          <button class="tool-button" [class.active]="activeTool === 'crosshair'" (click)="setActiveTool('crosshair')" title="Crosshair">
+            <i class="tool-icon crosshair-icon"></i>
+          </button>
+          <button class="tool-button" [class.active]="activeTool === 'draw'" (click)="setActiveTool('draw')" title="Drawing Tools">
+            <i class="tool-icon draw-icon"></i>
+          </button>
+          <button class="tool-button" [class.active]="activeTool === 'fibonacci'" (click)="setActiveTool('fibonacci')" title="Fibonacci">
+            <i class="tool-icon fibonacci-icon"></i>
+          </button>
+          <button class="tool-button" (click)="toggleFullscreen()" title="Fullscreen">
+            <i class="tool-icon fullscreen-icon"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="price-alert-tooltip" *ngIf="showPriceAlertTooltip" [style.top.px]="priceAlertTooltipY">
+      <div class="tooltip-content">
+        <input type="number" [(ngModel)]="alertPrice" step="0.0001" placeholder="Set price alert">
+        <button (click)="setPriceAlert()">Set Alert</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="alerts-panel" *ngIf="showAlertsPanel">
+    <div class="panel-header">
+      <h4>Price Alerts</h4>
+      <button class="close-btn" (click)="toggleAlertsPanel()">×</button>
+    </div>
+    <div class="panel-content">
+      <div class="alert-item" *ngFor="let alert of priceAlerts; let i = index">
+        <span [ngClass]="{'above': alert.direction === 'above', 'below': alert.direction === 'below'}">
+          {{ alert.direction === 'above' ? '↑' : '↓' }} {{ alert.price | number:'1.2-4' }}
+        </span>
+        <button class="delete-btn" (click)="removeAlert(i)">×</button>
+      </div>
+      <div class="add-alert">
+        <input type="number" [(ngModel)]="newAlertPrice" step="0.0001" placeholder="Price">
+        <select [(ngModel)]="newAlertDirection">
+          <option value="above">Above</option>
+          <option value="below">Below</option>
+        </select>
+        <button (click)="addAlert()">Add</button>
+      </div>
+    </div>
+  </div>

@@ -1,12 +1,13 @@
 
 import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { QuoteService } from 'src/app/services/quoteService/quote.service';
 import { Subscription } from 'rxjs';
 import { PositionService } from 'src/app/services/position/position.service';
 import { ThemeService } from 'src/app/services/theme/theme.service';
-
+import { OperationPopupComponent } from '../operation-popup/operation-popup.component';
+import { TestpopupComponent } from '../testpopup/testpopup.component';
 @Component({
   selector: 'app-trade-popup',
   templateUrl: './trade-popup.component.html',
@@ -33,6 +34,7 @@ export class TradePopupComponent implements OnInit, OnDestroy {
   isProcessing: boolean = false;
 
   constructor(
+    private dialog: MatDialog,
     private themeService: ThemeService,
     public dialogRef: MatDialogRef<TradePopupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: {
@@ -176,5 +178,14 @@ export class TradePopupComponent implements OnInit, OnDestroy {
     return this.selectedOperation === 'ACHETER' 
       ? this.bidPrice * this.quantity 
       : this.askPrice * this.quantity;
+  }
+
+
+
+  openOperationPopup(): void {
+    this.dialog.open(TestpopupComponent, {
+      width: '500px',
+      data: {} // Pass any initial data if needed
+    });
   }
 }

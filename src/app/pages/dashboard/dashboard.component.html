@@ -68,10 +68,13 @@
             <div class="panel-content">
                 <ng-container [ngSwitch]="activeRightTab">
                     <div *ngSwitchCase="'chart'" class="h-full">
-                        <app-candlestick-chart></app-candlestick-chart>
+
+                         <app-candle-chart></app-candle-chart>
+                         <!-- <app-real-time-chart></app-real-time-chart> -->
                     </div>
                     <div *ngSwitchCase="'details'" class="h-full">
                         <!-- <app-details></app-details> -->
+                         <app-forex-chart></app-forex-chart>
                     </div>
                 </ng-container>
             </div>

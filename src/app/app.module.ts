@@ -46,6 +46,11 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { PendingOrderTableComponent } from './components/pending-order-table/pending-order-table.component';
+import { ForexChartComponent } from './components/forex-chart/forex-chart.component';
+import { RealTimeChartComponent } from './components/real-time-chart/real-time-chart.component';
+import { CandleChartComponent } from './components/candle-chart/candle-chart.component';
+import {  OperationPopupComponent } from './components/operation-popup/operation-popup.component';
+import { TestpopupComponent } from './components/testpopup/testpopup.component';
 
 const config: SocketIoConfig = { url: 'http://localhost:9092', options: {} };
 
@@ -76,6 +81,11 @@ export function HttpLoaderFactory(http: HttpClient) {
     CandlestickChartComponent,
     LanguageSwitcherComponent,
     ThemeToggleComponent,
+    ForexChartComponent,
+    RealTimeChartComponent,
+    CandleChartComponent,
+    OperationPopupComponent,
+    TestpopupComponent
     
     
   
