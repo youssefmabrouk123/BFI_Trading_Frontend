@@ -44,14 +44,19 @@
         <div #rightPanel id="right-panel" class="panel">
             <div class="panel-header">
                 <div class="tabs">
+                      <button class="tab" [class.tab-active]="activeRightTab === 'details'"
+                        (click)="activeRightTab = 'details'">
+                        <span class="tab-content">{{ 'DASHBOARD.DETAILS' | translate }}</span>
+                    </button>
                     <button class="tab" [class.tab-active]="activeRightTab === 'chart'"
                         (click)="activeRightTab = 'chart'">
                         <span class="tab-content">{{ 'DASHBOARD.CHART' | translate }}</span>
                     </button>
-                    <button class="tab" [class.tab-active]="activeRightTab === 'details'"
-                        (click)="activeRightTab = 'details'">
-                        <span class="tab-content">{{ 'DASHBOARD.DETAILS' | translate }}</span>
+                      <button class="tab" [class.tab-active]="activeRightTab === 'candle-chart'"
+                        (click)="activeRightTab = 'candle-chart'">
+                        <span class="tab-content">{{ 'DASHBOARD.CANDELCHART' | translate }}</span>
                     </button>
+                  
                 </div>
 
                 <button class="btn-ghost" (click)="toggleFullscreen(rightPanel)">
@@ -68,13 +73,16 @@
             <div class="panel-content">
                 <ng-container [ngSwitch]="activeRightTab">
                     <div *ngSwitchCase="'chart'" class="h-full">
-
-                         <app-candle-chart></app-candle-chart>
+                         <app-forex-chart></app-forex-chart>
                          <!-- <app-real-time-chart></app-real-time-chart> -->
                     </div>
                     <div *ngSwitchCase="'details'" class="h-full">
                         <!-- <app-details></app-details> -->
-                         <app-forex-chart></app-forex-chart>
+                         <app-daily-stats></app-daily-stats>
+                    </div>
+                      <div *ngSwitchCase="'candle-chart'" class="h-full">
+                        <!-- <app-details></app-details> -->
+                         <app-candle-chart></app-candle-chart>
                     </div>
                 </ng-container>
             </div>

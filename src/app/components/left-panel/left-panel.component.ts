@@ -7,6 +7,7 @@ import { CrossParityService } from 'src/app/services/crossParity/cross-parity.se
 import { MatDialog } from '@angular/material/dialog';
 import { TradePopupComponent } from '../trade-popup/trade-popup.component';
 import { ThemeService } from 'src/app/services/theme/theme.service';
+import { DailyStatsService } from 'src/app/services/daily-stats/daily-stats.service';
 
 interface MarketDataItem {
   type: 'FX';
@@ -42,7 +43,7 @@ interface MarketFilters {
 })
 export class LeftPanelComponent implements OnInit, OnDestroy {
   instruments: string[] = [];
-  isLoading = true; // Contrôle le squelette et le chargement
+  isLoading = true;
   skeletonArray: number[] = [1, 2, 3, 4, 5];
   marketData: MarketDataItem[] = [];
   filteredMarketData: MarketDataItem[] = [];
@@ -66,17 +67,14 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
     private quoteService: QuoteService,
     private favoriteService: FavoriteService,
     private crossParityService: CrossParityService,
+    private dailyStatsService: DailyStatsService,
     private cd: ChangeDetectorRef,
     public dialog: MatDialog,
-    private themeService: ThemeService,
-
-    
+    private themeService: ThemeService
   ) {}
 
- 
-
   ngOnInit(): void {
-    this.fetchData(true); // Chargement initial avec squelette
+    this.fetchData(true);
     this.themeService.theme$.subscribe(theme => {
       console.log('Dashboard theme updated:', theme);
       this.currentTheme = theme;
@@ -85,12 +83,12 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.quoteService.disconnect();
   }
 
-  // Gestion centralisée des données et du squelette
   private fetchData(showSkeleton: boolean = false): void {
     if (showSkeleton) {
-      this.isLoading = true; // Activer le squelette
+      this.isLoading = true;
     }
 
     this.subscriptions.add(
@@ -103,7 +101,7 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
           this.instruments = crossParities.sort((a, b) => a.localeCompare(b));
           this.updateMarketData(quotes, favorites);
           this.applyFilters();
-          this.isLoading = false; // Désactiver le squelette
+          this.isLoading = false;
           this.isRefreshing = false;
           this.cd.markForCheck();
         },
@@ -119,7 +117,11 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
 
   refreshTable(): void {
     this.isRefreshing = true;
-    this.fetchData(true); // Rafraîchir avec squelette
+    this.fetchData(true);
+  }
+
+  selectCrossParity(item: MarketDataItem): void {
+    this.dailyStatsService.setCrossParityId(item.pk, item.instrument);
   }
 
   private updateMarketData(quotes: Quote[], favorites: any[]): void {
@@ -171,8 +173,7 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
   }
 
   applyFilters(): void {
-    let filtered = [...this.marketData]; // Nouvelle référence pour OnPush
-
+    let filtered = [...this.marketData];
     if (!this.filters.types.fx) {
       filtered = filtered.filter(item => item.type !== 'FX');
     }
@@ -241,13 +242,13 @@ export class LeftPanelComponent implements OnInit, OnDestroy {
   toggleFavorite(item: MarketDataItem, event: Event): void {
     event.stopPropagation();
     const originalFavoriteState = item.favorite;
-    item.favorite = !item.favorite; // Mise à jour optimiste
+    item.favorite = !item.favorite;
     this.applyFilters();
     this.cd.markForCheck();
 
     this.favoriteService.toggleFavorite(item.pk).subscribe({
       next: () => {
-        this.fetchData(false); // Rafraîchir sans squelette
+        this.fetchData(false);
       },
       error: (err) => {
         console.error("Erreur lors de la mise à jour du favori", err);

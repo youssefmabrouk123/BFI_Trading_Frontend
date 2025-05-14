@@ -1,0 +1,121 @@
+<div class="trading-analytics-container">
+  <!-- Simplified header -->
+  <div class="header-wrapper">
+    <div class="header-content">
+      <div class="header-title-section">
+        <h1 class="header-main-title">Trading Analytics</h1>
+        <span class="live-indicator">● LIVE</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <!-- Live Market Overview -->
+    <div *ngIf="instrument" class="market-overview-section">
+      <div class="section-header">
+        <h2 class="section-title">{{ instrument }}</h2>
+        <p class="section-subtitle">Live Market Data</p>
+      </div>
+      
+      <div class="price-cards">
+        <div class="price-card">
+          <div class="price-label">Bid Price</div>
+          <div class="price-value">{{ buy || '-.----' }}</div>
+        </div>
+        
+        <div class="price-card">
+          <div class="price-label">Ask Price</div>
+          <div class="price-value">{{ sell || '-.----' }}</div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+
+    <!-- Trading Statistics -->
+    <div *ngFor="let stat of dailyStats; trackBy: trackByStat" class="stats-section">
+      <div class="stats-header">
+        <h3 class="stats-date">{{ stat.date | date:'EEEE, MMM d' }}</h3>
+       
+      </div>
+
+      <div class="stats-grid">
+        <!-- Bid Analytics -->
+        <div class="analytics-section">
+          <h4 class="analytics-title">Bid Analysis</h4>
+          <div class="analytics-list">
+            <div class="stat-item">
+              <span class="stat-label">High</span>
+              <span class="stat-value">{{ stat.maxBid | number: '1.4-4' }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Low</span>
+              <span class="stat-value">{{ stat.minBid | number: '1.4-4' }}</span>
+            </div>
+            <div class="stat-item highlighted">
+              <span class="stat-label">Average</span>
+              <span class="stat-value">{{ stat.averageBid | number: '1.4-4' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ask Analytics -->
+        <div class="analytics-section">
+          <h4 class="analytics-title">Ask Analysis</h4>
+          <div class="analytics-list">
+            <div class="stat-item">
+              <span class="stat-label">High</span>
+              <span class="stat-value">{{ stat.maxAsk | number: '1.4-4' }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Low</span>
+              <span class="stat-value">{{ stat.minAsk | number: '1.4-4' }}</span>
+            </div>
+            <div class="stat-item highlighted">
+              <span class="stat-label">Average</span>
+              <span class="stat-value">{{ stat.averageAsk | number: '1.4-4' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Daily Movement -->
+        <div class="movement-section">
+          <h4 class="analytics-title">Daily Movement</h4>
+          <div class="movement-grid">
+            <div class="movement-item">
+              <div class="movement-label">Open</div>
+              <div class="movement-value">{{ stat.openBid | number: '1.4-4' }}</div>
+            </div>
+            <div class="movement-item">
+              <div class="movement-label">Close</div>
+              <div class="movement-value" 
+                   [class.positive]="stat.closeBid > stat.openBid"
+                   [class.negative]="stat.closeBid < stat.openBid">
+                {{ stat.closeBid | number: '1.4-4' }}
+              </div>
+            </div>
+            <div class="movement-item">
+              <div class="movement-label">Change</div>
+              <div class="movement-value" 
+                   [class.positive]="stat.closeBid > stat.openBid"
+                   [class.negative]="stat.closeBid < stat.openBid">
+                <span *ngIf="stat.closeBid > stat.openBid">+</span>{{ (stat.closeBid - stat.openBid) | number: '1.4-4' }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="dailyStats.length === 0 && !error" class="empty-state">
+      <div class="empty-message">No trading data available</div>
+      <div class="empty-subtitle">Select a cross parity to analyze daily trading statistics</div>
+    </div>
+  </div>
+</div>

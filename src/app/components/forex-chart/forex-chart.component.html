@@ -1,113 +1,303 @@
-<div class="forex-chart-container" #chartContainer [ngClass]="{'fullscreen': isFullscreen}">
+<div
+  class="forex-chart-container bg-[var(--card-background)] rounded-lg shadow-lg border border-[var(--border-color)] overflow-hidden transition-all duration-300 ease-in-out"
+  [ngClass]="{
+    'fixed inset-0 z-[9999] w-full h-full rounded-none': isFullscreen,
+    'relative h-[600px] md:h-[600px]': !isFullscreen
+  }"
+>
   <!-- Chart Header -->
-  <div class="chart-header">
-    <div class="chart-title">
-      <h3 class="symbol-title">{{ crossParityIdentifier }}</h3>
-      <div class="data-summary">
-        <span class="current-price">{{ currentPrice | number:'1.5-5' }}</span>
-        <span class="price-change" [ngClass]="{'positive': priceChange > 0, 'negative': priceChange < 0}">
-          <i class="arrow-icon" [ngClass]="{'up': priceChange > 0, 'down': priceChange < 0}"></i>
-          {{ priceChange | number:'1.5-5' }} ({{ priceChangePercent | number:'1.2-2' }}%)
-        </span>
+  <div class="chart-header bg-gradient-to-r from-[var(--card-background)] to-[var(--card-background)]/90 p-4 border-b border-[var(--border-color)] backdrop-blur-sm">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-3 lg:space-y-0">
+      <div class="chart-title flex-1">
+        <h3 class="text-xl lg:text-2xl font-bold text-[var(--text-color)] mb-2 bg-gradient-to-r from-[var(--text-color)] to-[var(--text-color)]/70 bg-clip-text">
+          {{ crossParityIdentifier }}
+        </h3>
+        <div class="data-summary flex flex-wrap items-center gap-3">
+          <span class="current-price text-2xl lg:text-3xl font-bold text-[var(--primary-color)] tabular-nums">
+            {{ currentPrice | number:'1.5-5' }}
+          </span>
+          <div 
+            class="price-change flex items-center space-x-2 px-3 py-1.5 rounded-full backdrop-blur-sm" 
+            [ngClass]="{
+              'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20': priceChange > 0, 
+              'bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/20': priceChange < 0,
+              'bg-neutral-500/15 text-neutral-600 dark:text-neutral-400 border border-neutral-500/20': priceChange === 0
+            }"
+          >
+            <i class="fas fa-xs" [ngClass]="{
+              'fa-arrow-up': priceChange > 0, 
+              'fa-arrow-down': priceChange < 0,
+              'fa-minus': priceChange === 0
+            }"></i>
+            <span class="font-semibold tabular-nums">
+              {{ priceChange | number:'1.5-5' }} ({{ priceChangePercent | number:'1.2-2' }}%)
+            </span>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="chart-actions">
-      <div class="chart-indicators">
-        <button [class.active]="showIndicators" (click)="toggleIndicators()">Indicators</button>
-        <button [class.active]="showDrawingTools" (click)="toggleDrawingTools()">Draw</button>
-        <button (click)="exportChart()">Export</button>
-      </div>
-      <div class="chart-tools">
-        <button class="tool-button" (click)="toggleFullscreen()" title="{{ isFullscreen ? 'Exit Fullscreen' : 'Fullscreen' }}">
-          <i class="tool-icon" [ngClass]="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>
+      
+      <div class="chart-actions flex items-center gap-2 flex-wrap">
+        <div class="chart-indicators flex gap-2">
+          <button 
+            class="px-4 py-2 rounded-lg font-medium transition-all duration-200 backdrop-blur-sm"
+            [ngClass]="{
+              'bg-[var(--primary-color)] text-white shadow-lg': showIndicators,
+              'bg-[var(--card-background)] text-[var(--text-color)] border border-[var(--border-color)] hover:border-[var(--primary-color)] hover:text-[var(--primary-color)]': !showIndicators
+            }"
+            (click)="toggleIndicators()"
+          >
+            <i class="fas fa-chart-line mr-2"></i>Indicators
+          </button>
+          <button 
+            class="px-4 py-2 rounded-lg font-medium transition-all duration-200 backdrop-blur-sm"
+            [ngClass]="{
+              'bg-[var(--primary-color)] text-white shadow-lg': showDrawingTools,
+              'bg-[var(--card-background)] text-[var(--text-color)] border border-[var(--border-color)] hover:border-[var(--primary-color)] hover:text-[var(--primary-color)]': !showDrawingTools
+            }"
+            (click)="toggleDrawingTools()"
+          >
+            <i class="fas fa-pencil-alt mr-2"></i>Draw
+          </button>
+          <button 
+            class="px-4 py-2 rounded-lg font-medium transition-all duration-200 backdrop-blur-sm bg-[var(--card-background)] text-[var(--text-color)] border border-[var(--border-color)] hover:border-[var(--primary-color)] hover:text-[var(--primary-color)]"
+            (click)="exportChart()"
+          >
+            <i class="fas fa-download mr-2"></i>Export
+          </button>
+        </div>
+        
+        <button 
+          class="w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-200 backdrop-blur-sm border border-[var(--border-color)] hover:border-[var(--primary-color)] hover:bg-[var(--primary-color)]/10 text-[var(--text-color)] hover:text-[var(--primary-color)]" 
+          (click)="toggleFullscreen()" 
+        >
+          <i class="fas text-lg" [ngClass]="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>
         </button>
       </div>
     </div>
   </div>
 
   <!-- Chart Content -->
-  <div class="chart-content">
+  <div class="chart-content relative flex-1 bg-gradient-to-br from-[var(--card-background)] via-[var(--card-background)] to-[var(--card-background)]/95">
     <!-- Loading State -->
-    <div class="loading-state" *ngIf="isLoading">
-      <div class="spinner"></div>
-      <p>Loading chart data...</p>
+    <div 
+      *ngIf="isLoading" 
+      class="absolute inset-0 flex flex-col items-center justify-center bg-[var(--main-background)]/90 backdrop-blur-sm z-10"
+    >
+      <div class="relative">
+        <div class="w-16 h-16 border-4 border-[var(--primary-color)]/30 border-t-[var(--primary-color)] rounded-full animate-spin"></div>
+        <div class="absolute top-2 left-2 w-12 h-12 border-4 border-transparent border-t-[var(--secondary-color)] rounded-full animate-spin animate-reverse" style="animation-duration: 1.5s;"></div>
+      </div>
+      <p class="mt-6 text-[var(--text-color)]/80 font-medium">Loading chart data...</p>
     </div>
 
     <!-- Error State -->
-    <div class="error-state" *ngIf="hasError && !isLoading">
-      <i class="fas fa-exclamation-triangle error-icon"></i>
-      <p>{{ errorMessage }}</p>
-      <button class="retry-btn" (click)="loadChartData()">Retry</button>
+    <div 
+      *ngIf="hasError && !isLoading" 
+      class="absolute inset-0 flex flex-col items-center justify-center bg-[var(--main-background)]/90 backdrop-blur-sm z-10"
+    >
+      <div class="text-center">
+        <div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-4">
+          <i class="fas fa-exclamation-triangle text-2xl text-red-500"></i>
+        </div>
+        <p class="text-[var(--text-color)] mb-6 max-w-md">{{ errorMessage }}</p>
+        <button 
+          class="bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/90 text-white px-6 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
+          (click)="loadChartData()"
+        >
+          <i class="fas fa-redo mr-2"></i>Retry
+        </button>
+      </div>
     </div>
 
     <!-- Chart -->
-    <div class="chart-wrapper hg" [ngClass]="{'hidden': isLoading || hasError}">
-      <canvas #chartCanvas></canvas>
+    <div 
+      class="chart-wrapper h-full relative" 
+      [ngClass]="{'opacity-30 pointer-events-none': isLoading || hasError}"
+    >
+      <canvas #chartCanvas class="w-full h-full rounded-b-lg"></canvas>
+      <!-- Chart Grid Overlay (decorative) -->
+      <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: linear-gradient(to right, var(--border-color) 1px, transparent 1px), linear-gradient(to bottom, var(--border-color) 1px, transparent 1px); background-size: 50px 50px;"></div>
     </div>
   </div>
 
   <!-- Chart Footer -->
-  <div class="chart-footer">
-    <div class="chart-controls">
-      <div class="time-ranges">
-        <button *ngFor="let frame of timeFrames" [class.active]="selectedTimeFrame === frame.value"
-                (click)="setTimeFrame(frame.value)">
-          {{ frame.label }}
-        </button>
+  <div class="chart-footer bg-gradient-to-r from-[var(--card-background)] to-[var(--card-background)]/90 p-4 border-t border-[var(--border-color)] backdrop-blur-sm">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+      <div class="chart-controls flex flex-col md:flex-row items-start md:items-center space-y-3 md:space-y-0 md:space-x-6">
+        <div class="time-ranges-container">
+          <label class="text-sm font-medium text-[var(--text-color)]/80 mb-2 block">Time Range</label>
+          <div class="time-ranges flex flex-wrap gap-2">
+            <button 
+              *ngFor="let frame of timeFrames" 
+              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-200"
+              [ngClass]="{
+                'bg-[var(--primary-color)] text-white shadow-md': selectedTimeFrame === frame.value,
+                'bg-[var(--card-background)] text-[var(--text-color)] border border-[var(--border-color)] hover:border-[var(--primary-color)] hover:text-[var(--primary-color)]': selectedTimeFrame !== frame.value
+              }"
+              (click)="setTimeFrame(frame.value)"
+            >
+              {{ frame.label }}
+            </button>
+          </div>
+        </div>
+        
+        <div class="custom-range-container">
+          <label class="text-sm font-medium text-[var(--text-color)]/80 mb-2 block">Custom Range</label>
+          <div class="custom-range flex flex-wrap gap-2">
+            <input 
+              type="datetime-local" 
+              [(ngModel)]="startDate" 
+              (change)="onCustomRangeChange()"
+              class="bg-[var(--input-background)] border border-[var(--input-border)] text-[var(--input-text)] px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent transition-all duration-200"
+            >
+            <input 
+              type="datetime-local" 
+              [(ngModel)]="endDate" 
+              (change)="onCustomRangeChange()"
+              class="bg-[var(--input-background)] border border-[var(--input-border)] text-[var(--input-text)] px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent transition-all duration-200"
+            >
+            <button 
+              (click)="onCustomRangeChange()"
+              class="bg-[var(--primary-color)] hover:bg-[var(--primary-color)]/90 text-white px-4 py-1.5 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              <i class="fas fa-check mr-1"></i>Apply
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="custom-range">
-        <input type="datetime-local" [(ngModel)]="startDate" (change)="onCustomRangeChange()">
-        <input type="datetime-local" [(ngModel)]="endDate" (change)="onCustomRangeChange()">
-        <button (click)="onCustomRangeChange()">Apply</button>
+      
+      <div class="chart-info bg-[var(--input-background)] px-4 py-2 rounded-lg border border-[var(--border-color)]">
+        <div class="info-block">
+          <span class="text-[var(--text-color)]/70 mr-2 text-sm">Cross Parity:</span>
+          <span class="font-semibold text-[var(--text-color)] text-lg">{{ crossParityIdentifier }}</span>
+        </div>
       </div>
-    </div>
-    <div class="chart-info">
-      <!-- <div class="info-block">
-        <span class="info-label">Spread:</span>
-        <span class="info-value">{{ currentSpread | number:'1.2-2' }}</span>
-      </div> -->
     </div>
   </div>
 
   <!-- Indicators Panel -->
-  <div class="indicators-panel" *ngIf="showIndicators">
-    <div class="panel-header">
-      <h4>Indicators</h4>
-      <button class="close-btn" (click)="toggleIndicators()">×</button>
-    </div>
-    <div class="panel-content">
-      <div class="indicator-item" *ngFor="let indicator of availableIndicators">
-        <input type="checkbox" [id]="indicator.id" [(ngModel)]="indicator.active" (change)="updateIndicators()">
-        <label [for]="indicator.id">{{ indicator.name }}</label>
-        <button class="indicator-settings-btn" (click)="configureIndicator(indicator)">⚙</button>
+  <div 
+    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] flex items-center justify-center p-4" 
+    *ngIf="showIndicators"
+  >
+    <div class="bg-[var(--card-background)] rounded-2xl w-96 max-w-[90vw] max-h-[80vh] overflow-hidden shadow-2xl border border-[var(--border-color)]">
+      <div class="flex justify-between items-center p-6 border-b border-[var(--border-color)] bg-gradient-to-r from-[var(--card-background)] to-[var(--card-background)]/90">
+        <h4 class="text-xl font-bold text-[var(--text-color)]">
+          <i class="fas fa-chart-line mr-2 text-[var(--primary-color)]"></i>Indicators
+        </h4>
+        <button 
+          class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--border-color)]/50 text-[var(--text-color)]/70 hover:text-[var(--text-color)] transition-all duration-200" 
+          (click)="toggleIndicators()"
+        >
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+      <div class="p-4 max-h-[calc(80vh-160px)] overflow-y-auto custom-scrollbar">
+        <div 
+          class="indicator-item group flex items-center justify-between py-4 px-3 rounded-lg hover:bg-[var(--border-color)]/30 transition-all duration-200 border border-transparent hover:border-[var(--border-color)]" 
+          *ngFor="let indicator of availableIndicators"
+        >
+          <div class="flex items-center flex-1">
+            <div class="relative">
+              <input 
+                type="checkbox" 
+                [id]="indicator.id" 
+                [(ngModel)]="indicator.active" 
+                (change)="updateIndicators()"
+                class="sr-only"
+              >
+              <label [for]="indicator.id" class="cursor-pointer flex items-center">
+                <div class="w-5 h-5 rounded border-2 border-[var(--border-color)] flex items-center justify-center transition-all duration-200" 
+                     [ngClass]="{'bg-[var(--primary-color)] border-[var(--primary-color)]': indicator.active}">
+                  <i class="fas fa-check text-white text-xs" *ngIf="indicator.active"></i>
+                </div>
+                <span class="ml-3 text-[var(--text-color)] font-medium">{{ indicator.name }}</span>
+              </label>
+            </div>
+          </div>
+          <button 
+            class="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--text-color)]/60 hover:text-[var(--primary-color)] hover:bg-[var(--primary-color)]/10 transition-all duration-200 opacity-0 group-hover:opacity-100" 
+            (click)="configureIndicator(indicator)"
+          >
+            <i class="fas fa-cog"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Drawing Tools Panel -->
-  <div class="drawing-tools-panel" *ngIf="showDrawingTools">
-    <div class="panel-header">
-      <h4>Drawing Tools</h4>
-      <button class="close-btn" (click)="toggleDrawingTools()">×</button>
-    </div>
-    <div class="panel-content">
-      <button *ngFor="let tool of drawingTools" [class.active]="selectedDrawingTool === tool.id"
-              (click)="selectDrawingTool(tool.id)">
-        <i class="fas" [ngClass]="tool.iconClass"></i> {{ tool.name }}
-      </button>
-      <button class="clear-btn" (click)="clearDrawings()">Clear Drawings</button>
+  <div 
+    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] flex items-center justify-center p-4" 
+    *ngIf="showDrawingTools"
+  >
+    <div class="bg-[var(--card-background)] rounded-2xl w-96 max-w-[90vw] overflow-hidden shadow-2xl border border-[var(--border-color)]">
+      <div class="flex justify-between items-center p-6 border-b border-[var(--border-color)] bg-gradient-to-r from-[var(--card-background)] to-[var(--card-background)]/90">
+        <h4 class="text-xl font-bold text-[var(--text-color)]">
+          <i class="fas fa-pencil-alt mr-2 text-[var(--primary-color)]"></i>Drawing Tools
+        </h4>
+        <button 
+          class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--border-color)]/50 text-[var(--text-color)]/70 hover:text-[var(--text-color)] transition-all duration-200" 
+          (click)="toggleDrawingTools()"
+        >
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-3 gap-3">
+          <button 
+            *ngFor="let tool of drawingTools" 
+            class="flex flex-col items-center justify-center py-4 px-3 rounded-lg transition-all duration-200 relative overflow-hidden group"
+            [ngClass]="{
+              'bg-[var(--primary-color)] text-white shadow-lg': selectedDrawingTool === tool.id,
+              'bg-[var(--input-background)] text-[var(--text-color)] border border-[var(--border-color)] hover:border-[var(--primary-color)] hover:text-[var(--primary-color)]': selectedDrawingTool !== tool.id
+            }"
+            (click)="selectDrawingTool(tool.id)"
+          >
+            <i class="fas text-lg mb-2" [ngClass]="tool.iconClass"></i>
+            <span class="text-xs font-medium">{{ tool.name }}</span>
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700"></div>
+          </button>
+        </div>
+        <button 
+          class="w-full mt-6 py-3 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-lg font-medium transition-all duration-200 border border-red-500/20 hover:border-red-500/30"
+          (click)="clearDrawings()"
+        >
+          <i class="fas fa-trash mr-2"></i>Clear All Drawings
+        </button>
+      </div>
     </div>
   </div>
 
   <!-- Chart Legend -->
-  <div class="chart-legend" *ngIf="!(isLoading || hasError)">
-    <div class="legend-item" *ngFor="let dataset of visibleDatasets">
-      <span class="color-indicator" [style.backgroundColor]="dataset.color"></span>
-      <span class="legend-label">{{ dataset.label }}</span>
-      <span class="legend-value">{{ dataset.currentValue | number:'1.5-5' }}</span>
-      <button class="legend-toggle" [class.active]="dataset.visible" (click)="toggleDataset(dataset.id)">
-        <i class="fas" [ngClass]="dataset.visible ? 'fa-eye' : 'fa-eye-slash'"></i>
-      </button>
+  <div 
+    class="absolute bottom-20 left-4 p-4 bg-[var(--dropdown-background)]/95 backdrop-blur-sm border border-[var(--border-color)] rounded-xl shadow-xl z-10" 
+    *ngIf="!(isLoading || hasError)"
+  >
+    <div class="flex flex-col space-y-3">
+      <div class="text-xs font-semibold text-[var(--text-color)]/70 uppercase tracking-wide mb-1">Legend</div>
+      <div 
+        class="legend-item group flex items-center space-x-3 py-2 px-2 rounded-lg hover:bg-[var(--border-color)]/30 transition-all duration-200" 
+        *ngFor="let dataset of visibleDatasets"
+      >
+        <span 
+          class="color-indicator w-3 h-3 rounded-full shadow-sm" 
+          [style.backgroundColor]="dataset.color"
+        ></span>
+        <span class="legend-label text-sm font-medium text-[var(--text-color)] flex-1">{{ dataset.label }}</span>
+        <span class="legend-value text-sm font-bold text-[var(--primary-color)] tabular-nums">
+          {{ dataset.currentValue | number:'1.5-5' }}
+        </span>
+        <button 
+          class="w-7 h-7 flex items-center justify-center rounded-full text-[var(--text-color)]/60 hover:text-[var(--text-color)] hover:bg-[var(--border-color)]/50 transition-all duration-200 opacity-0 group-hover:opacity-100" 
+          (click)="toggleDataset(dataset.id)"
+        >
+          <i 
+            class="fas text-xs" 
+            [ngClass]="dataset.visible ? 'fa-eye' : 'fa-eye-slash'"
+          ></i>
+        </button>
+      </div>
     </div>
   </div>
 </div>

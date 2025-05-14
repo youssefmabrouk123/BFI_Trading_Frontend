@@ -27,3 +27,4 @@ describe('AppComponent', () => {
     expect(compiled.querySelector('.content span')?.textContent).toContain('trading-dashboard app is running!');
   });
 });
+

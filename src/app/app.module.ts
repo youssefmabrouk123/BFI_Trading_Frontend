@@ -9,7 +9,7 @@ import { LeftPanelComponent } from './components/left-panel/left-panel.component
 import { BottomPanelComponent } from './components/bottom-panel/bottom-panel.component';
 import { LucideAngularModule, Zap, Search, Filter, Plus } from 'lucide-angular';
 import { NavbarComponent } from './components/navbar/navbar.component';
-import {  FormsModule, ReactiveFormsModule } from '@angular/forms';  
+import {  FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';  
 import {  HTTP_INTERCEPTORS, HttpClientModule ,HttpClient} from '@angular/common/http';
 import { WatchlistComponent } from './components/watchlist/watchlist.component';
 import { CommonModule } from '@angular/common';
@@ -51,6 +51,7 @@ import { RealTimeChartComponent } from './components/real-time-chart/real-time-c
 import { CandleChartComponent } from './components/candle-chart/candle-chart.component';
 import {  OperationPopupComponent } from './components/operation-popup/operation-popup.component';
 import { TestpopupComponent } from './components/testpopup/testpopup.component';
+import { DailyStatsComponent } from './components/daily-stats/daily-stats.component';
 
 const config: SocketIoConfig = { url: 'http://localhost:9092', options: {} };
 
@@ -85,12 +86,11 @@ export function HttpLoaderFactory(http: HttpClient) {
     RealTimeChartComponent,
     CandleChartComponent,
     OperationPopupComponent,
-    TestpopupComponent
-    
-    
-  
+    TestpopupComponent,
+    DailyStatsComponent
   ],
   imports: [
+    
     BrowserModule,
     AppRoutingModule,
     LucideAngularModule.pick({ Zap, Search, Filter, Plus }),

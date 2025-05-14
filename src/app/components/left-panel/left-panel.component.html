@@ -138,7 +138,11 @@
       </tr>
     </thead>
     <tbody *ngIf="!isLoading && marketData.length > 0">
-      <tr *ngFor="let item of filteredMarketData; trackBy: trackByInstrument" [class.favorite-row]="item.favorite" (dblclick)="openTradePopup(item)" class="cursor-pointer transition-colors">
+      <tr *ngFor="let item of filteredMarketData; trackBy: trackByInstrument" 
+          [class.favorite-row]="item.favorite" 
+          (click)="selectCrossParity(item)"
+          (dblclick)="openTradePopup(item)" 
+          class="cursor-pointer transition-colors">
         <td class="instrument-col sticky left-0 z-10">
           <div class="instrument-cell">
             <span class="instrument-name">{{ item.instrument }}</span>

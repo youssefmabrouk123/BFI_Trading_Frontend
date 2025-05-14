@@ -18,6 +18,7 @@
     "DASHBOARD.WATCHLIST": "Watchlist",
     "DASHBOARD.MARKETS": "Markets",
     "DASHBOARD.CHART": "Chart",
+    "DASHBOARD.CANDELCHART": "Candlestick",
     "DASHBOARD.DETAILS": "Details",
     "DASHBOARD.POSITIONS": "Positions",
     "DASHBOARD.ORDERS": "Orders",
@@ -86,7 +87,7 @@
     "ACCOUNT.DELETE_CONFIRM_PROMPT": "Type \"delete\" to confirm",
     "ACCOUNT.DELETE_CONFIRM_EXACT": "Must be exactly \"delete\".",
     "ACCOUNT.DELETE": "Delete",
-    "WATCHLIST.INSTRUMENT": "Instrument",
+    "WATCHLIST.INSTRUMENT": "Cross",
     "WATCHLIST.BID": "Bid",
     "WATCHLIST.ASK": "Ask",
     "WATCHLIST.SPREAD": "Spread",
@@ -130,8 +131,8 @@
     "POSITION.SEARCH_PLACEHOLDER": "Search positions...",
     "POSITION.REFRESH": "Refresh",
     "POSITION.CURRENCY": "Currency",
-    "POSITION.AMOUNT_CURRENCY": "Currency Amount",
-    "POSITION.REQUIRED_CURRENCY": "Required Currency",
+    "POSITION.AMOUNT_CURRENCY": "Position Amount",
+    "POSITION.REQUIRED_CURRENCY": "Required Position",
     "POSITION.FINAL_POSITION": "Final Position",
     "POSITION.ACTIONS": "Actions",
     "POSITION.MORE_ACTIONS": "More actions",
@@ -238,6 +239,7 @@
     "INVALID_ID": "Invalid order ID",
     "CANCEL_SUCCESS": "Order cancelled successfully",
     "NOT_FOUND": "Order not found",
-    "CANCEL_ERROR": "Error cancelling order"
+    "CANCEL_ERROR": "Error cancelling order",
+    "TAKE_PROFIT_STOP_LOSS.TRADE_INFO": "Information"
   }
     

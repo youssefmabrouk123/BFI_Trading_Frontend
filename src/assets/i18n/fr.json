@@ -18,6 +18,7 @@
     "DASHBOARD.WATCHLIST": "Liste de suivi",
     "DASHBOARD.MARKETS": "Marchés",
     "DASHBOARD.CHART": "Graphique",
+    "DASHBOARD.CANDELCHART": "Candlestick",
     "DASHBOARD.DETAILS": "Détails",
     "DASHBOARD.POSITIONS": "Positions",
     "DASHBOARD.ORDERS": "Ordres",
@@ -86,7 +87,7 @@
     "ACCOUNT.DELETE_CONFIRM_PROMPT": "Taper \"supprimer\" pour confirmer",
     "ACCOUNT.DELETE_CONFIRM_EXACT": "Doit être exactement \"supprimer\".",
     "ACCOUNT.DELETE": "Supprimer",
-    "WATCHLIST.INSTRUMENT": "Instrument",
+    "WATCHLIST.INSTRUMENT": "paire ",
     "WATCHLIST.BID": "Bid",
     "WATCHLIST.ASK": "Ask",
     "WATCHLIST.SPREAD": "Écart",
@@ -130,8 +131,8 @@
     "POSITION.SEARCH_PLACEHOLDER": "Rechercher des positions...",
     "POSITION.REFRESH": "Actualiser",
     "POSITION.CURRENCY": "Devise",
-    "POSITION.AMOUNT_CURRENCY": "Montant Devise",
-    "POSITION.REQUIRED_CURRENCY": "Besoin Devise",
+    "POSITION.AMOUNT_CURRENCY": "Montant Position",
+    "POSITION.REQUIRED_CURRENCY": "Besoin Position",
     "POSITION.FINAL_POSITION": "Position Finale",
     "POSITION.ACTIONS": "Actions",
     "POSITION.MORE_ACTIONS": "Plus d'actions",
@@ -208,5 +209,6 @@
     "TAKE_PROFIT_STOP_LOSS.HOURS": "Heures",
     "TAKE_PROFIT_STOP_LOSS.MINUTES": "Minutes",
     "TAKE_PROFIT_STOP_LOSS.DURATION_REQUIRED": "Durée requise",
-    "TAKE_PROFIT_STOP_LOSS.DURATION":"Durée"
+    "TAKE_PROFIT_STOP_LOSS.DURATION":"Durée",
+    "TAKE_PROFIT_STOP_LOSS.TRADE_INFO": "Informations"
 } 

@@ -58,7 +58,7 @@ export class StopLossTakeProfitPopupComponent implements OnInit, OnDestroy {
   ) {
     // Initialize with data from current position if available and valid
     if (data?.currentPosition && data.currentPosition > 0) {
-      this.amount = data.currentPosition;
+      this.amount = 1;
     }
 
     // Set a reasonable default target price if current market price is available and valid
@@ -118,7 +118,7 @@ export class StopLossTakeProfitPopupComponent implements OnInit, OnDestroy {
 
   isFormValid(): boolean {
     return (
-      this.amount > 0 &&
+      this.amount >= 0 &&
       this.targetPrice > 0 &&
       this.durationValue !== null &&
       this.durationValue >= this.minDuration &&

@@ -15,7 +15,7 @@ import { PendingOrdersService } from 'src/app/services/pendingOrders/pending-ord
 })
 export class PendingOrderTableComponent implements OnInit, OnDestroy {
   private alive = true;
-  private autoRefreshInterval = 5000; // Refresh every 5 seconds
+  private autoRefreshInterval = 10000; // Refresh every 5 seconds
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
 

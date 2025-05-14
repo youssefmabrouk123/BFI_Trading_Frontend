@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { AuthService, User } from 'src/app/services/auth/auth.service';
 import { Subscription } from 'rxjs';
 import { NotificationService, Notification } from 'src/app/services/notification/notification.service';
@@ -35,7 +35,8 @@ export class MainComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private notificationService: NotificationService,
     private translate: TranslateService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private cdr: ChangeDetectorRef
   ) {
     this.translate.setDefaultLang('en');
     const savedLang = localStorage.getItem('lang');
@@ -49,11 +50,14 @@ export class MainComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.authService.getUserObservable().subscribe(user => {
         this.user = user;
+        console.log('User updated:', user);
         if (user) {
           this.initializeNotifications();
+          this.notificationService.fetchInitialNotifications(user.id);
         } else {
           this.notifications = [];
           this.unreadCount = 0;
+          this.cdr.detectChanges();
         }
       })
     );
@@ -66,9 +70,10 @@ export class MainComponent implements OnInit, OnDestroy {
   private initializeNotifications(): void {
     this.subscriptions.add(
       this.notificationService.notifications$.subscribe(notifications => {
-        console.log('Received notifications update:', notifications);
+        console.log('Notifications updated in MainComponent:', notifications);
         this.notifications = notifications;
         this.unreadCount = this.notificationService.getUnreadCount();
+        this.cdr.detectChanges(); // Force change detection
       })
     );
   }
