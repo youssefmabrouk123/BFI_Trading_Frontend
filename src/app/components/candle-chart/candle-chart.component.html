@@ -1,183 +1,148 @@
-<div
-  #candleChartContainer
-  class="candle-chart-container bg-[#171717] rounded-2xl shadow-2xl border border-[#252525] overflow-hidden transition-all duration-300 ease-in-out flex flex-col"
-  [ngClass]="{
-    'fixed inset-0 z-[100] w-full h-full': isFullscreen,
-    'relative': !isFullscreen
-  }"
->
+<div class="forex-chart-container" #chartContainer [ngClass]="{'fullscreen': isFullscreen}">
   <!-- Chart Header -->
-  <div class="chart-header bg-[#1f1f1f] p-4 border-b border-[#252525] shadow-sm">
-    <div class="flex justify-between items-center">
-      <div class="chart-title">
-        <h3 class="text-xl font-semibold text-white mb-2" *ngIf="selectedParity">
-          {{ selectedParity.description }}
-        </h3>
-        <div class="data-summary flex items-center space-x-3" *ngIf="selectedCandle">
-          <span class="current-price text-2xl font-bold text-[#3b82f6]">
-            {{ selectedCandle.close | number:'1.5-5' }}
-          </span>
-          <span 
-            class="price-change flex items-center space-x-2 px-2 py-1 rounded-md" 
-            [ngClass]="{'bg-green-600/10 text-green-600': priceChange > 0, 'bg-red-600/10 text-red-600': priceChange < 0}"
-          >
-            <i class="arrow-icon" 
-               [ngClass]="{
-                 'fas fa-arrow-up': priceChange > 0, 
-                 'fas fa-arrow-down': priceChange < 0
-               }"
-            ></i>
-            <span>
-              {{ priceChange | number:'1.5-5' }} ({{ priceChangePercent | number:'1.2-2' }}%)
-            </span>
-          </span>
-        </div>
+  <div class="chart-header">
+    <div class="chart-title">
+      <h3 class="symbol-title">{{ selectedParity?.identifier }}</h3>
+    </div>
+    <div class="chart-actions">
+      <div class="chart-indicators">
+        <button class="tab" [class.tab-active]="showIndicators" (click)="toggleIndicators()">Indicators</button>
+        <button class="tab" [class.tab-active]="showDrawingTools" (click)="toggleDrawingTools()">Draw</button>
+        <button class="tab" (click)="exportChart()">Export</button>
       </div>
-      
-      <div class="chart-actions flex items-center space-x-3">
-        <div class="chart-controls flex space-x-2">
-          <button 
-            class="btn-chart-action bg-[#2a2a2a] text-white px-3 py-1.5 rounded-lg hover:bg-[#3a3a3a] transition-all duration-200 shadow-sm"
-            [class.active]="showDrawingTools" 
-            (click)="toggleDrawingTools()"
-          >
-            <i class="fas fa-pencil-alt mr-2"></i>Draw
-          </button>
-          <button 
-            class="btn-chart-action bg-[#2a2a2a] text-white px-3 py-1.5 rounded-lg hover:bg-[#3a3a3a] transition-all duration-200 shadow-sm"
-            (click)="exportChart()"
-          >
-            <i class="fas fa-download mr-2"></i>Export
-          </button>
-        </div>
-        
-        <button 
-          class="fullscreen-toggle text-white hover:text-[#3b82f6] transition-all duration-200" 
-          (click)="toggleFullscreen()" 
-          [title]="isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'"
-        >
-          <i 
-            class="fas text-xl" 
-            [ngClass]="isFullscreen ? 'fa-compress' : 'fa-expand'"
-          ></i>
-        </button>
-      </div>
+      <div class="chart-tools">
+  <button class="btn-ghost" (click)="toggleFullscreen()" title="{{ isFullscreen ? 'Exit Fullscreen' : 'Fullscreen' }}" aria-label="Toggle fullscreen">
+    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path *ngIf="!isFullscreen"
+            d="M4 8V4h4M4 4l5 5m11-1V4h-4m4 0l-5 5M4 16v4h4m-4 0l5-5m11 5l-5-5m5 5v-4h-4"
+            stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+      <path *ngIf="isFullscreen"
+            d="M6 18L18 6M6 6l12 12"
+            stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+    </svg>
+  </button>
+</div>
     </div>
   </div>
 
   <!-- Chart Content -->
-  <div class="chart-content relative flex-1">
-    <!-- Loading State -->
-    <div 
-      *ngIf="isLoading" 
-      class="absolute inset-0 flex flex-col items-center justify-center bg-[#171717]/60 z-10"
-    >
-      <div class="spinner border-4 border-[#3b82f6] border-t-transparent rounded-full w-12 h-12 animate-spin"></div>
-      <p class="mt-4 text-white font-medium">Loading chart data...</p>
-    </div>
 
-    <!-- Error State -->
-    <div 
-      *ngIf="hasError && !isLoading" 
-      class="absolute inset-0 flex flex-col items-center justify-center bg-[#171717]/60 z-10"
-    >
-      <i class="fas fa-exclamation-triangle text-4xl text-red-600 mb-4"></i>
-      <p class="text-white font-medium mb-4">{{ errorMessage }}</p>
+  <!-- Chart Footer -->
+  <div class="chart-footer w-full p-4">
+  <div class="chart-controls flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+    
+    <!-- Time ranges -->
+    <div class="time-ranges flex flex-wrap gap-2">
       <button 
-        class="btn-retry bg-[#3b82f6] text-white px-4 py-2 rounded-lg hover:bg-[#2563eb] transition-all duration-200 shadow-sm"
-        (click)="loadCandleData()"
-      >
-        Retry
+        class="tab px-4 py-2 rounded border border-gray-300 hover:bg-gray-100 transition"
+        *ngFor="let frame of timeframeOptions" 
+        [class.tab-active]="filterForm.value.timeframe === frame.value"
+        (click)="setTimeFrame(frame.value)">
+        {{ frame.label }}
+      </button>
+    </div>
+    
+    <!-- Custom range inputs -->
+    <div class="custom-range flex flex-col sm:flex-row items-start sm:items-center gap-2">
+      <input 
+        type="datetime-local" 
+        class="date-input px-3 py-2 border border-gray-300 rounded w-full sm:w-auto"
+        formControlName="startDate" 
+        (change)="onCustomRangeChange()" 
+        aria-label="Start date and time">
+        
+      <input 
+        type="datetime-local" 
+        class="date-input px-3 py-2 border border-gray-300 rounded w-full sm:w-auto"
+        formControlName="endDate" 
+        (change)="onCustomRangeChange()" 
+        aria-label="End date and time">
+        
+      <button 
+        class="tab px-4 py-2 rounded border border-blue-500 text-blue-500 hover:bg-blue-50 transition"
+        (click)="onCustomRangeChange()">
+        Apply
       </button>
     </div>
 
-    <!-- Chart -->
-    <div 
-      class="chart-wrapper p-5 h-full" 
-      [ngClass]="{'opacity-60 pointer-events-none': isLoading || hasError}"
-    >
-      <div #chartContainer class="chart h-full"></div>
-    </div>
   </div>
 
-  <!-- Chart Footer -->
-  <div class="chart-footer bg-[#1f1f1f] p-4 border-t border-[#252525] shadow-sm">
-    <div class="flex justify-between items-center flex-wrap gap-4">
-      <div class="chart-controls flex items-center space-x-3 flex-wrap gap-2">
-        <div class="time-ranges flex space-x-2">
-          <button 
-            *ngFor="let frame of timeframeOptions" 
-            class="timeframe-btn bg-[#2a2a2a] text-white px-3 py-1.5 rounded-lg hover:bg-[#3a3a3a] transition-all duration-200 shadow-sm text-sm font-medium"
-            [class.active]="filterForm.value.timeframe === frame.value"
-            (click)="setTimeFrame(frame.value)"
-          >
-            {{ frame.label }}
-          </button>
-        </div>
-        
-        <div class="custom-range flex items-center space-x-2">
-          <input 
-            type="datetime-local" 
-            (change)="onCustomRangeChange()"
-            class="custom-input bg-[#2a2a2a] text-white px-2 py-1.5 rounded-lg border border-[#3a3a3a] text-sm"
-          >
-          <input 
-            type="datetime-local" 
-            (change)="onCustomRangeChange()"
-            class="custom-input bg-[#2a2a2a] text-white px-2 py-1.5 rounded-lg border border-[#3a3a3a] text-sm"
-          >
-          <button 
-            (click)="onCustomRangeChange()"
-            class="btn-apply bg-[#3b82f6] text-white px-3 py-1.5 rounded-lg hover:bg-[#2563eb] transition-all duration-200 shadow-sm text-sm font-medium"
-          >
-            Apply
-          </button>
-        </div>
-      </div>
-      
-      <div class="chart-info">
-        <div class="info-block" *ngIf="selectedParity">
-          <span class="info-label text-white/70 mr-2 text-sm">Pair:</span>
-          <span class="info-value text-white font-medium text-sm">
-            {{ selectedParity.identifier }}
-          </span>
-        </div>
+  <div class="chart-info mt-4">
+    <!-- Optional chart info here -->
+  </div>
+</div>
+
+
+  <!-- Indicators Panel -->
+  <div class="indicators-panel" *ngIf="showIndicators">
+    <div class="panel-header">
+      <h4>Indicators</h4>
+      <button class="btn-ghost close-btn" (click)="toggleIndicators()">×</button>
+    </div>
+    <div class="panel-content">
+      <div class="indicator-item" *ngFor="let indicator of availableIndicators">
+        <input type="checkbox" [id]="indicator.id" [formControlName]="indicator.id" (change)="updateIndicators()">
+        <label [for]="indicator.id">{{ indicator.name }}</label>
+        <button class="btn-ghost indicator-settings-btn" (click)="configureIndicator(indicator)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M12 8a4 4 0 100 8 4 4 0 000-8zm0 6a2 2 0 110-4 2 2 0 010 4z" />
+            <path d="M19.9 12a7.5 7.5 0 01-1.4 4.3l-2.3-2.3a4.5 4.5 0 00-.6-1.7l2.5-2.5a7.5 7.5 0 011.8 2.2zM12 4.1a7.5 7.5 0 014.3 1.4l-2.3 2.3a4.5 4.5 0 00-1.7.6L9.8 6a7.5 7.5 0 012.2-1.8zM4.1 12a7.5 7.5 0 011.4-4.3l2.3 2.3a4.5 4.5 0 00.6 1.7L6 14.2a7.5 7.5 0 01-1.8-2.2zM12 19.9a7.5 7.5 0 01-4.3-1.4l2.3-2.3a4.5 4.5 0 001.7-.6l2.5 2.5a7.5 7.5 0 01-2.2 1.8z" />
+          </svg>
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Drawing Tools Panel -->
-  <div 
-    class="drawing-tools-panel fixed inset-0 bg-black/60 z-50 flex items-center justify-center" 
-    *ngIf="showDrawingTools"
-  >
-    <div class="panel-content bg-[#171717] rounded-2xl p-6 w-80 shadow-xl">
-      <div class="panel-header flex justify-between items-center mb-4">
-        <h4 class="text-lg font-semibold text-white">Drawing Tools</h4>
-        <button 
-          class="close-btn text-2xl text-white/70 hover:text-white transition-all duration-200" 
-          (click)="toggleDrawingTools()"
-        >
-          ×
-        </button>
-      </div>
-      <div class="drawing-tools-grid grid grid-cols-3 gap-2">
-        <button 
-          *ngFor="let tool of drawingTools" 
-          class="drawing-tool-btn bg-[#2a2a2a] text-white p-3 rounded-lg hover:bg-[#3a3a3a] transition-all duration-200 flex flex-col items-center justify-center"
-          [class.active]="selectedDrawingTool === tool.id"
-          (click)="selectDrawingTool(tool.id)"
-        >
-          <i class="fas" [ngClass]="tool.iconClass" style="font-size: 1.25rem;"></i>
-          <span class="text-xs mt-1.5 font-medium">{{ tool.name }}</span>
-        </button>
-        <button 
-          class="clear-btn col-span-3 mt-3 bg-red-600/10 text-red-600 hover:bg-red-600/20 rounded-lg p-3 transition-all duration-200 font-medium"
-          (click)="clearDrawings()"
-        >
-          Clear Drawings
-        </button>
-      </div>
+  <div class="drawing-tools-panel" *ngIf="showDrawingTools">
+    <div class="panel-header">
+      <h4>Drawing Tools</h4>
+      <button class="btn-ghost close-btn" (click)="toggleDrawingTools()">×</button>
+    </div>
+    <div class="panel-content">
+      <button class="tab" *ngFor="let tool of drawingTools" [class.tab-active]="selectedDrawingTool === tool.id"
+              (click)="selectDrawingTool(tool.id)">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path [attr.d]="tool.svgPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+        </svg>
+        {{ tool.name }}
+      </button>
+      <button class="clear-btn" (click)="clearDrawings()">Clear Drawings</button>
     </div>
   </div>
+
+  <!-- Chart Legend -->
+  <div class="chart-legend" *ngIf="!(isLoading || hasError)">
+    <div class="legend-item" *ngFor="let indicator of activeIndicators">
+      <span class="color-indicator" [style.backgroundColor]="indicator.color"></span>
+      <span class="legend-label">{{ indicator.name }}</span>
+      <span class="legend-value">{{ getIndicatorValue(indicator.id) | number:'1.5-5' }}</span>
+    </div>
+  </div>
+
+   <div class="chart-content">
+    <!-- Loading State -->
+
+
+    <!-- Error State -->
+    <div class="error-state" *ngIf="hasError && !isLoading">
+      <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2L2 19h20L12 2zm0 4v7m0 3v2" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+      </svg>
+      <p>{{ errorMessage }}</p>
+      <button class="tab retry-btn" (click)="loadCandleData()">Retry</button>
+    </div>
+
+    <!-- Chart -->
+    <!-- <div class="chart-wrapper hg" [ngClass]="{'hidden': isLoading || hasError}">
+      <div #chartContainer class="chart"></div>
+    </div> -->
+  </div>
 </div>
+
+
+
+
+
+
+ 

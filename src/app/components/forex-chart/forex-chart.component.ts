@@ -3,7 +3,8 @@ import { Chart, ChartType, ChartOptions, LineController, LinearScale, CategorySc
          PointElement, LineElement, Tooltip, Legend, ChartData, ChartDataset, Filler } from 'chart.js';
 import { formatDate } from '@angular/common';
 import { ForexChartService, QuoteHistoryChartData } from 'src/app/services/ForexChart/forex-chart.service';
-import { Subject } from 'rxjs';
+import { DailyStatsService } from 'src/app/services/daily-stats/daily-stats.service';
+import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import zoomPlugin from 'chartjs-plugin-zoom';
@@ -31,7 +32,7 @@ interface IndicatorConfig {
 interface DrawingTool {
   id: string;
   name: string;
-  iconClass: string;
+  svgPath: string;
 }
 
 interface DatasetInfo {
@@ -54,7 +55,7 @@ interface DrawingAnnotation {
   styleUrls: ['./forex-chart.component.css']
 })
 export class ForexChartComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() crossParityIdentifier: string = 'EUR/TND';
+  @Input() crossParityIdentifier: string | null = null; // Made optional
   @Input() startDate: string | null = null;
   @Input() endDate: string | null = null;
 
@@ -65,7 +66,7 @@ export class ForexChartComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoading = false;
   hasError = false;
   errorMessage = '';
-  selectedTimeFrame: string = '1H';
+  selectedTimeFrame: string = '15M';
   intradayData: QuoteHistoryChartData[] = [];
   
   // Fullscreen state
@@ -99,14 +100,14 @@ export class ForexChartComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   drawingTools: DrawingTool[] = [
-    { id: 'line', name: 'Trend Line', iconClass: 'fa-grip-lines' },
-    { id: 'horizontal', name: 'Horizontal Line', iconClass: 'fa-minus' },
-    { id: 'vertical', name: 'Vertical Line', iconClass: 'fa-grip-lines-vertical' },
-    { id: 'rectangle', name: 'Rectangle', iconClass: 'fa-square' },
-    { id: 'ellipse', name: 'Ellipse', iconClass: 'fa-circle' },
-    { id: 'arrow', name: 'Arrow', iconClass: 'fa-arrow-right' },
-    { id: 'text', name: 'Text', iconClass: 'fa-font' },
-    { id: 'fibonacci', name: 'Fibonacci', iconClass: 'fa-wave-square' }
+    { id: 'line', name: 'Trend Line', svgPath: 'M4 20L20 4' },
+    { id: 'horizontal', name: 'Horizontal Line', svgPath: 'M4 12H20' },
+    { id: 'vertical', name: 'Vertical Line', svgPath: 'M12 4V20' },
+    { id: 'rectangle', name: 'Rectangle', svgPath: 'M4 4H20V20H4Z' },
+    { id: 'ellipse', name: 'Ellipse', svgPath: 'M12 4A8 4 0 0 1 12 20A8 4 0 0 1 12 4' },
+    { id: 'arrow', name: 'Arrow', svgPath: 'M4 12H18M14 8L18 12L14 16' },
+    { id: 'text', name: 'Text', svgPath: 'M8 8H16M8 12H16M8 16H12' },
+    { id: 'fibonacci', name: 'Fibonacci', svgPath: 'M4 8H20M4 12H20M4 16H20' }
   ];
 
   intradayTimeFrames = [
@@ -118,6 +119,7 @@ export class ForexChartComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   private destroy$ = new Subject<void>();
+  private subscription = new Subscription();
 
   get priceChangeClass(): string {
     return this.priceChange >= 0 ? 'positive' : 'negative';
@@ -131,7 +133,10 @@ export class ForexChartComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.intradayTimeFrames;
   }
 
-  constructor(private forexChartService: ForexChartService) {}
+  constructor(
+    private forexChartService: ForexChartService,
+    private dailyStatsService: DailyStatsService
+  ) {}
 
   ngOnInit(): void {
     this.setTimeFrame(this.selectedTimeFrame);
@@ -141,20 +146,42 @@ export class ForexChartComponent implements OnInit, AfterViewInit, OnDestroy {
       { id: 'mid', label: 'Mid Price', visible: false, color: '#FFCE56', currentValue: 0 },
       { id: 'spread', label: 'Spread', visible: false, color: '#4BC0C0', currentValue: 0 }
     ];
-  }
 
+    // Subscribe to instrument$ from DailyStatsService
+    this.subscription.add(
+      this.dailyStatsService.instrument$.subscribe(instrument => {
+        this.crossParityIdentifier = instrument;
+        if (instrument) {
+          this.loadChartData();
+        } else {
+          this.clearChart();
+        }
+      })
+    );
+  }
+  clearChart(): void {
+    this.crossParityIdentifier = null;
+    this.intradayData = [];
+    this.hasError = true;
+    this.errorMessage = 'Please select a currency pair';
+    this.isLoading = false;
+    if (this.chart) {
+      this.chart.destroy();
+      this.chart = null;
+    }
+  }
   ngAfterViewInit(): void {
-    this.loadChartData();
+    // Initial chart load will happen via instrument$ subscription
     this.setupCanvasListeners();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.subscription.unsubscribe();
     if (this.chart) {
       this.chart.destroy();
     }
-    // Exit fullscreen on component destroy if active
     if (this.isFullscreen) {
       this.exitFullscreen();
     }
@@ -162,7 +189,7 @@ export class ForexChartComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Toggle fullscreen mode
   toggleFullscreen(): void {
-    const element = this.chartContainer?.nativeElement; // Target the forex-chart-container
+    const element = this.chartContainer?.nativeElement;
     if (!this.isFullscreen) {
       this.enterFullscreen(element);
     } else {
@@ -170,15 +197,14 @@ export class ForexChartComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // Enter fullscreen mode
   private enterFullscreen(element: HTMLElement | undefined): void {
     if (!element) return;
     try {
       if (element.requestFullscreen) {
         element.requestFullscreen();
-      } else if ((element as any).webkitRequestFullscreen) { // Safari
+      } else if ((element as any).webkitRequestFullscreen) {
         (element as any).webkitRequestFullscreen();
-      } else if ((element as any).msRequestFullscreen) { // IE11
+      } else if ((element as any).msRequestFullscreen) {
         (element as any).msRequestFullscreen();
       }
       this.isFullscreen = true;
@@ -187,14 +213,13 @@ export class ForexChartComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // Exit fullscreen mode
   private exitFullscreen(): void {
     try {
       if (document.exitFullscreen) {
         document.exitFullscreen();
-      } else if ((document as any).webkitExitFullscreen) { // Safari
+      } else if ((document as any).webkitExitFullscreen) {
         (document as any).webkitExitFullscreen();
-      } else if ((document as any).msExitFullscreen) { // IE11
+      } else if ((document as any).msExitFullscreen) {
         (document as any).msExitFullscreen();
       }
       this.isFullscreen = false;
@@ -203,15 +228,13 @@ export class ForexChartComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // Listen for fullscreen change events to sync isFullscreen state
   @HostListener('document:fullscreenchange')
-  @HostListener('document:webkitfullscreenchange') // Safari
-  @HostListener('document:msfullscreenchange') // IE11
+  @HostListener('document:webkitfullscreenchange')
+  @HostListener('document:msfullscreenchange')
   onFullscreenChange(): void {
     this.isFullscreen = !!document.fullscreenElement || 
                         !!(document as any).webkitFullscreenElement || 
                         !!(document as any).msFullscreenElement;
-    // Recreate chart to adjust to new dimensions
     if (this.chart) {
       this.recreateChart();
     }
@@ -220,12 +243,12 @@ export class ForexChartComponent implements OnInit, AfterViewInit, OnDestroy {
   setTimeFrame(timeFrame: string): void {
     this.selectedTimeFrame = timeFrame;
     const now = new Date();
-    now.setHours(now.getHours() + 1)
+    now.setHours(now.getHours() + 1);
     let startDate: Date;
 
     switch (timeFrame) {
       case '1M':
-        startDate = new Date(now.getTime()  - 60 * 1000);
+        startDate = new Date(now.getTime() - 60 * 1000);
         break;
       case '5M':
         startDate = new Date(now.getTime() - 5 * 60 * 1000);
@@ -234,22 +257,24 @@ export class ForexChartComponent implements OnInit, AfterViewInit, OnDestroy {
         startDate = new Date(now.getTime() - 15 * 60 * 1000);
         break;
       case '1H':
-        startDate = new Date(now.getTime()- 60 * 60 * 1000);
+        startDate = new Date(now.getTime() - 60 * 60 * 1000);
         break;
       case '4H':
-        startDate = new Date(now.getTime()  - 4 * 60 * 1000);
+        startDate = new Date(now.getTime() - 4 * 60 * 60 * 1000);
         break;
       default:
         startDate = new Date(now.getTime() - 60 * 60 * 1000);
     }
     this.startDate = startDate.toISOString().slice(0, 16);
     this.endDate = now.toISOString().slice(0, 16);
-    this.loadChartData();
+    if (this.crossParityIdentifier) {
+      this.loadChartData();
+    }
   }
 
   onCustomRangeChange(): void {
     this.selectedTimeFrame = 'custom';
-    if (this.startDate && this.endDate) {
+    if (this.startDate && this.endDate && this.crossParityIdentifier) {
       this.loadChartData();
     }
   }
@@ -267,8 +292,7 @@ export class ForexChartComponent implements OnInit, AfterViewInit, OnDestroy {
       this.showIndicators = false;
     }
   }
-
-  selectDrawingTool(toolId: string): void {
+selectDrawingTool(toolId: string): void {
     this.selectedDrawingTool = this.selectedDrawingTool === toolId ? null : toolId;
     this.isDrawing = !!this.selectedDrawingTool;
     if (!this.isDrawing) {
@@ -289,7 +313,7 @@ export class ForexChartComponent implements OnInit, AfterViewInit, OnDestroy {
       const url = this.chart.toBase64Image();
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${this.crossParityIdentifier.replace('/', '')}_chart.png`;
+      link.download = `${(this.crossParityIdentifier ? this.crossParityIdentifier.replace('/', '') : 'forex')}_chart.png`;
       link.click();
     }
   }

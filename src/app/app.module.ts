@@ -52,6 +52,7 @@ import { CandleChartComponent } from './components/candle-chart/candle-chart.com
 import {  OperationPopupComponent } from './components/operation-popup/operation-popup.component';
 import { TestpopupComponent } from './components/testpopup/testpopup.component';
 import { DailyStatsComponent } from './components/daily-stats/daily-stats.component';
+import { ChatbotComponent } from './components/chatbot/chatbot.component';
 
 const config: SocketIoConfig = { url: 'http://localhost:9092', options: {} };
 
@@ -87,7 +88,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     CandleChartComponent,
     OperationPopupComponent,
     TestpopupComponent,
-    DailyStatsComponent
+    DailyStatsComponent,
+    ChatbotComponent
   ],
   imports: [
     

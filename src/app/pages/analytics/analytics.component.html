@@ -22,10 +22,10 @@
         <div class="stat-label">{{ 'ANALYTICS.TRANSACTION_COUNT' | translate }}</div>
         <div class="stat-value">{{ stats.transactionCount }}</div>
       </div>
-      <div class="stat-card">
+      <!-- <div class="stat-card">
         <div class="stat-label">{{ 'ANALYTICS.AMOUNT_TND' | translate }}</div>
         <div class="stat-value">{{ formatCurrency(stats.position) }} TND</div>
-      </div>
+      </div> -->
       <div class="stat-card">
         <div class="stat-label">{{ 'ANALYTICS.LAST_ACTION' | translate }}</div>
         <div class="stat-value" *ngIf="formatDate(stats.lastAction) !== 'N/A'; else elseBlock">

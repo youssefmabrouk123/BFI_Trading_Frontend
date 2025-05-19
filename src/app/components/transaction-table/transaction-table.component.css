@@ -329,7 +329,6 @@ tr:hover .instrument-col {
 /* Debug: Highlight table in light mode */
 :host(.light-mode) .market-table::before,
 .table-wrapper.light-mode .market-table::before {
-  content: "Light Mode Table";
   position: absolute;
   top: 10px;
   left: 10px;

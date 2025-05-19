@@ -1,0 +1,68 @@
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  opacity: 0.5;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  opacity: 0.8;
+}
+
+/* Animation for bounce effect */
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+/* Ensure text is readable in all modes */
+:root {
+  --text-high-contrast: #1a1a1a;
+  --text-high-contrast-dark: #f5f5f5;
+}
+
+/* Dark mode text improvements */
+@media (prefers-color-scheme: dark) {
+  .text-\[var\(--text-color\)\] {
+    color: var(--text-high-contrast-dark) !important;
+  }
+}
+
+/* Light mode text improvements */
+@media (prefers-color-scheme: light) {
+  .text-\[var\(--text-color\)\] {
+    color: var(--text-high-contrast) !important;
+  }
+}
+
+/* Message text clarity */
+.bg-\[var\(--card-background\)\] {
+  background-color: rgba(var(--card-background-rgb), 0.95);
+  backdrop-filter: blur(8px);
+}
+
+/* Input field improvements */
+textarea:focus {
+  background-color: var(--input-background) !important;
+  color: var(--input-text) !important;
+}
+
+textarea::placeholder {
+  color: var(--text-color);
+  opacity: 0.6;
+}

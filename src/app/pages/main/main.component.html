@@ -50,70 +50,139 @@
         <!-- User Section -->
         <div class="user-section">
           <!-- Notifications -->
-          <div class="notification-dropdown" [class.open]="isNotificationsOpen">
-            <button class="icon-button notification-icon-button" (click)="toggleNotifications()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="1.5"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="1.5"/>
-              </svg>
-              <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
-            </button>
+         <!-- Notification Dropdown -->
+<div class="notification-dropdown" [class.open]="isNotificationsOpen">
+  <!-- Notification Button -->
+  <button class="icon-button notification-icon-button group" (click)="toggleNotifications()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="transition-all duration-300 group-hover:stroke-[var(--accent-hover)]">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="1.5"/>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="1.5"/>
+    </svg>
+    <span *ngIf="unreadCount > 0" class="notification-badge animate-pulse">{{ unreadCount }}</span>
+  </button>
 
-            <div *ngIf="isNotificationsOpen" class="dropdown-menu notifications-menu">
-              <div class="dropdown-header notifications-header">
-                <div class="notifications-header-content">
-                  <p class="notifications-title">{{ 'NOTIFICATIONS' | translate }}</p>
-                  <button *ngIf="unreadCount > 0" class="mark-all-read-btn" (click)="markAllAsRead()">
-                    {{ 'MARK_ALL_READ' | translate }}
-                  </button>
-                </div>
-              </div>
-              
-              <div class="dropdown-content notifications-content">
-                <div *ngIf="notifications.length === 0" class="no-notifications">
-                  <div class="empty-state">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="1.5"/>
-                      <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="1.5"/>
-                    </svg>
-                    <p>{{ 'NO_NOTIFICATIONS' | translate }}</p>
-                  </div>
-                </div>
-                
-                <div class="notifications-list">
-                  <div *ngFor="let notification of notifications" 
-                      class="notification-item" 
-                      [class.unread]="!notification.isRead"
-                      [class.read]="notification.isRead"
-                      [@notificationAnimation]="notification.isRead ? 'read' : 'unread'">
-                    <div class="notification-status" *ngIf="!notification.isRead"></div>
-                    <div class="notification-content">
-                      <span class="notification-message">{{ notification.message }}</span>
-                      <span class="notification-time">{{ notification.createdAt | date:'MMM d, h:mm a' }}</span>
-                    </div>
-                    <button *ngIf="!notification.isRead" 
-                            class="mark-read-btn" 
-                            (click)="markNotificationAsRead(notification.id)">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M20 6L9 17l-5-5" stroke-width="2"/>
-                      </svg>
-                    </button>
-                    <button class="delete-btn" (click)="deleteNotification(notification.id)">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m-4 5v6m-4-6v6m-6-3h12" stroke-width="1.5"/>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="dropdown-footer" *ngIf="notifications.length > 0">
-                <a href="#" class="view-all-link" (click)="viewAllNotifications($event)">
-                  {{ 'VIEW_ALL_NOTIFICATIONS' | translate }}
-                </a>
-              </div>
+  <!-- Dropdown Menu -->
+  <div *ngIf="isNotificationsOpen" class="dropdown-menu notifications-menu animate-slideIn" [@dropdownAnimation]>
+    <!-- Header -->
+    <div class="notifications-header">
+      <div class="notifications-header-content">
+        <div class="flex items-center gap-2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="text-[var(--accent-color)]">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="1.5"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="1.5"/>
+          </svg>
+          <h3 class="notifications-title">{{ 'NOTIFICATIONS' | translate }}</h3>
+        </div>
+        <button *ngIf="unreadCount > 0" class="mark-all-read-btn group" (click)="markAllAsRead()">
+          <span class="flex items-center gap-1.5 transition-all duration-300">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="transition-all duration-300 group-hover:stroke-[var(--accent-hover)]">
+              <path d="M20 6L9 17l-5-5" stroke-width="2"/>
+            </svg>
+            {{ 'MARK_ALL_READ' | translate }}
+          </span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Notifications Content -->
+    <div class="notifications-content custom-scrollbar">
+      <!-- Empty State -->
+      <div *ngIf="notifications.length === 0" class="empty-state">
+        <div class="p-6 flex flex-col items-center justify-center space-y-3">
+          <div class="bg-[rgba(212,160,23,0.1)] p-4 rounded-full">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="text-[var(--accent-color)]">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="1.5"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <p class="text-center text-sm">{{ 'NO_NOTIFICATIONS' | translate }}</p>
+          <span class="text-xs opacity-60">{{ 'CHECK_BACK_LATER' | translate }}</span>
+        </div>
+      </div>
+      
+      <!-- Notification List -->
+      <div class="notifications-list">
+        <div *ngFor="let notification of notifications; let i = index" 
+            class="notification-item group" 
+            [class.unread]="!notification.isRead"
+            [class.read]="notification.isRead"
+            [@notificationAnimation]="notification.isRead ? 'read' : 'unread'">
+          
+          <!-- Notification Type Icon -->
+          <div class="flex-shrink-0 mr-3">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center" 
+                [ngClass]="{'bg-[rgba(212,160,23,0.15)]': !notification.isRead, 'bg-[rgba(212,160,23,0.05)]': notification.isRead}">
+              <svg *ngIf="notification.type === 'alert'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                  [ngClass]="{'text-[var(--accent-color)]': !notification.isRead, 'opacity-70': notification.isRead}">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke-width="1.5"/>
+                <line x1="12" y1="9" x2="12" y2="13" stroke-width="1.5"/>
+                <line x1="12" y1="17" x2="12.01" y2="17" stroke-width="1.5"/>
+              </svg>
+              <svg *ngIf="notification.type === 'info' || !notification.type" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  [ngClass]="{'text-[var(--accent-color)]': !notification.isRead, 'opacity-70': notification.isRead}">
+                <circle cx="12" cy="12" r="10" stroke-width="1.5"/>
+                <line x1="12" y1="16" x2="12" y2="12" stroke-width="1.5"/>
+                <line x1="12" y1="8" x2="12.01" y2="8" stroke-width="1.5"/>
+              </svg>
+              <svg *ngIf="notification.type === 'success'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  [ngClass]="{'text-[var(--accent-color)]': !notification.isRead, 'opacity-70': notification.isRead}">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke-width="1.5"/>
+                <polyline points="22 4 12 14.01 9 11.01" stroke-width="1.5"/>
+              </svg>
             </div>
           </div>
+          
+          <!-- Notification Content -->
+          <div class="notification-content">
+            <p class="notification-message" [ngClass]="{'font-medium': !notification.isRead}">{{ notification.message }}</p>
+            <div class="flex justify-between items-center mt-1">
+              <span class="notification-time flex items-center gap-1">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="opacity-60">
+                  <circle cx="12" cy="12" r="10" stroke-width="1.5"/>
+                  <polyline points="12 6 12 12 16 14" stroke-width="1.5"/>
+                </svg>
+                {{ notification.createdAt | date:'MMM d, h:mm a' }}
+              </span>
+              
+              <!-- Category Tag (if applicable) -->
+            
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="notification-actions">
+            <button *ngIf="!notification.isRead" 
+                    class="mark-read-btn transition-all duration-300" 
+                    (click)="markNotificationAsRead(notification.id); $event.stopPropagation()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M20 6L9 17l-5-5" stroke-width="2"/>
+              </svg>
+            </button>
+            <button class="delete-btn transition-all duration-300" 
+                    (click)="deleteNotification(notification.id); $event.stopPropagation()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m-4 5v6m-4-6v6m-6-3h12" stroke-width="1.5"/>
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Unread Indicator -->
+          <div *ngIf="!notification.isRead" class="absolute left-0 top-0 bottom-0 w-1 bg-[var(--accent-color)] rounded-l-md"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="dropdown-footer" *ngIf="notifications.length > 0">
+      <a href="#" class="view-all-link flex items-center justify-center gap-1.5" (click)="viewAllNotifications($event)">
+        <span>{{ 'VIEW_ALL_NOTIFICATIONS' | translate }}</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M5 12h14M12 5l7 7-7 7" stroke-width="1.5"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
 
           <!-- Profile Dropdown -->
           <div class="profile-dropdown" [class.open]="isDropdownOpen">
@@ -234,3 +303,4 @@
     <app-account *ngIf="selectedView === 'account'"></app-account>
   </div>
 </div>
+

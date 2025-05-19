@@ -15,8 +15,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('horizontalResizer') horizontalResizer!: ElementRef;
   @ViewChild('verticalResizer') verticalResizer!: ElementRef;
 
-  activeLeftTab = 'watchlist';
-  activeRightTab = 'chart';
+  activeLeftTab = 'markets';
+  activeRightTab = 'details';
   activeBottomTab = 'positions';
   currentTheme: string = 'dark';
   isMobile = false;

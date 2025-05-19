@@ -104,7 +104,7 @@ export class PendingOrderTableComponent implements OnInit, OnDestroy {
         this.pendingOrders = data.orders;
         this.filterOrders();
         this.lastUpdated = new Date();
-        this.showToast('PENDING_ORDER.UPDATED', 'success-snackbar');
+        // this.showToast('PENDING_ORDER.UPDATED', 'success-snackbar');
       }
     });
 
@@ -137,7 +137,7 @@ export class PendingOrderTableComponent implements OnInit, OnDestroy {
       this.socket.emit('subscribeOrders', { userId, status: this.selectedStatus });
     } else {
       console.error('No userId found for socket subscription');
-      this.showToast('PENDING_ORDER.NO_USER_ID', 'error-snackbar');
+      // this.showToast('PENDING_ORDER.NO_USER_ID', 'error-snackbar');
     }
   }
 
@@ -207,7 +207,7 @@ export class PendingOrderTableComponent implements OnInit, OnDestroy {
 
   cancelOrder(orderId: number | undefined): void {
     if (orderId === undefined) {
-      this.showToast('PENDING_ORDER.INVALID_ID', 'error-snackbar');
+      // this.showToast('PENDING_ORDER.INVALID_ID', 'error-snackbar');
       return;
     }
     this.translateService
@@ -217,7 +217,7 @@ export class PendingOrderTableComponent implements OnInit, OnDestroy {
           this.pendingOrderService.cancelPendingOrder(orderId).subscribe({
             next: () => {
               this.loadOrdersByStatus(); // Refresh via HTTP as a fallback
-              this.showToast('PENDING_ORDER.CANCEL_SUCCESS', 'success-snackbar');
+              // this.showToast('PENDING_ORDER.CANCEL_SUCCESS', 'success-snackbar');
             },
             error: (err) => {
               console.error('Error cancelling order:', err);

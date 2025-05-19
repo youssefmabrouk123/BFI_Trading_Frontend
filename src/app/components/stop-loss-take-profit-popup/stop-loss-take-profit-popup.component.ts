@@ -40,7 +40,7 @@ export class StopLossTakeProfitPopupComponent implements OnInit, OnDestroy {
   triggerType: 'STOP_LOSS' | 'TAKE_PROFIT' = 'STOP_LOSS';
   amount: number = 0;
   targetPrice: number = 0;
-  actionOnTrigger: 'EXECUTE' | 'NOTIFY' = 'EXECUTE';
+  actionOnTrigger: 'EXECUTE' | 'NOTIFY' = 'NOTIFY';
   durationValue: number | null = null; // Duration value
   durationUnit: 'MINUTES' | 'HOURS' = 'MINUTES'; // Duration unit
   durationError: string | null = null; // Error message for duration

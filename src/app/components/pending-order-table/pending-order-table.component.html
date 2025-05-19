@@ -111,7 +111,7 @@
           {{ 'PENDING_ORDER.ID' | translate }}
         </th>
         <th>{{ 'PENDING_ORDER.CURRENCY_PAIR' | translate }}</th>
-        <th>{{ 'PENDING_ORDER.AMOUNT' | translate }}</th>
+        <!-- <th>{{ 'PENDING_ORDER.AMOUNT' | translate }}</th> -->
         <th>{{ 'PENDING_ORDER.TARGET_PRICE' | translate }}</th>
         <th>{{ 'PENDING_ORDER.ORDER_TYPE' | translate }}</th>
         <th>{{ 'PENDING_ORDER.TRIGGER_TYPE' | translate }}</th>
@@ -132,7 +132,7 @@
             </span>
           </div>
         </td>
-        <td>{{ order.amount | number:'1.2-2' }}</td>
+        <!-- <td>{{ order.amount | number:'1.2-2' }}</td> -->
         <td>{{ order.targetPrice | number:'1.2-2' }}</td>
         <td>
           <span class="action-badge" [ngClass]="order.orderType.toLowerCase()">
